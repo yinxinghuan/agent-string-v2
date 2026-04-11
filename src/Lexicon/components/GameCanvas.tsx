@@ -251,8 +251,17 @@ export default function GameCanvas({
         }
       }
 
-      // Update time
-      onTimeUpdate(dt);
+      // Check if all interactive words are done (collected/shattered/triggered)
+      const remaining = wordsRef.current.filter(w =>
+        !w.collected && !w.shattered && !w.trapTriggered &&
+        (w.meta.type === 'target' || w.meta.type === 'time' || w.meta.type === 'volatile' || w.meta.type === 'anchor')
+      );
+      if (remaining.length === 0 && scrollYRef.current > 0) {
+        // All words done — end round in 2 seconds
+        onTimeUpdate(Math.max(dt, 2));
+      } else {
+        onTimeUpdate(dt);
+      }
 
       // Screen shake decay
       screenShakeRef.current *= 0.9;

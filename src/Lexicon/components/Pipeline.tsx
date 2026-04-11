@@ -37,7 +37,6 @@ function RollingNumber({ value, duration = 300 }: { value: number; duration?: nu
     const animate = (now: number) => {
       const elapsed = now - start;
       const progress = Math.min(1, elapsed / duration);
-      // Ease out cubic
       const eased = 1 - Math.pow(1 - progress, 3);
       setDisplay(Math.round(from + (to - from) * eased));
       if (progress < 1) {
@@ -57,7 +56,8 @@ export default function Pipeline({ queue, onEntryComplete }: PipelineProps) {
   const [activeEntry, setActiveEntry] = useState<PipelineEntry | null>(null);
   const [stepIndex, setStepIndex] = useState(-1);
   const [displayScore, setDisplayScore] = useState(0);
-  const [prevStepLabel, setPrevStepLabel] = useState('');
+  // History of steps resolved so far (for showing the chain)
+  const [resolvedSteps, setResolvedSteps] = useState<PipelineStep[]>([]);
   const processingRef = useRef(false);
   const queueRef = useRef(queue);
   queueRef.current = queue;
@@ -68,13 +68,14 @@ export default function Pipeline({ queue, onEntryComplete }: PipelineProps) {
     if (!next) {
       setActiveEntry(null);
       setStepIndex(-1);
+      setResolvedSteps([]);
       return;
     }
 
     processingRef.current = true;
     setActiveEntry(next);
     setDisplayScore(0);
-    setPrevStepLabel('');
+    setResolvedSteps([]);
 
     let idx = 0;
     const playStep = () => {
@@ -87,7 +88,7 @@ export default function Pipeline({ queue, onEntryComplete }: PipelineProps) {
       const step = next.steps[idx];
       setStepIndex(idx);
       setDisplayScore(step.runningTotal);
-      setPrevStepLabel(step.type !== 'final' ? step.label : '');
+      setResolvedSteps(prev => [...prev, step]);
       soundForStep(step);
       idx++;
 
@@ -107,56 +108,39 @@ export default function Pipeline({ queue, onEntryComplete }: PipelineProps) {
 
   const currentStep = activeEntry.steps[stepIndex];
   const isFinal = currentStep?.type === 'final';
-  const isMultiStep = activeEntry.steps.length > 2; // more than base + final
   const isBigScore = activeEntry.totalScore >= 50;
 
   return (
-    <div className={`lex-pipeline ${isFinal && isBigScore ? 'lex-pipeline--massive' : ''}`}>
-      <div className="lex-pipeline__track">
-        {/* Word name */}
-        <span className="lex-pipeline__word">{activeEntry.wordText}</span>
+    <div className="lex-pipeline">
+      <div className={`lex-pipeline__card ${isFinal && isBigScore ? 'lex-pipeline__card--massive' : ''}`}>
+        {/* Word being scored */}
+        <div className="lex-pipeline__word">{activeEntry.wordText}</div>
 
-        {/* Step chain: show previous steps faded + current step active */}
-        <div className="lex-pipeline__steps">
-          {prevStepLabel && currentStep?.type !== 'base' && (
-            <span className="lex-pipeline__prev-step">{prevStepLabel}</span>
-          )}
-          {currentStep && !isFinal && (
-            <span
-              className={`lex-pipeline__step lex-pipeline__step--${currentStep.type}`}
-              key={`${activeEntry.wordId}-${stepIndex}`}
-            >
-              {currentStep.operation === 'x' ? (
-                <span className="lex-pipeline__step-mult">{currentStep.label}</span>
-              ) : (
-                <span className="lex-pipeline__step-label">{currentStep.label}</span>
-              )}
-            </span>
-          )}
-        </div>
-
-        {/* Running total with rolling counter */}
-        <span className={`lex-pipeline__total ${isFinal ? 'lex-pipeline__total--final' : ''} ${isFinal && isBigScore ? 'lex-pipeline__total--big' : ''}`}>
-          +<RollingNumber value={displayScore} duration={currentStep?.type === 'final' ? 400 : 250} />
-        </span>
-      </div>
-
-      {/* Step progress dots */}
-      {isMultiStep && (
-        <div className="lex-pipeline__dots">
-          {activeEntry.steps.filter(s => s.type !== 'final').map((s, i) => (
-            <span
+        {/* Chain of resolved steps */}
+        <div className="lex-pipeline__chain">
+          {resolvedSteps.filter(s => s.type !== 'final').map((s, i) => (
+            <div
               key={i}
-              className={`lex-pipeline__dot ${i <= stepIndex ? 'lex-pipeline__dot--active' : ''} lex-pipeline__dot--${s.type}`}
-            />
+              className={`lex-pipeline__step lex-pipeline__step--${s.type} ${i === resolvedSteps.length - 1 ? 'lex-pipeline__step--current' : 'lex-pipeline__step--past'}`}
+            >
+              <span className="lex-pipeline__step-label">{s.label}</span>
+              <span className="lex-pipeline__step-value">
+                {s.operation === 'x' ? `×${s.value}` : `+${s.value}`}
+              </span>
+            </div>
           ))}
         </div>
-      )}
 
-      {/* Queue indicator */}
-      {queue.length > 1 && (
-        <div className="lex-pipeline__queue">+{queue.length - 1}</div>
-      )}
+        {/* Big score display */}
+        <div className={`lex-pipeline__score ${isFinal ? 'lex-pipeline__score--final' : ''}`}>
+          +<RollingNumber value={displayScore} duration={isFinal ? 400 : 200} />
+        </div>
+
+        {/* Queue count */}
+        {queue.length > 1 && (
+          <div className="lex-pipeline__queue">+{queue.length - 1} more</div>
+        )}
+      </div>
     </div>
   );
 }
