@@ -9,7 +9,6 @@ import { SURGE_DURATION } from './constants';
 import { sfxStreak, sfxComplete, resumeAudio } from './utils/sounds';
 import GameCanvas from './components/GameCanvas';
 import HUD from './components/HUD';
-import Pipeline from './components/Pipeline';
 import Toast from './components/Toast';
 import StartScreen from './components/StartScreen';
 import EndScreen from './components/EndScreen';
@@ -41,10 +40,11 @@ function initialState(): GameState {
 
 export default function Lexicon() {
   const [state, setState] = useState<GameState>(initialState);
-  const [pipelineQueue, setPipelineQueue] = useState<PipelineEntry[]>([]);
+  // Pipeline entries are passed to GameCanvas via ref (no queue)
   const [toastQueue, setToastQueue] = useState<ToastMessage[]>([]);
   const [shopOffered, setShopOffered] = useState<Glyph[]>([]);
   const toastIdRef = useRef(0);
+  const pipelineEntryRef = useRef<PipelineEntry | null>(null);
 
   const roundConfig = getRound(state.round - 1);
 
@@ -57,7 +57,7 @@ export default function Lexicon() {
       phase: 'playing',
       timeLeft: rc.timeLimit,
     });
-    setPipelineQueue([]);
+    pipelineEntryRef.current = null;
     setToastQueue([]);
   }, []);
 
@@ -99,8 +99,10 @@ export default function Lexicon() {
         phraseSets: roundConfig.phraseSets,
       });
 
-      setPipelineQueue(q => [...q, entry]);
+      // Score is added immediately (no queue)
       addToast(t('toast.found'), word.meta.text, brief);
+      // Pass entry to GameCanvas for flip card display
+      pipelineEntryRef.current = entry;
 
       if (newStreak === 3 || newStreak === 5 || newStreak === 7) {
         sfxStreak(newStreak);
@@ -108,6 +110,7 @@ export default function Lexicon() {
 
       return {
         ...prev,
+        score: prev.score + entry.totalScore,
         streak: newStreak,
         bestStreak: Math.max(prev.bestStreak, newStreak),
         wordsCollectedThisRound: allCollected,
@@ -118,6 +121,7 @@ export default function Lexicon() {
 
   // ── Volatile chain ─────────────────────────────────────────────────────────
   const handleVolatile = useCallback((words: Word[]) => {
+    let totalVolatileScore = 0;
     for (const w of words) {
       const entry = resolvePipeline({
         word: w.meta,
@@ -130,8 +134,10 @@ export default function Lexicon() {
         phraseSets: roundConfig.phraseSets,
         isVolatile: true,
       });
-      setPipelineQueue(q => [...q, entry]);
+      totalVolatileScore += entry.totalScore;
+      pipelineEntryRef.current = entry;
     }
+    setState(prev => ({ ...prev, score: prev.score + totalVolatileScore }));
     addToast(t('toast.volatile'), `x${words.length}`, '');
   }, [state, roundConfig, addToast]);
 
@@ -218,14 +224,7 @@ export default function Lexicon() {
     });
   }, []);
 
-  // ── Pipeline entry complete ────────────────────────────────────────────────
-  const handlePipelineComplete = useCallback((entry: PipelineEntry) => {
-    setState(prev => ({
-      ...prev,
-      score: prev.score + entry.totalScore,
-    }));
-    setPipelineQueue(q => q.slice(1));
-  }, []);
+  // Pipeline score is now added immediately in handleWordCollected
 
   // ── Shop: show glyph choices ───────────────────────────────────────────────
   const handleRoundEnd = useCallback(() => {
@@ -261,7 +260,7 @@ export default function Lexicon() {
         wordsShattered: 0,
       };
     });
-    setPipelineQueue([]);
+    pipelineEntryRef.current = null;
     setToastQueue([]);
   }, []);
 
@@ -284,6 +283,7 @@ export default function Lexicon() {
             surgeActive={state.surgeActive}
             surgeTimer={state.surgeTimer}
             pressure={state.pressure}
+            pipelineEntryRef={pipelineEntryRef}
             onWordCollected={handleWordCollected}
             onTrapHit={handleTrapHit}
             onShatter={handleShatter}
@@ -303,7 +303,7 @@ export default function Lexicon() {
             surgeActive={state.surgeActive}
             glyphs={state.activeGlyphs}
           />
-          <Pipeline queue={pipelineQueue} onEntryComplete={handlePipelineComplete} />
+          {/* Pipeline is now rendered on Canvas via flipCards */}
           <Toast queue={toastQueue} onDone={removeToast} />
         </>
       )}

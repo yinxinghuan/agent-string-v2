@@ -1,12 +1,12 @@
-import { useRef, useEffect, useCallback } from 'react';
-import type { Word, RoundConfig, Burst } from '../types';
+import { useRef, useEffect, useCallback, type MutableRefObject } from 'react';
+import type { Word, RoundConfig, Burst, PipelineEntry, PipelineStep } from '../types';
 import { buildWords, physicsStep } from '../engine/wordField';
 import {
   INK, TRAP_RGB, GROUP_COLORS, FONT_FAMILY, BG_COLOR, REDLINE_Y,
   COLLECT_R, PRESSURE_PER_COLLECT, PRESSURE_PER_SHATTER, PRESSURE_MAX,
   SURGE_SPEED_MULT, ANCHOR_TIME_BONUS, TRAP_TIME_PENALTY,
 } from '../constants';
-import { sfxCollect, sfxTrap, sfxShatter, sfxTime, sfxVolatile, sfxSurgeStart, resumeAudio } from '../utils/sounds';
+import { sfxCollect, sfxTrap, sfxShatter, sfxTime, sfxVolatile, sfxSurgeStart, sfxPipelineBase, sfxPipelineStreak, sfxPipelineGlyph, sfxPipelinePhrase, sfxPipelineFinal, resumeAudio } from '../utils/sounds';
 
 const GLITCH_CHARS = '!@#$%^&*~<>[]{}?|01_';
 function glitchText(text: string, seed: number): string {
@@ -15,11 +15,127 @@ function glitchText(text: string, seed: number): string {
   return out;
 }
 
+// ── Flip Card (airport split-flap style) ─────────────────────────────────────
+interface FlipCard {
+  x: number;
+  y: number;
+  steps: PipelineStep[];
+  currentStep: number;
+  stepTimer: number;      // time until next step flips in
+  age: number;            // total age of this card set
+  dismissing: boolean;    // fading out
+  dismissTimer: number;   // time left before fully gone
+}
+
+const FLIP_STEP_INTERVAL = 0.45;  // seconds between each step flip
+const FLIP_DISMISS_DELAY = 0.6;   // seconds to hold final state before dismissing
+const FLIP_DISMISS_DURATION = 0.5; // fade out duration
+const FLIP_CARD_H = 24;
+const FLIP_CARD_PAD = 8;
+const FLIP_CARD_GAP = 4;
+const FLIP_CARD_R = 4;
+
+function flipCardStepSound(step: PipelineStep): void {
+  switch (step.type) {
+    case 'base': sfxPipelineBase(); break;
+    case 'streak': sfxPipelineStreak(); break;
+    case 'glyph': sfxPipelineGlyph(); break;
+    case 'phrase': sfxPipelinePhrase(); break;
+    case 'final': sfxPipelineFinal(); break;
+  }
+}
+
+function drawFlipCard(ctx: CanvasRenderingContext2D, card: FlipCard, _dt: number): boolean {
+  const visibleSteps = card.steps.slice(0, card.currentStep + 1).filter(s => s.type !== 'final');
+  if (visibleSteps.length === 0) return card.dismissTimer <= 0;
+
+  const totalH = visibleSteps.length * (FLIP_CARD_H + FLIP_CARD_GAP) - FLIP_CARD_GAP;
+  let cy = card.y - totalH / 2;
+
+  // Global alpha for dismiss
+  const alpha = card.dismissing ? Math.max(0, card.dismissTimer / FLIP_DISMISS_DURATION) : 1;
+  // Float upward while dismissing
+  const yOff = card.dismissing ? (1 - card.dismissTimer / FLIP_DISMISS_DURATION) * 30 : 0;
+
+  for (let i = 0; i < visibleSteps.length; i++) {
+    const step = visibleSteps[i];
+    const isNewest = i === visibleSteps.length - 1 && !card.dismissing;
+
+    // Flip-in animation for newest card
+    let scaleY = 1;
+    let cardAlpha = alpha;
+    if (isNewest) {
+      const flipProgress = Math.min(1, (FLIP_STEP_INTERVAL - card.stepTimer) / 0.15);
+      scaleY = flipProgress;
+      cardAlpha *= flipProgress;
+    }
+    // Older cards fade slightly
+    if (!isNewest && !card.dismissing) {
+      cardAlpha *= 0.7;
+    }
+
+    const cardY = cy - yOff;
+    const text = step.type === 'base'
+      ? `${step.label}  +${step.value}`
+      : step.operation === 'x'
+        ? `${step.label}`
+        : `${step.label}  +${step.value}`;
+    const totalText = `= ${step.runningTotal}`;
+
+    ctx.save();
+    ctx.globalAlpha = cardAlpha;
+
+    // Measure text for card width
+    ctx.font = `500 11px ${FONT_FAMILY}`;
+    const textW = ctx.measureText(text).width;
+    const totalW = ctx.measureText(totalText).width;
+    const cardW = Math.max(textW + totalW + FLIP_CARD_PAD * 3, 120);
+
+    // Apply flip scale
+    ctx.translate(card.x, cardY + FLIP_CARD_H / 2);
+    ctx.scale(1, scaleY);
+    ctx.translate(-card.x, -(cardY + FLIP_CARD_H / 2));
+
+    // Black rounded rect
+    const rx = card.x - cardW / 2;
+    ctx.beginPath();
+    ctx.roundRect(rx, cardY, cardW, FLIP_CARD_H, FLIP_CARD_R);
+    ctx.fillStyle = 'rgba(20,16,12,0.88)';
+    ctx.fill();
+
+    // Left text (step label + value)
+    ctx.font = `500 11px ${FONT_FAMILY}`;
+    ctx.textBaseline = 'middle';
+    ctx.textAlign = 'left';
+
+    // Color by step type
+    let textColor = 'rgba(245,240,230,0.9)';
+    if (step.type === 'streak') textColor = 'rgba(100,200,120,0.95)';
+    else if (step.type === 'glyph') textColor = 'rgba(180,140,240,0.95)';
+    else if (step.type === 'surge') textColor = 'rgba(240,80,80,0.95)';
+    else if (step.type === 'phrase') textColor = 'rgba(230,170,60,0.95)';
+
+    ctx.fillStyle = textColor;
+    ctx.fillText(text, rx + FLIP_CARD_PAD, cardY + FLIP_CARD_H / 2);
+
+    // Right text (running total)
+    ctx.textAlign = 'right';
+    ctx.fillStyle = 'rgba(245,240,230,0.6)';
+    ctx.fillText(totalText, rx + cardW - FLIP_CARD_PAD, cardY + FLIP_CARD_H / 2);
+
+    ctx.restore();
+    cy += FLIP_CARD_H + FLIP_CARD_GAP;
+  }
+
+  return card.dismissTimer <= 0;
+}
+
 interface GameCanvasProps {
   roundConfig: RoundConfig;
   surgeActive: boolean;
   surgeTimer: number;
   pressure: number;
+  pipelineEntryRef: MutableRefObject<PipelineEntry | null>;
   onWordCollected: (word: Word) => void;
   onTrapHit: (word: Word) => void;
   onShatter: (word: Word) => void;
@@ -32,7 +148,7 @@ interface GameCanvasProps {
 }
 
 export default function GameCanvas({
-  roundConfig, surgeActive, surgeTimer, pressure,
+  roundConfig, surgeActive, surgeTimer, pressure, pipelineEntryRef,
   onWordCollected, onTrapHit, onShatter, onVolatile, onTimeBonus,
   onPressureChange, onSurgeStart, onSurgeEnd, onTimeUpdate,
 }: GameCanvasProps) {
@@ -45,6 +161,7 @@ export default function GameCanvas({
   const burstsRef = useRef<Burst[]>([]);
   const floatsRef = useRef<{ x: number; y: number; text: string; color: string; life: number; maxLife: number }[]>([]);
   const shatterPartsRef = useRef<{ x: number; y: number; vx: number; vy: number; char: string; life: number }[]>([]);
+  const flipCardsRef = useRef<FlipCard[]>([]);
   const screenShakeRef = useRef(0);
   const surgeRef = useRef({ active: false, timer: 0 });
   const pressureRef = useRef(0);
@@ -246,6 +363,48 @@ export default function GameCanvas({
         onShatter(w);
       }
 
+      // Spawn flip cards from pipeline entries
+      if (pipelineEntryRef.current) {
+        const entry = pipelineEntryRef.current;
+        pipelineEntryRef.current = null;
+        const word = wordsRef.current.find(w => w.id === entry.wordId);
+        const cx = word ? word.x : pointerRef.current.x;
+        const cy = word ? (word.y - scrollYRef.current) : pointerRef.current.y;
+        // Offset cards above the word
+        flipCardsRef.current.push({
+          x: Math.min(Math.max(cx, 80), W - 80),
+          y: Math.max(cy - 40, 80),
+          steps: entry.steps,
+          currentStep: 0,
+          stepTimer: FLIP_STEP_INTERVAL,
+          age: 0,
+          dismissing: false,
+          dismissTimer: FLIP_DISMISS_DURATION,
+        });
+        // Play first step sound
+        if (entry.steps.length > 0) flipCardStepSound(entry.steps[0]);
+      }
+
+      // Update flip cards
+      for (const card of flipCardsRef.current) {
+        card.age += dt * (1 / 60); // back to seconds
+        if (!card.dismissing) {
+          card.stepTimer -= dt * (1 / 60);
+          if (card.stepTimer <= 0 && card.currentStep < card.steps.length - 1) {
+            card.currentStep++;
+            card.stepTimer = FLIP_STEP_INTERVAL;
+            flipCardStepSound(card.steps[card.currentStep]);
+          }
+          // Start dismissing after all steps shown + delay
+          if (card.currentStep >= card.steps.length - 1 && card.stepTimer <= -FLIP_DISMISS_DELAY) {
+            card.dismissing = true;
+          }
+        } else {
+          card.dismissTimer -= dt * (1 / 60);
+        }
+      }
+      flipCardsRef.current = flipCardsRef.current.filter(c => c.dismissTimer > 0);
+
       // Surge timer
       if (surgeRef.current.active) {
         if (surgeRef.current.timer <= 0) {
@@ -430,6 +589,11 @@ export default function GameCanvas({
         ctx.textBaseline = 'middle';
         ctx.fillText(p.char, p.x, p.y);
         ctx.restore();
+      }
+
+      // Flip cards (pipeline scoring)
+      for (const card of flipCardsRef.current) {
+        drawFlipCard(ctx, card, dt);
       }
 
       // Top/bottom gradient vignette
