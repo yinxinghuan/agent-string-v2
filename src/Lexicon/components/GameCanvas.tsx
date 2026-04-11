@@ -1,5 +1,5 @@
-import { useRef, useEffect, useCallback, type MutableRefObject } from 'react';
-import type { Word, RoundConfig, Burst, PipelineEntry } from '../types';
+import { useRef, useEffect, useCallback } from 'react';
+import type { Word, RoundConfig, Burst } from '../types';
 import { buildWords, physicsStep } from '../engine/wordField';
 import {
   INK, TRAP_RGB, GROUP_COLORS, FONT_FAMILY, BG_COLOR, REDLINE_Y,
@@ -22,7 +22,6 @@ interface GameCanvasProps {
   surgeActive: boolean;
   surgeTimer: number;
   pressure: number;
-  pipelineEntryRef: MutableRefObject<PipelineEntry | null>;
   onWordCollected: (word: Word) => void;
   onTrapHit: (word: Word) => void;
   onShatter: (word: Word) => void;
@@ -35,7 +34,7 @@ interface GameCanvasProps {
 }
 
 export default function GameCanvas({
-  roundConfig, surgeActive, surgeTimer, pressure, pipelineEntryRef,
+  roundConfig, surgeActive, surgeTimer, pressure,
   onWordCollected, onTrapHit, onShatter, onVolatile, onTimeBonus,
   onPressureChange, onSurgeStart, onSurgeEnd, onTimeUpdate,
 }: GameCanvasProps) {
@@ -250,18 +249,7 @@ export default function GameCanvas({
         onShatter(w);
       }
 
-      // Consume pipeline entries — show total score as a float label at word position
-      if (pipelineEntryRef.current) {
-        const entry = pipelineEntryRef.current;
-        pipelineEntryRef.current = null;
-        // Score float is already added in the collect handler (word name + color)
-        // Add the score number as a second float slightly below
-        const word = wordsRef.current.find(w => w.id === entry.wordId);
-        if (word) {
-          const sy = word.y - scrollYRef.current;
-          addFloat(word.x, sy + 20, `+${entry.totalScore}`, 'rgba(20,12,5,0.7)');
-        }
-      }
+      // Pipeline entries are consumed by ScoreFlip component (DOM flip cards)
 
       // Surge timer
       if (surgeRef.current.active) {
@@ -303,19 +291,19 @@ export default function GameCanvas({
       const scrollY = scrollYRef.current;
       const redY = H * REDLINE_Y;
 
-      // Redline — more visible with glow
+      // Redline — black, below HUD area
       ctx.save();
       // Glow
-      ctx.strokeStyle = `rgba(180,40,40,0.08)`;
-      ctx.lineWidth = 8;
+      ctx.strokeStyle = `rgba(20,12,5,0.06)`;
+      ctx.lineWidth = 10;
       ctx.beginPath();
       ctx.moveTo(0, redY);
       ctx.lineTo(W, redY);
       ctx.stroke();
       // Line
-      ctx.strokeStyle = `rgba(180,40,40,0.5)`;
+      ctx.strokeStyle = `rgba(20,12,5,0.4)`;
       ctx.lineWidth = 1.5;
-      ctx.setLineDash([6, 4]);
+      ctx.setLineDash([8, 5]);
       ctx.beginPath();
       ctx.moveTo(0, redY);
       ctx.lineTo(W, redY);

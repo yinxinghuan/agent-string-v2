@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef, type MutableRefObject } from 'react';
 import type { PipelineEntry } from '../types';
-import { locale } from '../i18n';
 import { sfxCollect } from '../utils/sounds';
 
 interface ScoreFlipProps {
@@ -18,37 +17,39 @@ let flipIdCounter = 0;
 
 export default function ScoreFlip({ entryRef }: ScoreFlipProps) {
   const [items, setItems] = useState<FlipItem[]>([]);
-  const lastEntryRef = useRef<PipelineEntry | null>(null);
+  const checkRef = useRef(0);
 
-  // Poll for new pipeline entries
+  // Check for new pipeline entries every frame
   useEffect(() => {
-    const interval = setInterval(() => {
-      if (entryRef.current && entryRef.current !== lastEntryRef.current) {
+    const check = () => {
+      if (entryRef.current) {
         const entry = entryRef.current;
-        lastEntryRef.current = entry;
+        entryRef.current = null; // consume
         const id = ++flipIdCounter;
 
-        // Add new card (unflipped)
+        // Add unflipped card
         setItems(prev => [...prev, { id, entry, flipped: false, leaving: false }]);
 
-        // Flip after a short delay
+        // Flip after brief delay
         setTimeout(() => {
           setItems(prev => prev.map(it => it.id === id ? { ...it, flipped: true } : it));
           sfxCollect(entry.steps[0]?.value % 3 || 0);
-        }, 80);
+        }, 100);
 
         // Start leaving
         setTimeout(() => {
           setItems(prev => prev.map(it => it.id === id ? { ...it, leaving: true } : it));
-        }, 1600);
+        }, 1800);
 
         // Remove
         setTimeout(() => {
           setItems(prev => prev.filter(it => it.id !== id));
-        }, 2100);
+        }, 2300);
       }
-    }, 50);
-    return () => clearInterval(interval);
+      checkRef.current = requestAnimationFrame(check);
+    };
+    checkRef.current = requestAnimationFrame(check);
+    return () => cancelAnimationFrame(checkRef.current);
   }, [entryRef]);
 
   if (items.length === 0) return null;
@@ -59,10 +60,7 @@ export default function ScoreFlip({ entryRef }: ScoreFlipProps) {
         const { entry } = item;
         const word = entry.wordText;
         const score = entry.totalScore;
-        // Find streak/glyph info for back of card
-        const hasStreak = entry.steps.some(s => s.type === 'streak');
-        const hasGlyph = entry.steps.some(s => s.type === 'glyph');
-        const brief = entry.steps[0]?.label || '';
+        const hasBonus = entry.steps.some(s => s.type === 'streak' || s.type === 'glyph' || s.type === 'phrase' || s.type === 'surge');
 
         return (
           <div
@@ -70,15 +68,15 @@ export default function ScoreFlip({ entryRef }: ScoreFlipProps) {
             className={`sf-card ${item.flipped ? 'sf-card--flipped' : ''} ${item.leaving ? 'sf-card--leaving' : ''}`}
           >
             <div className="sf-card__inner">
-              {/* Back (question mark / hidden) */}
+              {/* Back */}
               <div className="sf-card__back">
                 <span className="sf-card__back-icon">?</span>
               </div>
-              {/* Front (revealed content) */}
+              {/* Front */}
               <div className="sf-card__front">
                 <div className="sf-card__word">{word}</div>
                 <div className="sf-card__score">+{score}</div>
-                {(hasStreak || hasGlyph) && (
+                {hasBonus && (
                   <div className="sf-card__bonus">
                     {entry.steps.filter(s => s.type !== 'base' && s.type !== 'final').map((s, i) => (
                       <span key={i} className={`sf-card__tag sf-card__tag--${s.type}`}>
@@ -87,7 +85,6 @@ export default function ScoreFlip({ entryRef }: ScoreFlipProps) {
                     ))}
                   </div>
                 )}
-                {brief && <div className="sf-card__brief">{locale === 'zh' ? '' : ''}</div>}
               </div>
             </div>
           </div>

@@ -284,7 +284,6 @@ export default function Lexicon() {
             surgeActive={state.surgeActive}
             surgeTimer={state.surgeTimer}
             pressure={state.pressure}
-            pipelineEntryRef={pipelineEntryRef}
             onWordCollected={handleWordCollected}
             onTrapHit={handleTrapHit}
             onShatter={handleShatter}
