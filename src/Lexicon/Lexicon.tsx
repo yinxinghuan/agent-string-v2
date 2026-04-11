@@ -193,8 +193,9 @@ export default function Lexicon() {
       const newSurgeTimer = prev.surgeActive ? prev.surgeTimer - dt : 0;
 
       if (newTime <= 0) {
-        // Round end
-        const roundScore = prev.score;
+        // Round end — store per-round score delta
+        const prevTotal = prev.roundScores.reduce((a, b) => a + b, 0);
+        const thisRoundScore = prev.score - prevTotal;
         const isLastRound = prev.round >= MAX_ROUNDS;
         if (isLastRound) {
           sfxComplete();
@@ -204,7 +205,7 @@ export default function Lexicon() {
           timeLeft: 0,
           surgeTimer: newSurgeTimer,
           phase: isLastRound ? 'runEnd' : 'roundEnd',
-          roundScores: [...prev.roundScores, roundScore],
+          roundScores: [...prev.roundScores, thisRoundScore],
         };
       }
 

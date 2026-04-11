@@ -1,6 +1,19 @@
 import { t, locale } from '../i18n';
 import type { GameState, PhraseSet } from '../types';
 
+const ACT_NAMES: Record<string, [string, string]> = {
+  '1': ['THE SURFACE', '表层'],
+  '2': ['THE SURFACE', '表层'],
+  '3': ['THE QUARRY', '采石场'],
+  '4': ['THE QUARRY', '采石场'],
+  '5': ['THE DEPTHS', '深处'],
+};
+
+function actName(round: number): string {
+  const names = ACT_NAMES[String(round)] ?? ['???', '???'];
+  return locale === 'zh' ? names[1] : names[0];
+}
+
 interface EndScreenProps {
   state: GameState;
   phraseSets: PhraseSet[];
@@ -17,7 +30,7 @@ export default function EndScreen({ state, phraseSets, isRunEnd, onNext, onRetry
   return (
     <div className="lex-screen lex-end">
       <div className="lex-end__inner">
-        <div className="lex-end__label">// R{state.round}</div>
+        <div className="lex-end__label">// R{state.round} · {actName(state.round)}</div>
         <div className="lex-end__rule" />
         <div className="lex-end__title">{title}</div>
         <div className="lex-end__score">{state.score}</div>
@@ -50,6 +63,21 @@ export default function EndScreen({ state, phraseSets, isRunEnd, onNext, onRetry
             <div className="lex-end__glyphs">
               {state.activeGlyphs.map(g => (
                 <span key={g.id} className="lex-end__glyph">{g.icon} {locale === 'zh' ? g.nameZh : g.name}</span>
+              ))}
+            </div>
+          </>
+        )}
+
+        {/* Run end: show round-by-round scores */}
+        {isRunEnd && state.roundScores.length > 0 && (
+          <>
+            <div className="lex-end__rule" />
+            <div className="lex-end__breakdown">
+              {state.roundScores.map((s, i) => (
+                <div key={i} className="lex-end__round-row">
+                  <span>R{i + 1}</span>
+                  <span>{s}</span>
+                </div>
               ))}
             </div>
           </>
