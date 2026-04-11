@@ -15,27 +15,45 @@ function glitchText(text: string, seed: number): string {
   return out;
 }
 
-// ── Flip Card (airport split-flap style) ─────────────────────────────────────
-interface FlipCard {
+// ── Score Card — poker-card shaped, flip-clock animation ─────────────────────
+interface ScoreCard {
   x: number;
   y: number;
-  steps: PipelineStep[];
-  currentStep: number;
-  stepTimer: number;      // time until next step flips in
-  age: number;            // total age of this card set
-  dismissing: boolean;    // fading out
-  dismissTimer: number;   // time left before fully gone
+  // Content
+  label: string;       // e.g. "MORNING", "STREAK", "Echo Chamber"
+  value: string;       // e.g. "+10", "×2", "= 45"
+  color: string;       // accent color
+  // Animation
+  flipAge: number;     // time since spawn (seconds)
+  flipDone: boolean;   // flip animation complete
+  holdTimer: number;   // hold after flip, then dismiss
+  dismissing: boolean;
+  dismissAge: number;  // time into dismiss
+  // Spring bounce
+  scale: number;
+  scaleVel: number;
 }
 
-const FLIP_STEP_INTERVAL = 0.35;  // seconds between each step flip
-const FLIP_DISMISS_DELAY = 0.8;   // seconds to hold final state before dismissing
-const FLIP_DISMISS_DURATION = 0.4; // fade out duration
-const FLIP_CARD_H = 32;
-const FLIP_CARD_PAD = 12;
-const FLIP_CARD_GAP = 5;
-const FLIP_CARD_R = 5;
+const CARD_W = 110;
+const CARD_H = 70;
+const CARD_R = 8;
+const FLIP_DURATION = 0.3;    // flip-clock spin time
+const FLIP_SPINS = 3;         // number of half-rotations during flip
+const HOLD_DURATION = 1.0;    // hold visible before dismiss
+const DISMISS_DURATION = 0.35;
+const CARD_GAP_X = 8;
 
-function flipCardStepSound(step: PipelineStep): void {
+function stepColor(step: PipelineStep): string {
+  switch (step.type) {
+    case 'streak': return 'rgba(100,210,130,0.95)';
+    case 'glyph': return 'rgba(180,140,240,0.95)';
+    case 'surge': return 'rgba(240,80,80,0.95)';
+    case 'phrase': return 'rgba(240,180,50,0.95)';
+    default: return 'rgba(245,240,230,0.9)';
+  }
+}
+
+function stepSound(step: PipelineStep): void {
   switch (step.type) {
     case 'base': sfxPipelineBase(); break;
     case 'streak': sfxPipelineStreak(); break;
@@ -45,89 +63,93 @@ function flipCardStepSound(step: PipelineStep): void {
   }
 }
 
-function drawFlipCard(ctx: CanvasRenderingContext2D, card: FlipCard, _dt: number): boolean {
-  const visibleSteps = card.steps.slice(0, card.currentStep + 1).filter(s => s.type !== 'final');
-  if (visibleSteps.length === 0) return card.dismissTimer <= 0;
+function drawScoreCard(ctx: CanvasRenderingContext2D, card: ScoreCard): void {
+  // Dismiss: slide up + fade
+  let alpha = 1;
+  let yOff = 0;
+  if (card.dismissing) {
+    const p = Math.min(1, card.dismissAge / DISMISS_DURATION);
+    alpha = 1 - p;
+    yOff = p * 40;
+  }
+  if (alpha <= 0) return;
 
-  const totalH = visibleSteps.length * (FLIP_CARD_H + FLIP_CARD_GAP) - FLIP_CARD_GAP;
-  let cy = card.y - totalH / 2;
-
-  // Global alpha for dismiss
-  const alpha = card.dismissing ? Math.max(0, card.dismissTimer / FLIP_DISMISS_DURATION) : 1;
-  // Float upward while dismissing
-  const yOff = card.dismissing ? (1 - card.dismissTimer / FLIP_DISMISS_DURATION) * 30 : 0;
-
-  for (let i = 0; i < visibleSteps.length; i++) {
-    const step = visibleSteps[i];
-    const isNewest = i === visibleSteps.length - 1 && !card.dismissing;
-
-    // Flip-in animation for newest card
-    let scaleY = 1;
-    let cardAlpha = alpha;
-    if (isNewest) {
-      const flipProgress = Math.min(1, (FLIP_STEP_INTERVAL - card.stepTimer) / 0.15);
-      scaleY = flipProgress;
-      cardAlpha *= flipProgress;
-    }
-    // Older cards fade slightly
-    if (!isNewest && !card.dismissing) {
-      cardAlpha *= 0.7;
-    }
-
-    const cardY = cy - yOff;
-    const text = step.type === 'base'
-      ? `${step.label}  +${step.value}`
-      : step.operation === 'x'
-        ? `${step.label}`
-        : `${step.label}  +${step.value}`;
-    const totalText = `= ${step.runningTotal}`;
-
-    ctx.save();
-    ctx.globalAlpha = cardAlpha;
-
-    // Measure text for card width
-    ctx.font = `500 13px ${FONT_FAMILY}`;
-    const textW = ctx.measureText(text).width;
-    const totalW = ctx.measureText(totalText).width;
-    const cardW = Math.max(textW + totalW + FLIP_CARD_PAD * 3, 120);
-
-    // Apply flip scale
-    ctx.translate(card.x, cardY + FLIP_CARD_H / 2);
-    ctx.scale(1, scaleY);
-    ctx.translate(-card.x, -(cardY + FLIP_CARD_H / 2));
-
-    // Black rounded rect
-    const rx = card.x - cardW / 2;
-    ctx.beginPath();
-    ctx.roundRect(rx, cardY, cardW, FLIP_CARD_H, FLIP_CARD_R);
-    ctx.fillStyle = 'rgba(20,16,12,0.88)';
-    ctx.fill();
-
-    // Left text (step label + value)
-    ctx.font = `500 13px ${FONT_FAMILY}`;
-    ctx.textBaseline = 'middle';
-    ctx.textAlign = 'left';
-
-    // Color by step type
-    let textColor = 'rgba(245,240,230,0.9)';
-    if (step.type === 'streak') textColor = 'rgba(100,200,120,0.95)';
-    else if (step.type === 'glyph') textColor = 'rgba(180,140,240,0.95)';
-    else if (step.type === 'surge') textColor = 'rgba(240,80,80,0.95)';
-    else if (step.type === 'phrase') textColor = 'rgba(230,170,60,0.95)';
-
-    ctx.fillStyle = textColor;
-    ctx.fillText(text, rx + FLIP_CARD_PAD, cardY + FLIP_CARD_H / 2);
-
-    // Right text (running total)
-    ctx.textAlign = 'right';
-    ctx.fillStyle = 'rgba(245,240,230,0.6)';
-    ctx.fillText(totalText, rx + cardW - FLIP_CARD_PAD, cardY + FLIP_CARD_H / 2);
-
-    ctx.restore();
-    cy += FLIP_CARD_H + FLIP_CARD_GAP;
+  // Flip-clock animation: scaleY oscillates during flip
+  let scaleY = 1;
+  if (!card.flipDone) {
+    const p = Math.min(1, card.flipAge / FLIP_DURATION);
+    // Rapid half-rotations that settle: |cos(spins * π * p)| decaying to 1
+    const spin = Math.cos(FLIP_SPINS * Math.PI * p);
+    const decay = 1 - (1 - p) * (1 - p); // ease out quad
+    scaleY = Math.abs(spin) * (1 - decay) + decay;
   }
 
-  return card.dismissTimer <= 0;
+  // Spring bounce on scale
+  const bounceScale = card.scale;
+
+  const cx = card.x;
+  const cy = card.y - yOff;
+
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.translate(cx, cy);
+  ctx.scale(bounceScale, bounceScale * scaleY);
+
+  // Card background — dark, poker-card proportions
+  ctx.beginPath();
+  ctx.roundRect(-CARD_W / 2, -CARD_H / 2, CARD_W, CARD_H, CARD_R);
+  ctx.fillStyle = 'rgba(22,18,14,0.92)';
+  ctx.fill();
+  // Subtle border
+  ctx.strokeStyle = 'rgba(245,240,230,0.12)';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  // Only show text when card is "facing forward" (scaleY > 0.3 or flip done)
+  if (card.flipDone || scaleY > 0.3) {
+    // Label (top, smaller)
+    ctx.font = `500 11px ${FONT_FAMILY}`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = 'rgba(245,240,230,0.45)';
+    ctx.fillText(card.label, 0, -12);
+
+    // Value (center, large)
+    ctx.font = `600 22px ${FONT_FAMILY}`;
+    ctx.fillStyle = card.color;
+    ctx.fillText(card.value, 0, 14);
+  }
+
+  ctx.restore();
+}
+
+function updateScoreCard(card: ScoreCard, dt: number): boolean {
+  if (!card.flipDone) {
+    card.flipAge += dt;
+    if (card.flipAge >= FLIP_DURATION) {
+      card.flipDone = true;
+      // Start spring bounce
+      card.scale = 1.15;
+      card.scaleVel = 0;
+    }
+  } else if (!card.dismissing) {
+    // Spring physics for bounce
+    const target = 1;
+    const spring = 120;
+    const damp = 8;
+    card.scaleVel += (target - card.scale) * spring * dt;
+    card.scaleVel *= Math.exp(-damp * dt);
+    card.scale += card.scaleVel * dt;
+
+    card.holdTimer -= dt;
+    if (card.holdTimer <= 0) {
+      card.dismissing = true;
+      card.dismissAge = 0;
+    }
+  } else {
+    card.dismissAge += dt;
+  }
+  return card.dismissing && card.dismissAge >= DISMISS_DURATION;
 }
 
 interface GameCanvasProps {
@@ -161,7 +183,7 @@ export default function GameCanvas({
   const burstsRef = useRef<Burst[]>([]);
   const floatsRef = useRef<{ x: number; y: number; text: string; color: string; life: number; maxLife: number }[]>([]);
   const shatterPartsRef = useRef<{ x: number; y: number; vx: number; vy: number; char: string; life: number }[]>([]);
-  const flipCardsRef = useRef<FlipCard[]>([]);
+  const scoreCardsRef = useRef<ScoreCard[]>([]);
   const screenShakeRef = useRef(0);
   const surgeRef = useRef({ active: false, timer: 0 });
   const pressureRef = useRef(0);
@@ -363,46 +385,68 @@ export default function GameCanvas({
         onShatter(w);
       }
 
-      // Spawn flip cards from pipeline entries — positioned at center area
+      // Spawn score cards from pipeline entries — each step = one card
       if (pipelineEntryRef.current) {
         const entry = pipelineEntryRef.current;
         pipelineEntryRef.current = null;
-        // Stack new cards below existing ones
-        const existingCards = flipCardsRef.current.length;
-        const baseY = H * 0.35 + existingCards * 50;
-        flipCardsRef.current.push({
-          x: W / 2,
-          y: Math.min(baseY, H * 0.65),
-          steps: entry.steps,
-          currentStep: 0,
-          stepTimer: FLIP_STEP_INTERVAL,
-          age: 0,
-          dismissing: false,
-          dismissTimer: FLIP_DISMISS_DURATION,
-        });
-        // Play first step sound
-        if (entry.steps.length > 0) flipCardStepSound(entry.steps[0]);
-      }
+        const steps = entry.steps.filter(s => s.type !== 'final');
+        const totalCards = steps.length;
+        const rowW = totalCards * (CARD_W + CARD_GAP_X) - CARD_GAP_X;
+        const startX = (W - rowW) / 2 + CARD_W / 2;
+        const cy = H * 0.38;
 
-      // Update flip cards
-      for (const card of flipCardsRef.current) {
-        card.age += dt;
-        if (!card.dismissing) {
-          card.stepTimer -= dt;
-          if (card.stepTimer <= 0 && card.currentStep < card.steps.length - 1) {
-            card.currentStep++;
-            card.stepTimer = FLIP_STEP_INTERVAL;
-            flipCardStepSound(card.steps[card.currentStep]);
+        steps.forEach((step, i) => {
+          const label = step.type === 'base' ? step.label : step.label;
+          const value = step.type === 'base'
+            ? `+${step.value}`
+            : step.operation === 'x' ? `×${step.value}` : `+${step.value}`;
+
+          scoreCardsRef.current.push({
+            x: startX + i * (CARD_W + CARD_GAP_X),
+            y: cy,
+            label,
+            value,
+            color: stepColor(step),
+            flipAge: 0,
+            flipDone: false,
+            holdTimer: HOLD_DURATION + (totalCards - 1 - i) * 0.15, // last card dismisses first
+            dismissing: false,
+            dismissAge: 0,
+            scale: 0.5,
+            scaleVel: 0,
+          });
+
+          // Stagger sound
+          setTimeout(() => stepSound(step), i * 120);
+        });
+
+        // Add a total card at the end
+        if (entry.totalScore > 0) {
+          const totalStep = entry.steps.find(s => s.type === 'final');
+          if (totalStep) {
+            setTimeout(() => {
+              scoreCardsRef.current.push({
+                x: W / 2,
+                y: cy + CARD_H + 12,
+                label: 'TOTAL',
+                value: `+${entry.totalScore}`,
+                color: entry.totalScore >= 50 ? 'rgba(240,180,50,1)' : 'rgba(245,240,230,0.95)',
+                flipAge: 0,
+                flipDone: false,
+                holdTimer: HOLD_DURATION * 0.8,
+                dismissing: false,
+                dismissAge: 0,
+                scale: 0.5,
+                scaleVel: 0,
+              });
+              sfxPipelineFinal();
+            }, steps.length * 120 + 100);
           }
-          // Start dismissing after all steps shown + delay
-          if (card.currentStep >= card.steps.length - 1 && card.stepTimer <= -FLIP_DISMISS_DELAY) {
-            card.dismissing = true;
-          }
-        } else {
-          card.dismissTimer -= dt;
         }
       }
-      flipCardsRef.current = flipCardsRef.current.filter(c => c.dismissTimer > 0);
+
+      // Update score cards
+      scoreCardsRef.current = scoreCardsRef.current.filter(c => !updateScoreCard(c, dt));
 
       // Surge timer
       if (surgeRef.current.active) {
@@ -590,9 +634,9 @@ export default function GameCanvas({
         ctx.restore();
       }
 
-      // Flip cards (pipeline scoring)
-      for (const card of flipCardsRef.current) {
-        drawFlipCard(ctx, card, dt);
+      // Score cards (poker-card style, flip-clock animation)
+      for (const card of scoreCardsRef.current) {
+        drawScoreCard(ctx, card);
       }
 
       // Top/bottom gradient vignette
