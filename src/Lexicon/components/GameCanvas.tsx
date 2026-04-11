@@ -253,14 +253,14 @@ export default function GameCanvas({
         }
       }
 
-      // Check if all interactive words are done (collected/shattered/triggered)
-      const remaining = wordsRef.current.filter(w =>
+      // Auto-end: if all interactive words are done, skip remaining time
+      const hasInteractive = wordsRef.current.some(w =>
         !w.collected && !w.shattered && !w.trapTriggered &&
-        (w.meta.type === 'target' || w.meta.type === 'time' || w.meta.type === 'volatile' || w.meta.type === 'anchor')
+        w.meta.type !== 'normal'
       );
-      if (remaining.length === 0 && scrollYRef.current > 0) {
-        // All words done — end round in 2 seconds
-        onTimeUpdate(Math.max(dt, 2));
+      if (!hasInteractive && scrollYRef.current > 0) {
+        // Force time to 0 — round ends immediately
+        onTimeUpdate(9999);
       } else {
         onTimeUpdate(dt);
       }
