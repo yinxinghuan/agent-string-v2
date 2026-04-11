@@ -27,13 +27,13 @@ interface FlipCard {
   dismissTimer: number;   // time left before fully gone
 }
 
-const FLIP_STEP_INTERVAL = 0.45;  // seconds between each step flip
-const FLIP_DISMISS_DELAY = 0.6;   // seconds to hold final state before dismissing
-const FLIP_DISMISS_DURATION = 0.5; // fade out duration
-const FLIP_CARD_H = 24;
-const FLIP_CARD_PAD = 8;
-const FLIP_CARD_GAP = 4;
-const FLIP_CARD_R = 4;
+const FLIP_STEP_INTERVAL = 0.35;  // seconds between each step flip
+const FLIP_DISMISS_DELAY = 0.8;   // seconds to hold final state before dismissing
+const FLIP_DISMISS_DURATION = 0.4; // fade out duration
+const FLIP_CARD_H = 32;
+const FLIP_CARD_PAD = 12;
+const FLIP_CARD_GAP = 5;
+const FLIP_CARD_R = 5;
 
 function flipCardStepSound(step: PipelineStep): void {
   switch (step.type) {
@@ -86,7 +86,7 @@ function drawFlipCard(ctx: CanvasRenderingContext2D, card: FlipCard, _dt: number
     ctx.globalAlpha = cardAlpha;
 
     // Measure text for card width
-    ctx.font = `500 11px ${FONT_FAMILY}`;
+    ctx.font = `500 13px ${FONT_FAMILY}`;
     const textW = ctx.measureText(text).width;
     const totalW = ctx.measureText(totalText).width;
     const cardW = Math.max(textW + totalW + FLIP_CARD_PAD * 3, 120);
@@ -104,7 +104,7 @@ function drawFlipCard(ctx: CanvasRenderingContext2D, card: FlipCard, _dt: number
     ctx.fill();
 
     // Left text (step label + value)
-    ctx.font = `500 11px ${FONT_FAMILY}`;
+    ctx.font = `500 13px ${FONT_FAMILY}`;
     ctx.textBaseline = 'middle';
     ctx.textAlign = 'left';
 
@@ -363,17 +363,16 @@ export default function GameCanvas({
         onShatter(w);
       }
 
-      // Spawn flip cards from pipeline entries
+      // Spawn flip cards from pipeline entries — positioned at center area
       if (pipelineEntryRef.current) {
         const entry = pipelineEntryRef.current;
         pipelineEntryRef.current = null;
-        const word = wordsRef.current.find(w => w.id === entry.wordId);
-        const cx = word ? word.x : pointerRef.current.x;
-        const cy = word ? (word.y - scrollYRef.current) : pointerRef.current.y;
-        // Offset cards above the word
+        // Stack new cards below existing ones
+        const existingCards = flipCardsRef.current.length;
+        const baseY = H * 0.35 + existingCards * 50;
         flipCardsRef.current.push({
-          x: Math.min(Math.max(cx, 80), W - 80),
-          y: Math.max(cy - 40, 80),
+          x: W / 2,
+          y: Math.min(baseY, H * 0.65),
           steps: entry.steps,
           currentStep: 0,
           stepTimer: FLIP_STEP_INTERVAL,
@@ -387,9 +386,9 @@ export default function GameCanvas({
 
       // Update flip cards
       for (const card of flipCardsRef.current) {
-        card.age += dt * (1 / 60); // back to seconds
+        card.age += dt;
         if (!card.dismissing) {
-          card.stepTimer -= dt * (1 / 60);
+          card.stepTimer -= dt;
           if (card.stepTimer <= 0 && card.currentStep < card.steps.length - 1) {
             card.currentStep++;
             card.stepTimer = FLIP_STEP_INTERVAL;
@@ -400,7 +399,7 @@ export default function GameCanvas({
             card.dismissing = true;
           }
         } else {
-          card.dismissTimer -= dt * (1 / 60);
+          card.dismissTimer -= dt;
         }
       }
       flipCardsRef.current = flipCardsRef.current.filter(c => c.dismissTimer > 0);
