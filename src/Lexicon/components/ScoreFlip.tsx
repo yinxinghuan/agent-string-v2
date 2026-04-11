@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, type MutableRefObject } from 'react';
+import { useState, useEffect, useRef, useCallback, type MutableRefObject } from 'react';
 import type { PipelineEntry, PipelineStep } from '../types';
 import { sfxPipelineBase, sfxPipelineStreak, sfxPipelineGlyph, sfxPipelinePhrase, sfxPipelineFinal } from '../utils/sounds';
 
@@ -11,8 +11,11 @@ interface ChainCard {
   value: string;
   type: string;
   flipped: boolean;
-  rollTarget?: number;    // if set, this card does number rolling
-  rollMultiplier?: number; // how dramatic the roll is (higher = longer)
+  // For result card: multi-flip with different values
+  isResult?: boolean;
+  flipSequence?: string[];  // values shown at each flip
+  flipIndex?: number;       // which flip we're on (-1 = not started)
+  flipDone?: boolean;       // final value settled
 }
 
 interface ChainGroup {
@@ -34,17 +37,32 @@ function stepSound(type: string): void {
   }
 }
 
+/** Generate a sequence of random numbers leading to the target */
+function generateFlipSequence(target: number, multiplier: number): string[] {
+  // More flips for bigger multipliers: 3 base + 2 per multiplier level
+  const count = Math.min(3 + Math.floor(multiplier) * 2, 12);
+  const seq: string[] = [];
+  for (let i = 0; i < count; i++) {
+    const progress = i / count;
+    const variance = Math.max(1, Math.round(target * 0.6 * (1 - progress)));
+    const num = Math.max(0, target + Math.round((Math.random() - 0.5) * variance * 2));
+    seq.push(String(num));
+  }
+  seq.push(String(target)); // last value is always the real score
+  return seq;
+}
+
 function buildChain(entry: PipelineEntry): ChainCard[] {
   const cards: ChainCard[] = [];
   const steps = entry.steps.filter((s: PipelineStep) => s.type !== 'final');
 
-  // A: base score (word + points)
+  // A: base score
   const baseStep = steps.find((s: PipelineStep) => s.type === 'base');
   if (baseStep) {
     cards.push({ label: entry.wordText.toUpperCase(), value: `+${baseStep.value}`, type: 'base', flipped: false });
   }
 
-  // B: each modifier is its own card
+  // B: each modifier
   for (const step of steps) {
     if (step.type === 'base') continue;
     cards.push({
@@ -55,63 +73,98 @@ function buildChain(entry: PipelineEntry): ChainCard[] {
     });
   }
 
-  // C: final score — rolling number, duration based on total multiplier
+  // C: result card with multi-flip sequence
   const totalMult = steps.reduce((m, s) => s.operation === 'x' ? m * s.value : m, 1);
+  const flipSeq = generateFlipSequence(entry.totalScore, totalMult);
   cards.push({
     label: 'SCORE',
     value: '?',
     type: 'total',
     flipped: false,
-    rollTarget: entry.totalScore,
-    rollMultiplier: totalMult,
+    isResult: true,
+    flipSequence: flipSeq,
+    flipIndex: -1,
+    flipDone: false,
   });
 
   return cards;
 }
 
-/**
- * Rolling number display — flips through random values before landing.
- * rollMultiplier controls drama: ×1 = quick, ×5 = long dramatic roll.
- */
-function RollingNumber({ target, multiplier, active }: { target: number; multiplier: number; active: boolean }) {
-  const [display, setDisplay] = useState('?');
-  const [settled, setSettled] = useState(false);
-  const rafRef = useRef(0);
+/** Result card that physically flips multiple times, showing different numbers */
+function MultiFlipCard({ card }: { card: ChainCard }) {
+  const [currentFlip, setCurrentFlip] = useState(-1); // -1 = showing back
+  const [displayValue, setDisplayValue] = useState('?');
+  const [isFlipping, setIsFlipping] = useState(false);
+  const [isDone, setIsDone] = useState(false);
+  const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+
+  const startFlipping = useCallback(() => {
+    if (!card.flipSequence) return;
+    const seq = card.flipSequence;
+
+    // Each flip: card goes from front→back (150ms) then back→front (150ms) showing new value
+    // Interval increases: starts fast, slows down
+    let delay = 0;
+    seq.forEach((val, i) => {
+      const isLast = i === seq.length - 1;
+      // Interval gets longer: 250ms → 450ms
+      const interval = 250 + i * (200 / seq.length);
+      delay += interval;
+
+      // Start flip to back
+      const t1 = setTimeout(() => {
+        setIsFlipping(true);
+      }, delay);
+
+      // At midpoint, change the value
+      const t2 = setTimeout(() => {
+        setDisplayValue(val);
+        setCurrentFlip(i);
+      }, delay + 150);
+
+      // Complete flip back to front
+      const t3 = setTimeout(() => {
+        setIsFlipping(false);
+        if (isLast) {
+          setIsDone(true);
+          sfxPipelineFinal();
+        }
+      }, delay + 300);
+
+      timersRef.current.push(t1, t2, t3);
+    });
+  }, [card.flipSequence]);
+
+  // Start multi-flipping when card is first flipped
+  useEffect(() => {
+    if (card.flipped && currentFlip === -1) {
+      setCurrentFlip(0);
+      startFlipping();
+    }
+  }, [card.flipped, currentFlip, startFlipping]);
 
   useEffect(() => {
-    if (!active) { setDisplay('?'); setSettled(false); return; }
+    return () => timersRef.current.forEach(clearTimeout);
+  }, []);
 
-    // Duration: base 500ms + 300ms per multiplier level, capped at 2500ms
-    const duration = Math.min(500 + multiplier * 300, 2500);
-    const start = performance.now();
+  // Initial state: show back until first flip
+  const showBack = !card.flipped;
 
-    const roll = (now: number) => {
-      const elapsed = now - start;
-      const progress = Math.min(1, elapsed / duration);
-
-      if (progress < 1) {
-        // Tick rate: fast at start (every 50ms), slowing to every 200ms
-        const tickMs = 50 + progress * 150;
-        const tickIndex = Math.floor(elapsed / tickMs);
-        // Generate number that gets closer to target over time
-        const variance = Math.max(1, Math.round(target * 0.5 * (1 - progress)));
-        const num = Math.max(0, target + Math.round((Math.random() - 0.5) * variance * 2));
-        // Only update at tick boundaries to create visible "steps"
-        if (tickIndex >= 0) {
-          setDisplay(String(num));
-        }
-        rafRef.current = requestAnimationFrame(roll);
-      } else {
-        setDisplay(String(target));
-        setSettled(true);
-      }
-    };
-
-    rafRef.current = requestAnimationFrame(roll);
-    return () => cancelAnimationFrame(rafRef.current);
-  }, [target, multiplier, active]);
-
-  return <span className={settled ? 'sf-roll--settled' : 'sf-roll--rolling'}>{display}</span>;
+  return (
+    <div className={`sf-card sf-card--total sf-card--result ${card.flipped ? 'sf-card--flipped' : ''} ${isDone ? 'sf-card--settled' : ''}`}>
+      <div className={`sf-card__inner ${isFlipping ? 'sf-card__inner--flipping' : ''}`}>
+        <div className="sf-card__back">
+          <span className="sf-card__back-icon">?</span>
+        </div>
+        <div className="sf-card__front">
+          <div className="sf-card__label">{card.label}</div>
+          <div className={`sf-card__value ${isDone ? 'sf-card__value--settled' : ''}`}>
+            {showBack ? '?' : displayValue}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default function ScoreFlip({ entryRef }: ScoreFlipProps) {
@@ -137,18 +190,19 @@ export default function ScoreFlip({ entryRef }: ScoreFlipProps) {
               if (g.id !== id) return g;
               const newCards = [...g.cards];
               newCards[i] = { ...newCards[i], flipped: true };
-              stepSound(newCards[i].type);
+              if (!newCards[i].isResult) stepSound(newCards[i].type);
               return { ...g, cards: newCards, revealIndex: i };
             }));
           }, delay);
           timersRef.current.push(timer);
         });
 
-        // Calculate total roll time for the result card
+        // Calculate total time for result card multi-flip
         const totalMult = entry.steps.reduce((m, s) => s.type !== 'final' && s.operation === 'x' ? m * s.value : m, 1);
-        const rollTime = Math.min(500 + totalMult * 300, 2500);
+        const flipCount = Math.min(3 + Math.floor(totalMult) * 2, 12);
+        const totalFlipTime = flipCount * 350; // approximate
         const lastCardDelay = 200 + (cards.length - 1) * 500;
-        const leaveDelay = lastCardDelay + rollTime + 800;
+        const leaveDelay = lastCardDelay + totalFlipTime + 1000;
 
         const leaveTimer = setTimeout(() => {
           setGroups(prev => prev.map(g => g.id === id ? { ...g, leaving: true } : g));
@@ -176,14 +230,12 @@ export default function ScoreFlip({ entryRef }: ScoreFlipProps) {
       {groups.map(group => (
         <div key={group.id} className={`sf-chain ${group.leaving ? 'sf-chain--leaving' : ''}`}>
           {group.cards.map((card, i) => {
-            // Only render when it's this card's turn
             if (i > group.revealIndex + 1) return null;
 
             const isLast = i === group.cards.length - 1;
             const isMiddle = i > 0 && !isLast;
             const isVisible = i <= group.revealIndex;
 
-            // Operator between cards
             let op = '';
             if (isMiddle) op = card.value.startsWith('×') ? '×' : '+';
             if (isLast && group.cards.length > 1) op = '=';
@@ -193,22 +245,21 @@ export default function ScoreFlip({ entryRef }: ScoreFlipProps) {
                 {op && (
                   <span className={`sf-chain__op ${isVisible ? 'sf-chain__op--visible' : ''}`}>{op}</span>
                 )}
-                <div className={`sf-card ${card.flipped ? 'sf-card--flipped' : ''} sf-card--${card.type} ${isLast ? 'sf-card--result' : ''}`}>
-                  <div className="sf-card__inner">
-                    <div className="sf-card__back">
-                      <span className="sf-card__back-icon">?</span>
-                    </div>
-                    <div className="sf-card__front">
-                      <div className="sf-card__label">{card.label}</div>
-                      <div className="sf-card__value">
-                        {card.rollTarget !== undefined
-                          ? <RollingNumber target={card.rollTarget} multiplier={card.rollMultiplier ?? 1} active={card.flipped} />
-                          : card.value
-                        }
+                {card.isResult ? (
+                  <MultiFlipCard card={card} />
+                ) : (
+                  <div className={`sf-card ${card.flipped ? 'sf-card--flipped' : ''} sf-card--${card.type}`}>
+                    <div className="sf-card__inner">
+                      <div className="sf-card__back">
+                        <span className="sf-card__back-icon">?</span>
+                      </div>
+                      <div className="sf-card__front">
+                        <div className="sf-card__label">{card.label}</div>
+                        <div className="sf-card__value">{card.value}</div>
                       </div>
                     </div>
                   </div>
-                </div>
+                )}
               </div>
             );
           })}
