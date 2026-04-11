@@ -152,12 +152,31 @@ export default function GameCanvas({
       const W = canvas.width;
       const H = canvas.height;
 
-      // Auto-scroll
+      // Auto-scroll — no clamping, text loops like v1
       const speed = roundConfig.scrollSpeed * (surgeRef.current.active ? SURGE_SPEED_MULT : 1);
       scrollYRef.current += speed * dt;
-      // Clamp scroll
-      const maxScroll = totalHRef.current - H + 100;
-      if (scrollYRef.current > maxScroll) scrollYRef.current = maxScroll;
+
+      // Recycle words that scroll off the top (like v1)
+      const totalH = totalHRef.current;
+      for (const w of wordsRef.current) {
+        const sy = w.y - scrollYRef.current;
+        if (sy < -80) {
+          // Word scrolled off top — recycle to bottom
+          if (w.collected || w.trapTriggered) continue; // don't recycle done words
+          if (w.shattered) {
+            // Reset shattered words so they get another chance
+            w.shattered = false;
+          }
+          w.hy += totalH;
+          w.y = w.hy;
+          w.x = w.hx;
+          w.vx = 0;
+          w.vy = 0;
+          w.revealAlpha = 0;
+          w.revealTimer = 0;
+          w.scrambleTimer = 0;
+        }
+      }
 
       // Physics
       const result = physicsStep(wordsRef.current, {
@@ -258,13 +277,11 @@ export default function GameCanvas({
         }
       }
 
-      // Auto-end: if all interactive words are done, skip remaining time
-      const hasInteractive = wordsRef.current.some(w =>
-        !w.collected && !w.shattered && !w.trapTriggered &&
-        w.meta.type !== 'normal'
+      // Auto-end: if all target words are collected, end round early
+      const hasUncollected = wordsRef.current.some(w =>
+        !w.collected && (w.meta.type === 'target' || w.meta.type === 'time')
       );
-      if (!hasInteractive && scrollYRef.current > 0) {
-        // Force time to 0 — round ends immediately
+      if (!hasUncollected && scrollYRef.current > 0) {
         onTimeUpdate(9999);
       } else {
         onTimeUpdate(dt);

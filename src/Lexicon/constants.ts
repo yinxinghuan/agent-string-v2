@@ -14,7 +14,7 @@ export const TRAP_ALPHA_THRESH = 0.45;
 export const TRAP_TIME = 0.25;
 
 // ── Redline ──────────────────────────────────────────────────────────────────
-export const REDLINE_Y = 0.22;       // fraction of screen height (below HUD/toast area)
+export const REDLINE_Y = 0.50;       // screen center — visual divider
 
 // ── Scoring ──────────────────────────────────────────────────────────────────
 export const BASE_SCORE_COMMON = 10;

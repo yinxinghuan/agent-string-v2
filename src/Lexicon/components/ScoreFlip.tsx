@@ -111,11 +111,12 @@ export default function ScoreFlip({ entryRef }: ScoreFlipProps) {
         const id = ++groupIdCounter;
         const cards = buildChain(entry);
 
+        // Start with all cards hidden — they appear AND flip one at a time
         setGroups(prev => [...prev, { id, cards, revealIndex: -1, leaving: false }]);
 
-        // Flip cards one by one
+        // Reveal + flip cards one by one (card only appears when it's its turn)
         cards.forEach((_, i) => {
-          const delay = 150 + i * 450;
+          const delay = 200 + i * 500;
           const timer = setTimeout(() => {
             setGroups(prev => prev.map(g => {
               if (g.id !== id) return g;
@@ -157,21 +158,24 @@ export default function ScoreFlip({ entryRef }: ScoreFlipProps) {
       {groups.map(group => (
         <div key={group.id} className={`sf-chain ${group.leaving ? 'sf-chain--leaving' : ''}`}>
           {group.cards.map((card, i) => {
+            // Only render card when revealIndex has reached it
+            if (i > group.revealIndex + 1) return null;
+
             const isLast = i === group.cards.length - 1;
             const isModifier = i > 0 && !isLast;
             const showEquals = isLast && group.cards.length > 1;
+            const isVisible = i <= group.revealIndex;
 
-            // Operator: × for multipliers, + for additive
             let opSymbol = '+';
             if (isModifier && card.value.startsWith('×')) opSymbol = '×';
 
             return (
-              <div key={i} className="sf-chain__slot">
+              <div key={i} className={`sf-chain__slot ${isVisible ? 'sf-chain__slot--visible' : ''}`}>
                 {isModifier && (
-                  <span className={`sf-chain__op ${i <= group.revealIndex ? 'sf-chain__op--visible' : ''}`}>{opSymbol}</span>
+                  <span className={`sf-chain__op ${isVisible ? 'sf-chain__op--visible' : ''}`}>{opSymbol}</span>
                 )}
                 {showEquals && (
-                  <span className={`sf-chain__op sf-chain__op--eq ${i <= group.revealIndex ? 'sf-chain__op--visible' : ''}`}>=</span>
+                  <span className={`sf-chain__op sf-chain__op--eq ${isVisible ? 'sf-chain__op--visible' : ''}`}>=</span>
                 )}
 
                 <div className={`sf-card ${card.flipped ? 'sf-card--flipped' : ''} sf-card--${card.type} ${isLast ? 'sf-card--result' : ''}`}>

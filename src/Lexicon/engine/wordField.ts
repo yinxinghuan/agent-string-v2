@@ -1,5 +1,5 @@
 import type { Word, WordMeta, LayoutMode } from '../types';
-import { SPRING, DAMP, REPEL_R, REPEL_F, COLLECT_R, COLLECT_ALPHA_THRESH, COLLECT_TIME, TRAP_R, TRAP_ALPHA_THRESH, TRAP_TIME, REDLINE_Y } from '../constants';
+import { SPRING, DAMP, REPEL_R, REPEL_F, COLLECT_R, COLLECT_ALPHA_THRESH, COLLECT_TIME, TRAP_R, TRAP_ALPHA_THRESH, TRAP_TIME } from '../constants';
 
 // ── Layout ───────────────────────────────────────────────────────────────────
 
@@ -182,7 +182,7 @@ export interface PhysicsResult {
 
 export function physicsStep(words: Word[], input: PhysicsInput): PhysicsResult {
   const { pointerX, pointerY, pointerActive, scrollY, canvasH, pulseT, dt: dtSec } = input;
-  const redlineY = canvasH * REDLINE_Y;
+  void canvasH; // redline check removed, recycling handled by GameCanvas
   const collected: Word[] = [];
   const trapped: Word[] = [];
   const shattered: Word[] = [];
@@ -199,14 +199,7 @@ export function physicsStep(words: Word[], input: PhysicsInput): PhysicsResult {
     // Screen position
     const sy = w.y - scrollY;
 
-    // Redline: target/volatile/anchor words that scroll past the line shatter
-    if (w.meta.type !== 'normal' && w.meta.type !== 'trap' && sy < redlineY) {
-      w.shattered = true;
-      shattered.push(w);
-      continue;
-    }
-
-    // Skip offscreen words (like v1)
+    // Skip offscreen words — recycling is handled by GameCanvas
     if (sy < -200 || sy > canvasH + 150) continue;
 
     // Subtle wave motion (same as v1)
