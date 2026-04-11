@@ -185,34 +185,61 @@
   font-size: 10px; letter-spacing: 2px; color: @ink-dim; margin-top: 10px;
 }
 
-// ── Score Flip Cards ─────────────────────────────────────────────────────────
+// ── Score Flip Cards — A + B = C chain ───────────────────────────────────────
 .sf-container {
-  position: fixed; top: 30%; left: 0; right: 0; z-index: 16;
-  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 16;
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center;
   pointer-events: none;
+  padding-bottom: 20%;
 }
-.sf-card {
-  width: 130px; height: 80px;
-  perspective: 700px;
-  animation: sf-enter 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+// Chain row: [A] + [B] = [C]
+.sf-chain {
+  display: flex; align-items: center; gap: 0;
+  animation: sf-chain-enter 0.2s ease-out;
+  margin: 6px 0;
 }
-@keyframes sf-enter {
-  0% { opacity: 0; transform: scale(0.6) translateY(20px); }
-  100% { opacity: 1; transform: scale(1) translateY(0); }
+@keyframes sf-chain-enter {
+  0% { opacity: 0; } 100% { opacity: 1; }
 }
-.sf-card--leaving {
-  animation: sf-leave 0.5s ease-in forwards;
+.sf-chain--leaving {
+  animation: sf-chain-leave 0.5s ease-in forwards;
 }
-@keyframes sf-leave {
+@keyframes sf-chain-leave {
   0% { opacity: 1; transform: translateY(0) scale(1); }
-  100% { opacity: 0; transform: translateY(-30px) scale(0.85); }
+  100% { opacity: 0; transform: translateY(-24px) scale(0.9); }
+}
+
+.sf-chain__slot {
+  display: flex; align-items: center;
+}
+
+// Operator between cards (+, =)
+.sf-chain__op {
+  font-family: @font; font-size: 16px; font-weight: 500;
+  color: rgba(20, 12, 5, 0); // invisible until revealed
+  margin: 0 6px;
+  transition: color 0.3s;
+}
+.sf-chain__op--visible {
+  color: rgba(20, 12, 5, 0.4);
+}
+
+// Individual flip card
+.sf-card {
+  width: 72px; height: 56px;
+  perspective: 700px;
+}
+.sf-card--result {
+  width: 80px; height: 60px;
 }
 .sf-card__inner {
   width: 100%; height: 100%;
   position: relative;
   transform-style: preserve-3d;
   transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
-  border-radius: 10px;
+  border-radius: 8px;
 }
 .sf-card--flipped .sf-card__inner {
   transform: rotateY(180deg);
@@ -220,49 +247,55 @@
 .sf-card__back,
 .sf-card__front {
   position: absolute; inset: 0;
-  border-radius: 10px;
+  border-radius: 8px;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
 }
 .sf-card__back {
-  background: rgba(22, 18, 14, 0.9);
-  border: 1.5px solid rgba(245, 240, 230, 0.15);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  background: rgba(22, 18, 14, 0.88);
+  border: 1px solid rgba(245, 240, 230, 0.12);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.25);
 }
 .sf-card__back-icon {
-  font-family: @font; font-size: 28px; color: rgba(245, 240, 230, 0.25);
-  letter-spacing: 4px;
+  font-family: @font; font-size: 20px; color: rgba(245, 240, 230, 0.2);
 }
 .sf-card__front {
   transform: rotateY(180deg);
   background: rgba(22, 18, 14, 0.92);
-  border: 1.5px solid rgba(245, 240, 230, 0.2);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
-  padding: 8px;
+  border: 1px solid rgba(245, 240, 230, 0.18);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.3);
+  padding: 4px;
 }
-.sf-card__word {
-  font-family: @font; font-size: 13px; letter-spacing: 3px;
-  color: rgba(245, 240, 230, 0.6); text-transform: uppercase;
-  margin-bottom: 2px;
+.sf-card__label {
+  font-family: @font; font-size: 8px; letter-spacing: 2px;
+  color: rgba(245, 240, 230, 0.45); text-transform: uppercase;
+  margin-bottom: 2px; white-space: nowrap;
+  max-width: 100%; overflow: hidden; text-overflow: ellipsis;
 }
-.sf-card__score {
-  font-family: @font; font-size: 24px; font-weight: 600; letter-spacing: 2px;
-  color: rgba(245, 240, 230, 0.95);
+.sf-card__value {
+  font-family: @font; font-size: 18px; font-weight: 600;
+  color: rgba(245, 240, 230, 0.92); letter-spacing: 1px;
 }
-.sf-card__bonus {
-  display: flex; gap: 4px; margin-top: 3px;
+
+// Type colors on front
+.sf-card--streak .sf-card__value { color: rgba(100, 210, 130, 0.95); }
+.sf-card--glyph .sf-card__value { color: rgba(180, 140, 240, 0.95); }
+.sf-card--surge .sf-card__value { color: rgba(240, 80, 80, 0.95); }
+.sf-card--phrase .sf-card__value { color: rgba(240, 180, 50, 0.95); }
+.sf-card--total .sf-card__value {
+  font-size: 22px; color: rgba(245, 240, 230, 1);
 }
-.sf-card__tag {
-  font-family: @font; font-size: 9px; letter-spacing: 1px;
-  padding: 1px 5px; border-radius: 3px;
-  background: rgba(245, 240, 230, 0.1);
-  color: rgba(245, 240, 230, 0.5);
+// Result card slightly bigger appearance
+.sf-card--result .sf-card__front {
+  border-color: rgba(245, 240, 230, 0.3);
 }
-.sf-card__tag--streak { color: rgba(100, 210, 130, 0.9); }
-.sf-card__tag--glyph { color: rgba(180, 140, 240, 0.9); }
-.sf-card__tag--surge { color: rgba(240, 80, 80, 0.9); }
-.sf-card__tag--phrase { color: rgba(240, 180, 50, 0.9); }
+.sf-card--result.sf-card--flipped {
+  animation: sf-result-pop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes sf-result-pop {
+  0% { transform: scale(1.15); } 100% { transform: scale(1); }
+}
 
 // ── Toast ────────────────────────────────────────────────────────────────────
 .lex-toast {

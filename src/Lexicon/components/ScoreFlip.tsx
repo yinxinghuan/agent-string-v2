@@ -1,95 +1,200 @@
 import { useState, useEffect, useRef, type MutableRefObject } from 'react';
-import type { PipelineEntry } from '../types';
-import { sfxCollect } from '../utils/sounds';
+import type { PipelineEntry, PipelineStep } from '../types';
+import { sfxPipelineBase, sfxPipelineStreak, sfxPipelineGlyph, sfxPipelinePhrase, sfxPipelineFinal } from '../utils/sounds';
 
 interface ScoreFlipProps {
   entryRef: MutableRefObject<PipelineEntry | null>;
 }
 
-interface FlipItem {
-  id: number;
-  entry: PipelineEntry;
+interface ChainCard {
+  label: string;
+  value: string;
+  type: string;
   flipped: boolean;
+  finalValue?: number; // for rolling number on result card
+}
+
+interface ChainGroup {
+  id: number;
+  cards: ChainCard[];
+  revealIndex: number;
   leaving: boolean;
 }
 
-let flipIdCounter = 0;
+let groupIdCounter = 0;
+
+function stepTypeSound(type: string): void {
+  switch (type) {
+    case 'base': sfxPipelineBase(); break;
+    case 'streak': sfxPipelineStreak(); break;
+    case 'glyph': sfxPipelineGlyph(); break;
+    case 'phrase': sfxPipelinePhrase(); break;
+    case 'total': sfxPipelineFinal(); break;
+  }
+}
+
+function buildChain(entry: PipelineEntry): ChainCard[] {
+  const cards: ChainCard[] = [];
+  const steps = entry.steps.filter((s: PipelineStep) => s.type !== 'final');
+
+  const baseStep = steps.find((s: PipelineStep) => s.type === 'base');
+  if (baseStep) {
+    cards.push({ label: entry.wordText.toUpperCase(), value: `+${baseStep.value}`, type: 'base', flipped: false });
+  }
+
+  for (const step of steps) {
+    if (step.type === 'base') continue;
+    cards.push({
+      label: step.label,
+      value: step.operation === 'x' ? `×${step.value}` : `+${step.value}`,
+      type: step.type,
+      flipped: false,
+    });
+  }
+
+  // Result card with rolling number
+  cards.push({ label: 'SCORE', value: `${entry.totalScore}`, type: 'total', flipped: false, finalValue: entry.totalScore });
+
+  return cards;
+}
+
+/** Number that "rolls" through random values before settling on the final one */
+function RollingNumber({ target, active }: { target: number; active: boolean }) {
+  const [display, setDisplay] = useState('?');
+  const rafRef = useRef(0);
+
+  useEffect(() => {
+    if (!active) { setDisplay('?'); return; }
+
+    // Roll duration scales with score magnitude — bigger = more dramatic
+    const rollDuration = Math.min(800 + target * 8, 2000);
+    const start = performance.now();
+    let tickCount = 0;
+
+    const roll = (now: number) => {
+      const elapsed = now - start;
+      const progress = Math.min(1, elapsed / rollDuration);
+
+      if (progress < 1) {
+        // Show random numbers, getting closer to target as progress increases
+        tickCount++;
+        // Tick rate slows down as we approach the end
+        const tickInterval = 40 + progress * 120;
+        if (elapsed > tickCount * tickInterval) {
+          const range = Math.max(1, Math.round(target * (1 - progress * 0.8)));
+          const randomVal = Math.max(0, target + Math.round((Math.random() - 0.5) * range * 2));
+          setDisplay(String(randomVal));
+        }
+        rafRef.current = requestAnimationFrame(roll);
+      } else {
+        setDisplay(String(target));
+      }
+    };
+
+    rafRef.current = requestAnimationFrame(roll);
+    return () => cancelAnimationFrame(rafRef.current);
+  }, [target, active]);
+
+  return <>{display}</>;
+}
 
 export default function ScoreFlip({ entryRef }: ScoreFlipProps) {
-  const [items, setItems] = useState<FlipItem[]>([]);
+  const [groups, setGroups] = useState<ChainGroup[]>([]);
   const checkRef = useRef(0);
+  const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
-  // Check for new pipeline entries every frame
   useEffect(() => {
     const check = () => {
       if (entryRef.current) {
         const entry = entryRef.current;
-        entryRef.current = null; // consume
-        const id = ++flipIdCounter;
+        entryRef.current = null;
+        const id = ++groupIdCounter;
+        const cards = buildChain(entry);
 
-        // Add unflipped card
-        setItems(prev => [...prev, { id, entry, flipped: false, leaving: false }]);
+        setGroups(prev => [...prev, { id, cards, revealIndex: -1, leaving: false }]);
 
-        // Flip after brief delay
-        setTimeout(() => {
-          setItems(prev => prev.map(it => it.id === id ? { ...it, flipped: true } : it));
-          sfxCollect(entry.steps[0]?.value % 3 || 0);
-        }, 100);
+        // Flip cards one by one
+        cards.forEach((_, i) => {
+          const delay = 150 + i * 450;
+          const timer = setTimeout(() => {
+            setGroups(prev => prev.map(g => {
+              if (g.id !== id) return g;
+              const newCards = [...g.cards];
+              newCards[i] = { ...newCards[i], flipped: true };
+              stepTypeSound(newCards[i].type);
+              return { ...g, cards: newCards, revealIndex: i };
+            }));
+          }, delay);
+          timersRef.current.push(timer);
+        });
 
-        // Start leaving
-        setTimeout(() => {
-          setItems(prev => prev.map(it => it.id === id ? { ...it, leaving: true } : it));
-        }, 1800);
+        // Leave after all revealed + rolling done + hold
+        const totalRollTime = Math.min(800 + entry.totalScore * 8, 2000);
+        const leaveDelay = 150 + cards.length * 450 + totalRollTime + 600;
+        const leaveTimer = setTimeout(() => {
+          setGroups(prev => prev.map(g => g.id === id ? { ...g, leaving: true } : g));
+        }, leaveDelay);
+        timersRef.current.push(leaveTimer);
 
-        // Remove
-        setTimeout(() => {
-          setItems(prev => prev.filter(it => it.id !== id));
-        }, 2300);
+        const removeTimer = setTimeout(() => {
+          setGroups(prev => prev.filter(g => g.id !== id));
+        }, leaveDelay + 500);
+        timersRef.current.push(removeTimer);
       }
       checkRef.current = requestAnimationFrame(check);
     };
     checkRef.current = requestAnimationFrame(check);
-    return () => cancelAnimationFrame(checkRef.current);
+    return () => {
+      cancelAnimationFrame(checkRef.current);
+      timersRef.current.forEach(clearTimeout);
+    };
   }, [entryRef]);
 
-  if (items.length === 0) return null;
+  if (groups.length === 0) return null;
 
   return (
     <div className="sf-container">
-      {items.map(item => {
-        const { entry } = item;
-        const word = entry.wordText;
-        const score = entry.totalScore;
-        const hasBonus = entry.steps.some(s => s.type === 'streak' || s.type === 'glyph' || s.type === 'phrase' || s.type === 'surge');
+      {groups.map(group => (
+        <div key={group.id} className={`sf-chain ${group.leaving ? 'sf-chain--leaving' : ''}`}>
+          {group.cards.map((card, i) => {
+            const isLast = i === group.cards.length - 1;
+            const isModifier = i > 0 && !isLast;
+            const showEquals = isLast && group.cards.length > 1;
 
-        return (
-          <div
-            key={item.id}
-            className={`sf-card ${item.flipped ? 'sf-card--flipped' : ''} ${item.leaving ? 'sf-card--leaving' : ''}`}
-          >
-            <div className="sf-card__inner">
-              {/* Back */}
-              <div className="sf-card__back">
-                <span className="sf-card__back-icon">?</span>
-              </div>
-              {/* Front */}
-              <div className="sf-card__front">
-                <div className="sf-card__word">{word}</div>
-                <div className="sf-card__score">+{score}</div>
-                {hasBonus && (
-                  <div className="sf-card__bonus">
-                    {entry.steps.filter(s => s.type !== 'base' && s.type !== 'final').map((s, i) => (
-                      <span key={i} className={`sf-card__tag sf-card__tag--${s.type}`}>
-                        {s.operation === 'x' ? `×${s.value}` : `+${s.value}`}
-                      </span>
-                    ))}
-                  </div>
+            // Operator: × for multipliers, + for additive
+            let opSymbol = '+';
+            if (isModifier && card.value.startsWith('×')) opSymbol = '×';
+
+            return (
+              <div key={i} className="sf-chain__slot">
+                {isModifier && (
+                  <span className={`sf-chain__op ${i <= group.revealIndex ? 'sf-chain__op--visible' : ''}`}>{opSymbol}</span>
                 )}
+                {showEquals && (
+                  <span className={`sf-chain__op sf-chain__op--eq ${i <= group.revealIndex ? 'sf-chain__op--visible' : ''}`}>=</span>
+                )}
+
+                <div className={`sf-card ${card.flipped ? 'sf-card--flipped' : ''} sf-card--${card.type} ${isLast ? 'sf-card--result' : ''}`}>
+                  <div className="sf-card__inner">
+                    <div className="sf-card__back">
+                      <span className="sf-card__back-icon">?</span>
+                    </div>
+                    <div className="sf-card__front">
+                      <div className="sf-card__label">{card.label}</div>
+                      <div className="sf-card__value">
+                        {card.finalValue !== undefined
+                          ? <RollingNumber target={card.finalValue} active={card.flipped} />
+                          : card.value
+                        }
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-        );
-      })}
+            );
+          })}
+        </div>
+      ))}
     </div>
   );
 }
