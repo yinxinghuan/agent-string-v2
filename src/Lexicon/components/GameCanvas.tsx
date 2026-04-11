@@ -1,0 +1,401 @@
+import { useRef, useEffect, useCallback } from 'react';
+import type { Word, RoundConfig, Burst } from '../types';
+import { buildWords, physicsStep } from '../engine/wordField';
+import {
+  INK, TRAP_RGB, GROUP_COLORS, FONT_FAMILY, BG_COLOR, REDLINE_Y,
+  COLLECT_R, PRESSURE_PER_COLLECT, PRESSURE_PER_SHATTER, PRESSURE_MAX,
+  SURGE_SPEED_MULT, ANCHOR_TIME_BONUS, TRAP_TIME_PENALTY,
+} from '../constants';
+import { sfxCollect, sfxTrap, sfxShatter, sfxTime, sfxVolatile, sfxSurgeStart, resumeAudio } from '../utils/sounds';
+
+const GLITCH_CHARS = '!@#$%^&*~<>[]{}?|01_';
+function glitchText(text: string, seed: number): string {
+  let out = '';
+  for (let i = 0; i < text.length; i++) out += GLITCH_CHARS[(Math.floor(seed) + i * 7) % GLITCH_CHARS.length];
+  return out;
+}
+
+interface GameCanvasProps {
+  roundConfig: RoundConfig;
+  surgeActive: boolean;
+  surgeTimer: number;
+  pressure: number;
+  onWordCollected: (word: Word) => void;
+  onTrapHit: (word: Word) => void;
+  onShatter: (word: Word) => void;
+  onVolatile: (words: Word[]) => void;
+  onTimeBonus: (seconds: number) => void;
+  onPressureChange: (pressure: number) => void;
+  onSurgeStart: () => void;
+  onSurgeEnd: () => void;
+  onTimeUpdate: (dt: number) => void;
+}
+
+export default function GameCanvas({
+  roundConfig, surgeActive, surgeTimer, pressure,
+  onWordCollected, onTrapHit, onShatter, onVolatile, onTimeBonus,
+  onPressureChange, onSurgeStart, onSurgeEnd, onTimeUpdate,
+}: GameCanvasProps) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const wordsRef = useRef<Word[]>([]);
+  const scrollYRef = useRef(0);
+  const totalHRef = useRef(500);
+  const pointerRef = useRef({ x: 0, y: 0, active: false });
+  const pulseTRef = useRef(0);
+  const burstsRef = useRef<Burst[]>([]);
+  const screenShakeRef = useRef(0);
+  const surgeRef = useRef({ active: false, timer: 0 });
+  const pressureRef = useRef(0);
+  const rafRef = useRef(0);
+  const lastTRef = useRef(0);
+  const initedRef = useRef(false);
+
+  // Sync props to refs
+  surgeRef.current = { active: surgeActive, timer: surgeTimer };
+  pressureRef.current = pressure;
+
+  // Initialize words on round change
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d')!;
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const { words, totalHeight } = buildWords({
+      ...roundConfig,
+      canvasWidth: canvas.width,
+      fontFamily: FONT_FAMILY,
+      ctx,
+    });
+    wordsRef.current = words;
+    totalHRef.current = totalHeight;
+    scrollYRef.current = 0;
+    initedRef.current = true;
+  }, [roundConfig]);
+
+  // Resize
+  useEffect(() => {
+    const handleResize = () => {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Pointer handlers
+  const onPointerDown = useCallback((e: React.PointerEvent) => {
+    resumeAudio();
+    pointerRef.current = { x: e.clientX, y: e.clientY, active: true };
+  }, []);
+
+  const onPointerMove = useCallback((e: React.PointerEvent) => {
+    if (pointerRef.current.active) {
+      pointerRef.current.x = e.clientX;
+      pointerRef.current.y = e.clientY;
+    }
+  }, []);
+
+  const onPointerUp = useCallback(() => {
+    pointerRef.current.active = false;
+  }, []);
+
+  // Add burst effect
+  const addBurst = useCallback((x: number, y: number, color: [number, number, number], maxR = 60) => {
+    burstsRef.current.push({ x, y, r: 0, maxR, alpha: 0.8, color, speed: 180 });
+  }, []);
+
+  // Main game loop
+  useEffect(() => {
+    if (!initedRef.current) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d')!;
+
+    const loop = (t: number) => {
+      if (lastTRef.current === 0) lastTRef.current = t;
+      const rawDt = (t - lastTRef.current) / 1000;
+      const dt = Math.min(rawDt, 0.05); // cap
+      lastTRef.current = t;
+      pulseTRef.current += dt;
+
+      const W = canvas.width;
+      const H = canvas.height;
+
+      // Auto-scroll
+      const speed = roundConfig.scrollSpeed * (surgeRef.current.active ? SURGE_SPEED_MULT : 1);
+      scrollYRef.current += speed * dt;
+      // Clamp scroll
+      const maxScroll = totalHRef.current - H + 100;
+      if (scrollYRef.current > maxScroll) scrollYRef.current = maxScroll;
+
+      // Physics
+      const result = physicsStep(wordsRef.current, {
+        pointerX: pointerRef.current.x,
+        pointerY: pointerRef.current.y,
+        pointerActive: pointerRef.current.active,
+        scrollY: scrollYRef.current,
+        canvasH: H,
+        pulseT: pulseTRef.current,
+        dt,
+      });
+
+      // Handle collected
+      for (const w of result.collected) {
+        const screenY = w.y - scrollYRef.current;
+        const color = w.meta.group !== undefined ? GROUP_COLORS[w.meta.group % 3] : [100, 160, 80] as [number, number, number];
+        addBurst(w.x, screenY, color);
+
+        if (w.meta.type === 'time') {
+          sfxTime();
+          onTimeBonus(ANCHOR_TIME_BONUS);
+        } else if (w.meta.type === 'anchor') {
+          sfxTime();
+          onTimeBonus(ANCHOR_TIME_BONUS);
+        } else {
+          sfxCollect(w.meta.group ?? 0);
+          onWordCollected(w);
+        }
+
+        // Pressure
+        const newP = Math.min(PRESSURE_MAX, pressureRef.current + PRESSURE_PER_COLLECT);
+        onPressureChange(newP);
+        if (newP >= PRESSURE_MAX && !surgeRef.current.active) {
+          onSurgeStart();
+          sfxSurgeStart();
+        }
+      }
+
+      // Handle volatile chain
+      if (result.volatileTriggered.length > 0) {
+        sfxVolatile();
+        for (const w of result.volatileTriggered) {
+          const sy = w.y - scrollYRef.current;
+          addBurst(w.x, sy, [200, 160, 40], 80);
+        }
+        onVolatile(result.volatileTriggered);
+      }
+
+      // Handle traps
+      for (const w of result.trapped) {
+        sfxTrap();
+        screenShakeRef.current = 0.5;
+        const sy = w.y - scrollYRef.current;
+        addBurst(w.x, sy, TRAP_RGB, 50);
+        onTrapHit(w);
+        onTimeBonus(-TRAP_TIME_PENALTY);
+
+        // Scramble nearby words
+        for (const ow of wordsRef.current) {
+          if (ow.collected || ow.shattered || ow.trapTriggered) continue;
+          const dx = ow.x - w.x;
+          const dy = ow.y - w.y;
+          const d = Math.sqrt(dx * dx + dy * dy);
+          if (d < 140 && d > 0) {
+            ow.scrambleTimer = 2.5;
+            ow.vx += (dx / d) * 8;
+            ow.vy += (dy / d) * 8;
+          }
+        }
+      }
+
+      // Handle shatters
+      for (const w of result.shattered) {
+        sfxShatter();
+        const newP = Math.min(PRESSURE_MAX, pressureRef.current + PRESSURE_PER_SHATTER);
+        onPressureChange(newP);
+        if (newP >= PRESSURE_MAX && !surgeRef.current.active) {
+          onSurgeStart();
+          sfxSurgeStart();
+        }
+        onShatter(w);
+      }
+
+      // Surge timer
+      if (surgeRef.current.active) {
+        if (surgeRef.current.timer <= 0) {
+          onSurgeEnd();
+        }
+      }
+
+      // Update time
+      onTimeUpdate(dt);
+
+      // Screen shake decay
+      screenShakeRef.current *= 0.9;
+      if (screenShakeRef.current < 0.01) screenShakeRef.current = 0;
+
+      // ── DRAW ─────────────────────────────────────────────────────────────
+      ctx.save();
+
+      // Screen shake
+      if (screenShakeRef.current > 0) {
+        const sx = (Math.random() - 0.5) * screenShakeRef.current * 12;
+        const sy = (Math.random() - 0.5) * screenShakeRef.current * 12;
+        ctx.translate(sx, sy);
+      }
+
+      // Background
+      ctx.fillStyle = BG_COLOR;
+      ctx.fillRect(-10, -10, W + 20, H + 20);
+
+      const scrollY = scrollYRef.current;
+      const redY = H * REDLINE_Y;
+
+      // Redline
+      ctx.save();
+      ctx.strokeStyle = `rgba(180,40,40,0.35)`;
+      ctx.lineWidth = 1;
+      ctx.setLineDash([4, 6]);
+      ctx.beginPath();
+      ctx.moveTo(0, redY);
+      ctx.lineTo(W, redY);
+      ctx.stroke();
+      ctx.restore();
+
+      // Words
+      for (const w of wordsRef.current) {
+        const sy = w.y - scrollY;
+        if (sy < -50 || sy > H + 50) continue; // off-screen
+
+        ctx.save();
+        const fontSize = roundConfig.fontSize;
+        ctx.font = `${fontSize}px ${FONT_FAMILY}`;
+
+        let alpha = 0.38; // normal word
+        let color = INK;
+
+        if (w.collected) {
+          // Collected: show faded with check
+          alpha = 0.12;
+        } else if (w.shattered) {
+          continue; // don't render
+        } else if (w.trapTriggered) {
+          color = TRAP_RGB;
+          alpha = 0.6;
+        } else if (w.meta.type === 'target' || w.meta.type === 'time') {
+          // Gradually reveal color as proximity increases
+          const groupColor = w.meta.group !== undefined ? GROUP_COLORS[w.meta.group % 3] : [100, 160, 80] as [number, number, number];
+          const reveal = w.revealAlpha;
+          color = [
+            Math.round(INK[0] + (groupColor[0] - INK[0]) * reveal),
+            Math.round(INK[1] + (groupColor[1] - INK[1]) * reveal),
+            Math.round(INK[2] + (groupColor[2] - INK[2]) * reveal),
+          ] as [number, number, number];
+          alpha = 0.38 + reveal * 0.52;
+        } else if (w.meta.type === 'trap') {
+          const reveal = w.revealAlpha;
+          if (reveal > 0.2) {
+            color = [
+              Math.round(INK[0] + (TRAP_RGB[0] - INK[0]) * reveal),
+              Math.round(INK[1] + (TRAP_RGB[1] - INK[1]) * reveal),
+              Math.round(INK[2] + (TRAP_RGB[2] - INK[2]) * reveal),
+            ] as [number, number, number];
+          }
+          alpha = 0.38 + reveal * 0.3;
+        } else if (w.meta.type === 'volatile') {
+          const reveal = w.revealAlpha;
+          const vc: [number, number, number] = [200, 160, 40];
+          if (reveal > 0.1) {
+            color = [
+              Math.round(INK[0] + (vc[0] - INK[0]) * reveal * 0.5),
+              Math.round(INK[1] + (vc[1] - INK[1]) * reveal * 0.5),
+              Math.round(INK[2] + (vc[2] - INK[2]) * reveal * 0.5),
+            ] as [number, number, number];
+          }
+          alpha = 0.38;
+        } else if (w.meta.type === 'anchor') {
+          const reveal = w.revealAlpha;
+          alpha = 0.38 + reveal * 0.4;
+          ctx.font = `500 ${fontSize}px ${FONT_FAMILY}`;
+        }
+
+        // Scramble effect
+        const text = w.scrambleTimer > 0 ? glitchText(w.text, w.scrambleSeed + pulseTRef.current * 20) : w.text;
+
+        ctx.fillStyle = `rgba(${color[0]},${color[1]},${color[2]},${alpha})`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(text, w.x, sy);
+
+        // Reveal circle for targets approaching collection
+        if ((w.meta.type === 'target' || w.meta.type === 'time') && w.revealAlpha > 0.3 && !w.collected) {
+          const r = COLLECT_R * 0.6;
+          const progress = w.revealTimer / 0.15;
+          ctx.beginPath();
+          ctx.arc(w.x, sy, r, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * Math.min(1, progress));
+          const gc = w.meta.group !== undefined ? GROUP_COLORS[w.meta.group % 3] : [100, 160, 80];
+          ctx.strokeStyle = `rgba(${gc[0]},${gc[1]},${gc[2]},${w.revealAlpha * 0.3})`;
+          ctx.lineWidth = 2;
+          ctx.stroke();
+        }
+
+        ctx.restore();
+      }
+
+      // Bursts
+      const bursts = burstsRef.current;
+      for (let i = bursts.length - 1; i >= 0; i--) {
+        const b = bursts[i];
+        b.r += b.speed * dt;
+        b.alpha -= dt * 2;
+        if (b.alpha <= 0 || b.r >= b.maxR) {
+          bursts.splice(i, 1);
+          continue;
+        }
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(${b.color[0]},${b.color[1]},${b.color[2]},${b.alpha})`;
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      }
+
+      // Top/bottom gradient vignette
+      const gradTop = ctx.createLinearGradient(0, 0, 0, 80);
+      gradTop.addColorStop(0, BG_COLOR);
+      gradTop.addColorStop(1, 'rgba(245,240,230,0)');
+      ctx.fillStyle = gradTop;
+      ctx.fillRect(0, 0, W, 80);
+
+      const gradBot = ctx.createLinearGradient(0, H - 100, 0, H);
+      gradBot.addColorStop(0, 'rgba(245,240,230,0)');
+      gradBot.addColorStop(1, BG_COLOR);
+      ctx.fillStyle = gradBot;
+      ctx.fillRect(0, H - 100, W, 100);
+
+      // Surge vignette
+      if (surgeRef.current.active) {
+        const intensity = 0.12 + Math.sin(pulseTRef.current * 6) * 0.06;
+        const grad = ctx.createRadialGradient(W / 2, H / 2, H * 0.3, W / 2, H / 2, H * 0.8);
+        grad.addColorStop(0, 'rgba(180,40,40,0)');
+        grad.addColorStop(1, `rgba(180,40,40,${intensity})`);
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, W, H);
+      }
+
+      ctx.restore();
+
+      rafRef.current = requestAnimationFrame(loop);
+    };
+
+    lastTRef.current = 0;
+    rafRef.current = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(rafRef.current);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [roundConfig, initedRef.current]);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      style={{ position: 'fixed', inset: 0, touchAction: 'none', userSelect: 'none', WebkitTapHighlightColor: 'transparent' }}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
+      onPointerLeave={onPointerUp}
+      onPointerCancel={onPointerUp}
+    />
+  );
+}
