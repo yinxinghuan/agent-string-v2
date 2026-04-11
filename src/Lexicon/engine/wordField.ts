@@ -32,7 +32,8 @@ export function computePositions(cfg: LayoutConfig): WordPosition[] {
 
   if (layoutMode === 'prose') {
     let lx = 0;
-    const maxW = canvasWidth - margin * 2;
+    const maxColW = Math.min(canvasWidth - margin * 2, 480);
+    const colOffset = Math.max(margin, (canvasWidth - maxColW) / 2);
     for (const raw of rawLines) {
       if (raw.trim() === '') {
         if (lx > 0) { lineN++; lx = 0; }
@@ -41,8 +42,8 @@ export function computePositions(cfg: LayoutConfig): WordPosition[] {
       }
       for (const text of raw.trim().split(/\s+/).filter(Boolean)) {
         const tw = ctx.measureText(text).width;
-        if (lx + tw > maxW && lx > 0) { lineN++; lx = 0; }
-        positions.push({ hx: margin + lx + tw / 2, hy: TOP + lineN * lineSpace, tw });
+        if (lx + tw > maxColW && lx > 0) { lineN++; lx = 0; }
+        positions.push({ hx: colOffset + lx + tw / 2, hy: TOP + lineN * lineSpace, tw });
         lx += tw + spW;
       }
     }

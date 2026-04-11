@@ -70,8 +70,8 @@ export default function GameCanvas({
     });
     wordsRef.current = words;
     totalHRef.current = totalHeight;
-    // Start scroll so text appears in the lower portion, giving player time before Redline
-    scrollYRef.current = -(canvas.height * 0.55);
+    // Start scroll negative so text begins well below the Redline, scrolling upward into play
+    scrollYRef.current = -(canvas.height * 0.7);
     initedRef.current = true;
   }, [roundConfig]);
 
