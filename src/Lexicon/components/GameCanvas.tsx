@@ -43,6 +43,8 @@ export default function GameCanvas({
   const pointerRef = useRef({ x: 0, y: 0, active: false });
   const pulseTRef = useRef(0);
   const burstsRef = useRef<Burst[]>([]);
+  const floatsRef = useRef<{ x: number; y: number; text: string; color: string; life: number; maxLife: number }[]>([]);
+  const shatterPartsRef = useRef<{ x: number; y: number; vx: number; vy: number; char: string; life: number }[]>([]);
   const screenShakeRef = useRef(0);
   const surgeRef = useRef({ active: false, timer: 0 });
   const pressureRef = useRef(0);
@@ -109,6 +111,25 @@ export default function GameCanvas({
     burstsRef.current.push({ x, y, r: 0, maxR, alpha: 0.8, color, speed: 180 });
   }, []);
 
+  // Float label ("+10" rising from word)
+  const addFloat = useCallback((x: number, y: number, text: string, color: string) => {
+    floatsRef.current.push({ x, y, text, color, life: 1.2, maxLife: 1.2 });
+  }, []);
+
+  // Shatter particles (word crossing Redline)
+  const addShatter = useCallback((x: number, y: number, word: string) => {
+    for (let i = 0; i < Math.min(word.length, 6); i++) {
+      const angle = (Math.PI * 2 * i) / word.length + (Math.random() - 0.5) * 0.5;
+      shatterPartsRef.current.push({
+        x, y,
+        vx: Math.cos(angle) * (40 + Math.random() * 60),
+        vy: Math.sin(angle) * (40 + Math.random() * 60) - 30,
+        char: word[i],
+        life: 0.8 + Math.random() * 0.4,
+      });
+    }
+  }, []);
+
   // Main game loop
   useEffect(() => {
     if (!initedRef.current) return;
@@ -153,12 +174,16 @@ export default function GameCanvas({
         if (w.meta.type === 'time') {
           sfxTime();
           onTimeBonus(ANCHOR_TIME_BONUS);
+          addFloat(w.x, screenY, `+${ANCHOR_TIME_BONUS}s`, 'rgba(60,140,80,0.8)');
         } else if (w.meta.type === 'anchor') {
           sfxTime();
           onTimeBonus(ANCHOR_TIME_BONUS);
+          addFloat(w.x, screenY, `+${ANCHOR_TIME_BONUS}s`, 'rgba(60,140,80,0.8)');
         } else {
           sfxCollect(w.meta.group ?? 0);
           onWordCollected(w);
+          const colorStr = `rgb(${color[0]},${color[1]},${color[2]})`;
+          addFloat(w.x, screenY, w.meta.text, colorStr);
         }
 
         // Pressure
@@ -186,6 +211,7 @@ export default function GameCanvas({
         screenShakeRef.current = 0.5;
         const sy = w.y - scrollYRef.current;
         addBurst(w.x, sy, TRAP_RGB, 50);
+        addFloat(w.x, sy, `-${TRAP_TIME_PENALTY}s`, 'rgba(180,40,40,0.8)');
         onTrapHit(w);
         onTimeBonus(-TRAP_TIME_PENALTY);
 
@@ -206,6 +232,9 @@ export default function GameCanvas({
       // Handle shatters
       for (const w of result.shattered) {
         sfxShatter();
+        const sy = w.y - scrollYRef.current;
+        addShatter(w.x, sy, w.text);
+        addBurst(w.x, sy, [180, 40, 40], 40);
         const newP = Math.min(PRESSURE_MAX, pressureRef.current + PRESSURE_PER_SHATTER);
         onPressureChange(newP);
         if (newP >= PRESSURE_MAX && !surgeRef.current.active) {
@@ -352,6 +381,44 @@ export default function GameCanvas({
         ctx.strokeStyle = `rgba(${b.color[0]},${b.color[1]},${b.color[2]},${b.alpha})`;
         ctx.lineWidth = 2;
         ctx.stroke();
+      }
+
+      // Float labels ("+10" rising from word)
+      const floats = floatsRef.current;
+      for (let i = floats.length - 1; i >= 0; i--) {
+        const f = floats[i];
+        f.life -= dt;
+        if (f.life <= 0) { floats.splice(i, 1); continue; }
+        const progress = 1 - f.life / f.maxLife;
+        const alpha = progress < 0.7 ? 1 : 1 - (progress - 0.7) / 0.3;
+        const yOff = progress * 50;
+        const scale = 1 + progress * 0.3;
+        ctx.save();
+        ctx.font = `600 ${Math.round(14 * scale)}px ${FONT_FAMILY}`;
+        ctx.fillStyle = f.color.replace(/[\d.]+\)$/, `${alpha})`);
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(f.text, f.x, f.y - yOff);
+        ctx.restore();
+      }
+
+      // Shatter particles (letters flying from broken words)
+      const parts = shatterPartsRef.current;
+      for (let i = parts.length - 1; i >= 0; i--) {
+        const p = parts[i];
+        p.life -= dt;
+        if (p.life <= 0) { parts.splice(i, 1); continue; }
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
+        p.vy += 80 * dt; // gravity
+        const alpha = Math.min(1, p.life * 2);
+        ctx.save();
+        ctx.font = `${roundConfig.fontSize}px ${FONT_FAMILY}`;
+        ctx.fillStyle = `rgba(180,40,40,${alpha * 0.6})`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(p.char, p.x, p.y);
+        ctx.restore();
       }
 
       // Top/bottom gradient vignette
