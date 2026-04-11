@@ -142,7 +142,9 @@ export default function GameCanvas({
       const rawDt = (t - lastTRef.current) / 1000;
       const dt = Math.min(rawDt, 0.05); // cap
       lastTRef.current = t;
-      pulseTRef.current += dt;
+      // v1: pulseT += dt*0.018 where dt is ms/16.67 ≈ 1 per frame
+      // So pulseT grows at ~0.018 per frame = ~1.08/sec
+      pulseTRef.current += dt * 1.08;
 
       const W = canvas.width;
       const H = canvas.height;

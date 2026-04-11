@@ -1,8 +1,9 @@
 // ── Physics ──────────────────────────────────────────────────────────────────
+// Physics uses frame-count dt (like v1), NOT seconds
 export const SPRING = 0.038;
 export const DAMP = 0.87;
-export const REPEL_R = 120;
-export const REPEL_F = 12;
+export const REPEL_R = 90;
+export const REPEL_F = 5.5;
 
 // ── Collection ───────────────────────────────────────────────────────────────
 export const COLLECT_R = 130;         // proximity radius for collection

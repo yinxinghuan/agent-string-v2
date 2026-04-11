@@ -181,11 +181,17 @@ export interface PhysicsResult {
 }
 
 export function physicsStep(words: Word[], input: PhysicsInput): PhysicsResult {
-  const { pointerX, pointerY, pointerActive, scrollY, canvasH, pulseT, dt } = input;
+  const { pointerX, pointerY, pointerActive, scrollY, canvasH, pulseT, dt: dtSec } = input;
   const redlineY = canvasH * REDLINE_Y;
   const collected: Word[] = [];
   const trapped: Word[] = [];
   const shattered: Word[] = [];
+
+  // Convert seconds to v1-style frame units: at 60fps, dt≈1.0
+  // v1 uses: sec = dt * 16.67 / 1000 (where dt is RAF frame delta in ~16ms units)
+  // The physics forces/damping/spring are tuned for dt≈1 per frame
+  const dt = Math.min(dtSec * 60, 3); // frame count, capped at 3
+  const sec = dtSec; // real seconds for timers
 
   for (const w of words) {
     if (w.collected || w.shattered || w.trapTriggered) continue;
@@ -200,18 +206,21 @@ export function physicsStep(words: Word[], input: PhysicsInput): PhysicsResult {
       continue;
     }
 
-    // Subtle wave motion
+    // Skip offscreen words (like v1)
+    if (sy < -200 || sy > canvasH + 150) continue;
+
+    // Subtle wave motion (same as v1)
     w.vx += Math.sin(pulseT * w.waveFreq + w.waveOff) * 0.032;
     w.vy += Math.cos(pulseT * w.waveFreq * 0.8 + w.waveOff * 1.2) * 0.032;
 
-    // Spring to home
+    // Spring to home (same as v1)
     w.vx += (w.hx - w.x) * SPRING;
     w.vy += (w.hy - w.y) * SPRING;
 
-    // Pointer repulsion (in screen space)
+    // Pointer repulsion — exactly like v1: force applied directly, no dt scaling
     if (pointerActive) {
       const dx = w.x - pointerX;
-      const dy = sy - pointerY;
+      const dy = (w.y - scrollY) - pointerY;  // v1: w.y - (p.y + scrollY) but here pointer is screen-space
       const d = Math.sqrt(dx * dx + dy * dy);
       if (d < REPEL_R && d > 0.5) {
         const f = (1 - d / REPEL_R) * REPEL_F;
@@ -220,88 +229,97 @@ export function physicsStep(words: Word[], input: PhysicsInput): PhysicsResult {
       }
     }
 
-    // Proximity-based reveal (target words)
-    if (pointerActive && (w.meta.type === 'target' || w.meta.type === 'time')) {
-      const dx = w.x - pointerX;
-      const dy = sy - pointerY;
-      const d = Math.sqrt(dx * dx + dy * dy);
-      if (d < COLLECT_R) {
-        w.revealAlpha = Math.min(1, w.revealAlpha + dt * 3);
-        if (w.revealAlpha > COLLECT_ALPHA_THRESH) {
-          w.revealTimer += dt;
-          if (w.revealTimer >= COLLECT_TIME) {
-            w.collected = true;
-            collected.push(w);
-          }
-        }
-      } else {
-        w.revealAlpha = Math.max(0, w.revealAlpha - dt * 2);
-        w.revealTimer = Math.max(0, w.revealTimer - dt * 0.5);
-      }
-    }
-
-    // Trap proximity
-    if (pointerActive && w.meta.type === 'trap' && !w.trapTriggered) {
-      const dx = w.x - pointerX;
-      const dy = sy - pointerY;
-      const d = Math.sqrt(dx * dx + dy * dy);
-      if (d < TRAP_R) {
-        w.revealAlpha = Math.min(1, w.revealAlpha + dt * 2.5);
-        if (w.revealAlpha > TRAP_ALPHA_THRESH) {
-          w.revealTimer += dt;
-          if (w.revealTimer >= TRAP_TIME) {
-            w.trapTriggered = true;
-            trapped.push(w);
-          }
-        }
-      } else {
-        w.revealAlpha = Math.max(0, w.revealAlpha - dt * 1.5);
-        w.revealTimer = 0;
-      }
-    }
-
-    // Volatile proximity (collected separately when adjacent target collected)
-    if (pointerActive && w.meta.type === 'volatile') {
-      const dx = w.x - pointerX;
-      const dy = sy - pointerY;
-      const d = Math.sqrt(dx * dx + dy * dy);
-      if (d < COLLECT_R) {
-        w.revealAlpha = Math.min(1, w.revealAlpha + dt * 2);
-      } else {
-        w.revealAlpha = Math.max(0, w.revealAlpha - dt * 1.5);
-      }
-    }
-
-    // Anchor proximity
-    if (pointerActive && w.meta.type === 'anchor') {
-      const dx = w.x - pointerX;
-      const dy = sy - pointerY;
-      const d = Math.sqrt(dx * dx + dy * dy);
-      if (d < COLLECT_R) {
-        w.revealAlpha = Math.min(1, w.revealAlpha + dt * 3);
-        if (w.revealAlpha > COLLECT_ALPHA_THRESH) {
-          w.revealTimer += dt;
-          if (w.revealTimer >= COLLECT_TIME) {
-            w.collected = true;
-            collected.push(w);
-          }
-        }
-      } else {
-        w.revealAlpha = Math.max(0, w.revealAlpha - dt * 2);
-        w.revealTimer = Math.max(0, w.revealTimer - dt * 0.5);
-      }
-    }
-
-    // Scramble decay
-    if (w.scrambleTimer > 0) {
-      w.scrambleTimer = Math.max(0, w.scrambleTimer - dt);
-    }
-
-    // Damping + integrate
+    // Damping + integrate (same as v1: vx *= DAMP; x += vx * dt where dt≈1)
     w.vx *= DAMP;
     w.vy *= DAMP;
     w.x += w.vx * dt;
     w.y += w.vy * dt;
+
+    // ── Proximity reveal (uses real seconds for timers) ──────────────────────
+
+    // Target/time words
+    if (pointerActive && (w.meta.type === 'target' || w.meta.type === 'time')) {
+      const dx = w.x - pointerX;
+      const dy = (w.y - scrollY) - pointerY;
+      const d = Math.sqrt(dx * dx + dy * dy);
+      if (d < COLLECT_R) {
+        // v1-style smooth alpha: goldAlpha += (bonus - goldAlpha) * 0.22
+        const bonus = 1 - d / COLLECT_R;
+        w.revealAlpha += (bonus - w.revealAlpha) * 0.22;
+        if (w.revealAlpha > COLLECT_ALPHA_THRESH) {
+          w.revealTimer += sec;
+          if (w.revealTimer >= COLLECT_TIME) {
+            w.collected = true;
+            collected.push(w);
+          }
+        } else {
+          w.revealTimer = Math.max(0, w.revealTimer - sec * 0.6);
+        }
+      } else {
+        w.revealAlpha += (0 - w.revealAlpha) * 0.22;
+        w.revealTimer = Math.max(0, w.revealTimer - sec * 0.6);
+      }
+    }
+
+    // Trap words (v1-style)
+    if (pointerActive && w.meta.type === 'trap' && !w.trapTriggered) {
+      const dx = w.x - pointerX;
+      const dy = (w.y - scrollY) - pointerY;
+      const d = Math.sqrt(dx * dx + dy * dy);
+      if (d < TRAP_R) {
+        const bonus = 1 - d / TRAP_R;
+        w.revealAlpha += (bonus - w.revealAlpha) * 0.18;
+        if (w.revealAlpha > TRAP_ALPHA_THRESH) {
+          w.revealTimer += sec;
+          if (w.revealTimer >= TRAP_TIME) {
+            w.trapTriggered = true;
+            trapped.push(w);
+          }
+        } else {
+          w.revealTimer = Math.max(0, w.revealTimer - sec * 2.0);
+        }
+      } else {
+        w.revealAlpha += (0 - w.revealAlpha) * 0.18;
+        w.revealTimer = Math.max(0, w.revealTimer - sec * 2.0);
+      }
+    }
+
+    // Volatile proximity
+    if (pointerActive && w.meta.type === 'volatile') {
+      const dx = w.x - pointerX;
+      const dy = (w.y - scrollY) - pointerY;
+      const d = Math.sqrt(dx * dx + dy * dy);
+      const bonus = d < COLLECT_R ? 1 - d / COLLECT_R : 0;
+      w.revealAlpha += (bonus - w.revealAlpha) * 0.22;
+    }
+
+    // Anchor words
+    if (pointerActive && w.meta.type === 'anchor') {
+      const dx = w.x - pointerX;
+      const dy = (w.y - scrollY) - pointerY;
+      const d = Math.sqrt(dx * dx + dy * dy);
+      if (d < COLLECT_R) {
+        const bonus = 1 - d / COLLECT_R;
+        w.revealAlpha += (bonus - w.revealAlpha) * 0.22;
+        if (w.revealAlpha > COLLECT_ALPHA_THRESH) {
+          w.revealTimer += sec;
+          if (w.revealTimer >= COLLECT_TIME) {
+            w.collected = true;
+            collected.push(w);
+          }
+        } else {
+          w.revealTimer = Math.max(0, w.revealTimer - sec * 0.6);
+        }
+      } else {
+        w.revealAlpha += (0 - w.revealAlpha) * 0.22;
+        w.revealTimer = Math.max(0, w.revealTimer - sec * 0.6);
+      }
+    }
+
+    // Scramble decay (real seconds)
+    if (w.scrambleTimer > 0) {
+      w.scrambleTimer = Math.max(0, w.scrambleTimer - sec);
+    }
   }
 
   // Check volatile chain reactions for collected targets
