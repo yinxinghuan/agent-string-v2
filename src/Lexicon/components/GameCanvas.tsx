@@ -1,12 +1,12 @@
 import { useRef, useEffect, useCallback, type MutableRefObject } from 'react';
-import type { Word, RoundConfig, Burst, PipelineEntry, PipelineStep } from '../types';
+import type { Word, RoundConfig, Burst, PipelineEntry } from '../types';
 import { buildWords, physicsStep } from '../engine/wordField';
 import {
   INK, TRAP_RGB, GROUP_COLORS, FONT_FAMILY, BG_COLOR, REDLINE_Y,
   COLLECT_R, PRESSURE_PER_COLLECT, PRESSURE_PER_SHATTER, PRESSURE_MAX,
   SURGE_SPEED_MULT, ANCHOR_TIME_BONUS, TRAP_TIME_PENALTY,
 } from '../constants';
-import { sfxCollect, sfxTrap, sfxShatter, sfxTime, sfxVolatile, sfxSurgeStart, sfxPipelineBase, sfxPipelineStreak, sfxPipelineGlyph, sfxPipelinePhrase, sfxPipelineFinal, resumeAudio } from '../utils/sounds';
+import { sfxCollect, sfxTrap, sfxShatter, sfxTime, sfxVolatile, sfxSurgeStart, resumeAudio } from '../utils/sounds';
 
 const GLITCH_CHARS = '!@#$%^&*~<>[]{}?|01_';
 function glitchText(text: string, seed: number): string {
@@ -15,142 +15,7 @@ function glitchText(text: string, seed: number): string {
   return out;
 }
 
-// ── Score Card — poker-card shaped, flip-clock animation ─────────────────────
-interface ScoreCard {
-  x: number;
-  y: number;
-  // Content
-  label: string;       // e.g. "MORNING", "STREAK", "Echo Chamber"
-  value: string;       // e.g. "+10", "×2", "= 45"
-  color: string;       // accent color
-  // Animation
-  flipAge: number;     // time since spawn (seconds)
-  flipDone: boolean;   // flip animation complete
-  holdTimer: number;   // hold after flip, then dismiss
-  dismissing: boolean;
-  dismissAge: number;  // time into dismiss
-  // Spring bounce
-  scale: number;
-  scaleVel: number;
-}
-
-const CARD_W = 110;
-const CARD_H = 70;
-const CARD_R = 8;
-const FLIP_DURATION = 0.3;    // flip-clock spin time
-const FLIP_SPINS = 3;         // number of half-rotations during flip
-const HOLD_DURATION = 1.0;    // hold visible before dismiss
-const DISMISS_DURATION = 0.35;
-const CARD_GAP_X = 8;
-
-function stepColor(step: PipelineStep): string {
-  switch (step.type) {
-    case 'streak': return 'rgba(100,210,130,0.95)';
-    case 'glyph': return 'rgba(180,140,240,0.95)';
-    case 'surge': return 'rgba(240,80,80,0.95)';
-    case 'phrase': return 'rgba(240,180,50,0.95)';
-    default: return 'rgba(245,240,230,0.9)';
-  }
-}
-
-function stepSound(step: PipelineStep): void {
-  switch (step.type) {
-    case 'base': sfxPipelineBase(); break;
-    case 'streak': sfxPipelineStreak(); break;
-    case 'glyph': sfxPipelineGlyph(); break;
-    case 'phrase': sfxPipelinePhrase(); break;
-    case 'final': sfxPipelineFinal(); break;
-  }
-}
-
-function drawScoreCard(ctx: CanvasRenderingContext2D, card: ScoreCard): void {
-  // Dismiss: slide up + fade
-  let alpha = 1;
-  let yOff = 0;
-  if (card.dismissing) {
-    const p = Math.min(1, card.dismissAge / DISMISS_DURATION);
-    alpha = 1 - p;
-    yOff = p * 40;
-  }
-  if (alpha <= 0) return;
-
-  // Flip-clock animation: scaleY oscillates during flip
-  let scaleY = 1;
-  if (!card.flipDone) {
-    const p = Math.min(1, card.flipAge / FLIP_DURATION);
-    // Rapid half-rotations that settle: |cos(spins * π * p)| decaying to 1
-    const spin = Math.cos(FLIP_SPINS * Math.PI * p);
-    const decay = 1 - (1 - p) * (1 - p); // ease out quad
-    scaleY = Math.abs(spin) * (1 - decay) + decay;
-  }
-
-  // Spring bounce on scale
-  const bounceScale = card.scale;
-
-  const cx = card.x;
-  const cy = card.y - yOff;
-
-  ctx.save();
-  ctx.globalAlpha = alpha;
-  ctx.translate(cx, cy);
-  ctx.scale(bounceScale, bounceScale * scaleY);
-
-  // Card background — dark, poker-card proportions
-  ctx.beginPath();
-  ctx.roundRect(-CARD_W / 2, -CARD_H / 2, CARD_W, CARD_H, CARD_R);
-  ctx.fillStyle = 'rgba(22,18,14,0.92)';
-  ctx.fill();
-  // Subtle border
-  ctx.strokeStyle = 'rgba(245,240,230,0.12)';
-  ctx.lineWidth = 1;
-  ctx.stroke();
-
-  // Only show text when card is "facing forward" (scaleY > 0.3 or flip done)
-  if (card.flipDone || scaleY > 0.3) {
-    // Label (top, smaller)
-    ctx.font = `500 11px ${FONT_FAMILY}`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillStyle = 'rgba(245,240,230,0.45)';
-    ctx.fillText(card.label, 0, -12);
-
-    // Value (center, large)
-    ctx.font = `600 22px ${FONT_FAMILY}`;
-    ctx.fillStyle = card.color;
-    ctx.fillText(card.value, 0, 14);
-  }
-
-  ctx.restore();
-}
-
-function updateScoreCard(card: ScoreCard, dt: number): boolean {
-  if (!card.flipDone) {
-    card.flipAge += dt;
-    if (card.flipAge >= FLIP_DURATION) {
-      card.flipDone = true;
-      // Start spring bounce
-      card.scale = 1.15;
-      card.scaleVel = 0;
-    }
-  } else if (!card.dismissing) {
-    // Spring physics for bounce
-    const target = 1;
-    const spring = 120;
-    const damp = 8;
-    card.scaleVel += (target - card.scale) * spring * dt;
-    card.scaleVel *= Math.exp(-damp * dt);
-    card.scale += card.scaleVel * dt;
-
-    card.holdTimer -= dt;
-    if (card.holdTimer <= 0) {
-      card.dismissing = true;
-      card.dismissAge = 0;
-    }
-  } else {
-    card.dismissAge += dt;
-  }
-  return card.dismissing && card.dismissAge >= DISMISS_DURATION;
-}
+// Score display uses simple float labels — no complex card system
 
 interface GameCanvasProps {
   roundConfig: RoundConfig;
@@ -183,7 +48,7 @@ export default function GameCanvas({
   const burstsRef = useRef<Burst[]>([]);
   const floatsRef = useRef<{ x: number; y: number; text: string; color: string; life: number; maxLife: number }[]>([]);
   const shatterPartsRef = useRef<{ x: number; y: number; vx: number; vy: number; char: string; life: number }[]>([]);
-  const scoreCardsRef = useRef<ScoreCard[]>([]);
+  // Score cards removed — using simple float labels instead
   const screenShakeRef = useRef(0);
   const surgeRef = useRef({ active: false, timer: 0 });
   const pressureRef = useRef(0);
@@ -385,68 +250,18 @@ export default function GameCanvas({
         onShatter(w);
       }
 
-      // Spawn score cards from pipeline entries — each step = one card
+      // Consume pipeline entries — show total score as a float label at word position
       if (pipelineEntryRef.current) {
         const entry = pipelineEntryRef.current;
         pipelineEntryRef.current = null;
-        const steps = entry.steps.filter(s => s.type !== 'final');
-        const totalCards = steps.length;
-        const rowW = totalCards * (CARD_W + CARD_GAP_X) - CARD_GAP_X;
-        const startX = (W - rowW) / 2 + CARD_W / 2;
-        const cy = H * 0.38;
-
-        steps.forEach((step, i) => {
-          const label = step.type === 'base' ? step.label : step.label;
-          const value = step.type === 'base'
-            ? `+${step.value}`
-            : step.operation === 'x' ? `×${step.value}` : `+${step.value}`;
-
-          scoreCardsRef.current.push({
-            x: startX + i * (CARD_W + CARD_GAP_X),
-            y: cy,
-            label,
-            value,
-            color: stepColor(step),
-            flipAge: 0,
-            flipDone: false,
-            holdTimer: HOLD_DURATION + (totalCards - 1 - i) * 0.15, // last card dismisses first
-            dismissing: false,
-            dismissAge: 0,
-            scale: 0.5,
-            scaleVel: 0,
-          });
-
-          // Stagger sound
-          setTimeout(() => stepSound(step), i * 120);
-        });
-
-        // Add a total card at the end
-        if (entry.totalScore > 0) {
-          const totalStep = entry.steps.find(s => s.type === 'final');
-          if (totalStep) {
-            setTimeout(() => {
-              scoreCardsRef.current.push({
-                x: W / 2,
-                y: cy + CARD_H + 12,
-                label: 'TOTAL',
-                value: `+${entry.totalScore}`,
-                color: entry.totalScore >= 50 ? 'rgba(240,180,50,1)' : 'rgba(245,240,230,0.95)',
-                flipAge: 0,
-                flipDone: false,
-                holdTimer: HOLD_DURATION * 0.8,
-                dismissing: false,
-                dismissAge: 0,
-                scale: 0.5,
-                scaleVel: 0,
-              });
-              sfxPipelineFinal();
-            }, steps.length * 120 + 100);
-          }
+        // Score float is already added in the collect handler (word name + color)
+        // Add the score number as a second float slightly below
+        const word = wordsRef.current.find(w => w.id === entry.wordId);
+        if (word) {
+          const sy = word.y - scrollYRef.current;
+          addFloat(word.x, sy + 20, `+${entry.totalScore}`, 'rgba(20,12,5,0.7)');
         }
       }
-
-      // Update score cards
-      scoreCardsRef.current = scoreCardsRef.current.filter(c => !updateScoreCard(c, dt));
 
       // Surge timer
       if (surgeRef.current.active) {
@@ -488,11 +303,19 @@ export default function GameCanvas({
       const scrollY = scrollYRef.current;
       const redY = H * REDLINE_Y;
 
-      // Redline
+      // Redline — more visible with glow
       ctx.save();
-      ctx.strokeStyle = `rgba(180,40,40,0.35)`;
-      ctx.lineWidth = 1;
-      ctx.setLineDash([4, 6]);
+      // Glow
+      ctx.strokeStyle = `rgba(180,40,40,0.08)`;
+      ctx.lineWidth = 8;
+      ctx.beginPath();
+      ctx.moveTo(0, redY);
+      ctx.lineTo(W, redY);
+      ctx.stroke();
+      // Line
+      ctx.strokeStyle = `rgba(180,40,40,0.5)`;
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([6, 4]);
       ctx.beginPath();
       ctx.moveTo(0, redY);
       ctx.lineTo(W, redY);
@@ -508,12 +331,12 @@ export default function GameCanvas({
         const fontSize = roundConfig.fontSize;
         ctx.font = `${fontSize}px ${FONT_FAMILY}`;
 
-        let alpha = 0.38; // normal word
+        let alpha = 0.55; // normal word — higher contrast
         let color = INK;
 
         if (w.collected) {
           // Collected: show faded with check
-          alpha = 0.12;
+          alpha = 0.25;
         } else if (w.shattered) {
           continue; // don't render
         } else if (w.trapTriggered) {
@@ -528,7 +351,7 @@ export default function GameCanvas({
             Math.round(INK[1] + (groupColor[1] - INK[1]) * reveal),
             Math.round(INK[2] + (groupColor[2] - INK[2]) * reveal),
           ] as [number, number, number];
-          alpha = 0.38 + reveal * 0.52;
+          alpha = 0.55 + reveal * 0.40;
         } else if (w.meta.type === 'trap') {
           const reveal = w.revealAlpha;
           if (reveal > 0.2) {
@@ -538,7 +361,7 @@ export default function GameCanvas({
               Math.round(INK[2] + (TRAP_RGB[2] - INK[2]) * reveal),
             ] as [number, number, number];
           }
-          alpha = 0.38 + reveal * 0.3;
+          alpha = 0.55 + reveal * 0.3;
         } else if (w.meta.type === 'volatile') {
           const reveal = w.revealAlpha;
           const vc: [number, number, number] = [200, 160, 40];
@@ -549,10 +372,10 @@ export default function GameCanvas({
               Math.round(INK[2] + (vc[2] - INK[2]) * reveal * 0.5),
             ] as [number, number, number];
           }
-          alpha = 0.38;
+          alpha = 0.55;
         } else if (w.meta.type === 'anchor') {
           const reveal = w.revealAlpha;
-          alpha = 0.38 + reveal * 0.4;
+          alpha = 0.55 + reveal * 0.4;
           ctx.font = `500 ${fontSize}px ${FONT_FAMILY}`;
         }
 
@@ -634,10 +457,7 @@ export default function GameCanvas({
         ctx.restore();
       }
 
-      // Score cards (poker-card style, flip-clock animation)
-      for (const card of scoreCardsRef.current) {
-        drawScoreCard(ctx, card);
-      }
+      // (Score display is now simple float labels, rendered above)
 
       // Top/bottom gradient vignette
       const gradTop = ctx.createLinearGradient(0, 0, 0, 80);
