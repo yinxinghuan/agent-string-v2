@@ -10,6 +10,7 @@ import { sfxStreak, sfxComplete, resumeAudio } from './utils/sounds';
 import GameCanvas from './components/GameCanvas';
 import HUD from './components/HUD';
 import Toast from './components/Toast';
+import ScoreFlip from './components/ScoreFlip';
 import StartScreen from './components/StartScreen';
 import EndScreen from './components/EndScreen';
 import GlyphShop from './components/GlyphShop';
@@ -303,7 +304,7 @@ export default function Lexicon() {
             surgeActive={state.surgeActive}
             glyphs={state.activeGlyphs}
           />
-          {/* Pipeline is now rendered on Canvas via flipCards */}
+          <ScoreFlip entryRef={pipelineEntryRef} />
           <Toast queue={toastQueue} onDone={removeToast} />
         </>
       )}
