@@ -11,7 +11,8 @@ interface ChainCard {
   value: string;
   type: string;
   flipped: boolean;
-  finalValue?: number; // for rolling number on result card
+  rollTarget?: number;    // if set, this card does number rolling
+  rollMultiplier?: number; // how dramatic the roll is (higher = longer)
 }
 
 interface ChainGroup {
@@ -23,7 +24,7 @@ interface ChainGroup {
 
 let groupIdCounter = 0;
 
-function stepTypeSound(type: string): void {
+function stepSound(type: string): void {
   switch (type) {
     case 'base': sfxPipelineBase(); break;
     case 'streak': sfxPipelineStreak(); break;
@@ -37,11 +38,13 @@ function buildChain(entry: PipelineEntry): ChainCard[] {
   const cards: ChainCard[] = [];
   const steps = entry.steps.filter((s: PipelineStep) => s.type !== 'final');
 
+  // A: base score (word + points)
   const baseStep = steps.find((s: PipelineStep) => s.type === 'base');
   if (baseStep) {
     cards.push({ label: entry.wordText.toUpperCase(), value: `+${baseStep.value}`, type: 'base', flipped: false });
   }
 
+  // B: each modifier is its own card
   for (const step of steps) {
     if (step.type === 'base') continue;
     cards.push({
@@ -52,50 +55,63 @@ function buildChain(entry: PipelineEntry): ChainCard[] {
     });
   }
 
-  // Result card with rolling number
-  cards.push({ label: 'SCORE', value: `${entry.totalScore}`, type: 'total', flipped: false, finalValue: entry.totalScore });
+  // C: final score — rolling number, duration based on total multiplier
+  const totalMult = steps.reduce((m, s) => s.operation === 'x' ? m * s.value : m, 1);
+  cards.push({
+    label: 'SCORE',
+    value: '?',
+    type: 'total',
+    flipped: false,
+    rollTarget: entry.totalScore,
+    rollMultiplier: totalMult,
+  });
 
   return cards;
 }
 
-/** Number that "rolls" through random values before settling on the final one */
-function RollingNumber({ target, active }: { target: number; active: boolean }) {
+/**
+ * Rolling number display — flips through random values before landing.
+ * rollMultiplier controls drama: ×1 = quick, ×5 = long dramatic roll.
+ */
+function RollingNumber({ target, multiplier, active }: { target: number; multiplier: number; active: boolean }) {
   const [display, setDisplay] = useState('?');
+  const [settled, setSettled] = useState(false);
   const rafRef = useRef(0);
 
   useEffect(() => {
-    if (!active) { setDisplay('?'); return; }
+    if (!active) { setDisplay('?'); setSettled(false); return; }
 
-    // Roll duration scales with score magnitude — bigger = more dramatic
-    const rollDuration = Math.min(800 + target * 8, 2000);
+    // Duration: base 500ms + 300ms per multiplier level, capped at 2500ms
+    const duration = Math.min(500 + multiplier * 300, 2500);
     const start = performance.now();
-    let tickCount = 0;
 
     const roll = (now: number) => {
       const elapsed = now - start;
-      const progress = Math.min(1, elapsed / rollDuration);
+      const progress = Math.min(1, elapsed / duration);
 
       if (progress < 1) {
-        // Show random numbers, getting closer to target as progress increases
-        tickCount++;
-        // Tick rate slows down as we approach the end
-        const tickInterval = 40 + progress * 120;
-        if (elapsed > tickCount * tickInterval) {
-          const range = Math.max(1, Math.round(target * (1 - progress * 0.8)));
-          const randomVal = Math.max(0, target + Math.round((Math.random() - 0.5) * range * 2));
-          setDisplay(String(randomVal));
+        // Tick rate: fast at start (every 50ms), slowing to every 200ms
+        const tickMs = 50 + progress * 150;
+        const tickIndex = Math.floor(elapsed / tickMs);
+        // Generate number that gets closer to target over time
+        const variance = Math.max(1, Math.round(target * 0.5 * (1 - progress)));
+        const num = Math.max(0, target + Math.round((Math.random() - 0.5) * variance * 2));
+        // Only update at tick boundaries to create visible "steps"
+        if (tickIndex >= 0) {
+          setDisplay(String(num));
         }
         rafRef.current = requestAnimationFrame(roll);
       } else {
         setDisplay(String(target));
+        setSettled(true);
       }
     };
 
     rafRef.current = requestAnimationFrame(roll);
     return () => cancelAnimationFrame(rafRef.current);
-  }, [target, active]);
+  }, [target, multiplier, active]);
 
-  return <>{display}</>;
+  return <span className={settled ? 'sf-roll--settled' : 'sf-roll--rolling'}>{display}</span>;
 }
 
 export default function ScoreFlip({ entryRef }: ScoreFlipProps) {
@@ -111,10 +127,9 @@ export default function ScoreFlip({ entryRef }: ScoreFlipProps) {
         const id = ++groupIdCounter;
         const cards = buildChain(entry);
 
-        // Start with all cards hidden — they appear AND flip one at a time
         setGroups(prev => [...prev, { id, cards, revealIndex: -1, leaving: false }]);
 
-        // Reveal + flip cards one by one (card only appears when it's its turn)
+        // Flip cards one by one
         cards.forEach((_, i) => {
           const delay = 200 + i * 500;
           const timer = setTimeout(() => {
@@ -122,16 +137,19 @@ export default function ScoreFlip({ entryRef }: ScoreFlipProps) {
               if (g.id !== id) return g;
               const newCards = [...g.cards];
               newCards[i] = { ...newCards[i], flipped: true };
-              stepTypeSound(newCards[i].type);
+              stepSound(newCards[i].type);
               return { ...g, cards: newCards, revealIndex: i };
             }));
           }, delay);
           timersRef.current.push(timer);
         });
 
-        // Leave after all revealed + rolling done + hold
-        const totalRollTime = Math.min(800 + entry.totalScore * 8, 2000);
-        const leaveDelay = 150 + cards.length * 450 + totalRollTime + 600;
+        // Calculate total roll time for the result card
+        const totalMult = entry.steps.reduce((m, s) => s.type !== 'final' && s.operation === 'x' ? m * s.value : m, 1);
+        const rollTime = Math.min(500 + totalMult * 300, 2500);
+        const lastCardDelay = 200 + (cards.length - 1) * 500;
+        const leaveDelay = lastCardDelay + rollTime + 800;
+
         const leaveTimer = setTimeout(() => {
           setGroups(prev => prev.map(g => g.id === id ? { ...g, leaving: true } : g));
         }, leaveDelay);
@@ -158,26 +176,23 @@ export default function ScoreFlip({ entryRef }: ScoreFlipProps) {
       {groups.map(group => (
         <div key={group.id} className={`sf-chain ${group.leaving ? 'sf-chain--leaving' : ''}`}>
           {group.cards.map((card, i) => {
-            // Only render card when revealIndex has reached it
+            // Only render when it's this card's turn
             if (i > group.revealIndex + 1) return null;
 
             const isLast = i === group.cards.length - 1;
-            const isModifier = i > 0 && !isLast;
-            const showEquals = isLast && group.cards.length > 1;
+            const isMiddle = i > 0 && !isLast;
             const isVisible = i <= group.revealIndex;
 
-            let opSymbol = '+';
-            if (isModifier && card.value.startsWith('×')) opSymbol = '×';
+            // Operator between cards
+            let op = '';
+            if (isMiddle) op = card.value.startsWith('×') ? '×' : '+';
+            if (isLast && group.cards.length > 1) op = '=';
 
             return (
-              <div key={i} className={`sf-chain__slot ${isVisible ? 'sf-chain__slot--visible' : ''}`}>
-                {isModifier && (
-                  <span className={`sf-chain__op ${isVisible ? 'sf-chain__op--visible' : ''}`}>{opSymbol}</span>
+              <div key={i} className="sf-chain__slot">
+                {op && (
+                  <span className={`sf-chain__op ${isVisible ? 'sf-chain__op--visible' : ''}`}>{op}</span>
                 )}
-                {showEquals && (
-                  <span className={`sf-chain__op sf-chain__op--eq ${isVisible ? 'sf-chain__op--visible' : ''}`}>=</span>
-                )}
-
                 <div className={`sf-card ${card.flipped ? 'sf-card--flipped' : ''} sf-card--${card.type} ${isLast ? 'sf-card--result' : ''}`}>
                   <div className="sf-card__inner">
                     <div className="sf-card__back">
@@ -186,8 +201,8 @@ export default function ScoreFlip({ entryRef }: ScoreFlipProps) {
                     <div className="sf-card__front">
                       <div className="sf-card__label">{card.label}</div>
                       <div className="sf-card__value">
-                        {card.finalValue !== undefined
-                          ? <RollingNumber target={card.finalValue} active={card.flipped} />
+                        {card.rollTarget !== undefined
+                          ? <RollingNumber target={card.rollTarget} multiplier={card.rollMultiplier ?? 1} active={card.flipped} />
                           : card.value
                         }
                       </div>

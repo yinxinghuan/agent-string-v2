@@ -2,7 +2,7 @@ import { useRef, useEffect, useCallback } from 'react';
 import type { Word, RoundConfig, Burst } from '../types';
 import { buildWords, physicsStep } from '../engine/wordField';
 import {
-  INK, TRAP_RGB, GROUP_COLORS, FONT_FAMILY, BG_COLOR, REDLINE_Y,
+  INK, TRAP_RGB, GROUP_COLORS, FONT_FAMILY, BG_COLOR,
   COLLECT_R, PRESSURE_PER_COLLECT, PRESSURE_PER_SHATTER, PRESSURE_MAX,
   SURGE_SPEED_MULT, ANCHOR_TIME_BONUS, TRAP_TIME_PENALTY,
 } from '../constants';
@@ -306,26 +306,7 @@ export default function GameCanvas({
       ctx.fillRect(-10, -10, W + 20, H + 20);
 
       const scrollY = scrollYRef.current;
-      const redY = H * REDLINE_Y;
-
-      // Redline — black, below HUD area
-      ctx.save();
-      // Glow
-      ctx.strokeStyle = `rgba(20,12,5,0.06)`;
-      ctx.lineWidth = 10;
-      ctx.beginPath();
-      ctx.moveTo(0, redY);
-      ctx.lineTo(W, redY);
-      ctx.stroke();
-      // Line
-      ctx.strokeStyle = `rgba(20,12,5,0.4)`;
-      ctx.lineWidth = 1.5;
-      ctx.setLineDash([8, 5]);
-      ctx.beginPath();
-      ctx.moveTo(0, redY);
-      ctx.lineTo(W, redY);
-      ctx.stroke();
-      ctx.restore();
+      // Redline removed — was causing confusion
 
       // Words
       for (const w of wordsRef.current) {
