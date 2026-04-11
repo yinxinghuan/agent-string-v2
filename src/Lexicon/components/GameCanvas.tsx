@@ -70,7 +70,8 @@ export default function GameCanvas({
     });
     wordsRef.current = words;
     totalHRef.current = totalHeight;
-    scrollYRef.current = 0;
+    // Start scroll so text appears in the lower portion, giving player time before Redline
+    scrollYRef.current = -(canvas.height * 0.55);
     initedRef.current = true;
   }, [roundConfig]);
 
@@ -374,6 +375,26 @@ export default function GameCanvas({
         grad.addColorStop(1, `rgba(180,40,40,${intensity})`);
         ctx.fillStyle = grad;
         ctx.fillRect(0, 0, W, H);
+      }
+
+      // Pointer cursor — soft glow showing player's touch position
+      if (pointerRef.current.active) {
+        const px = pointerRef.current.x;
+        const py = pointerRef.current.y;
+        const cursorR = COLLECT_R * 0.7;
+        const grad = ctx.createRadialGradient(px, py, 0, px, py, cursorR);
+        grad.addColorStop(0, 'rgba(60,140,80,0.12)');
+        grad.addColorStop(0.5, 'rgba(60,140,80,0.04)');
+        grad.addColorStop(1, 'rgba(60,140,80,0)');
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(px, py, cursorR, 0, Math.PI * 2);
+        ctx.fill();
+        // Small center dot
+        ctx.beginPath();
+        ctx.arc(px, py, 3, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(60,140,80,0.25)';
+        ctx.fill();
       }
 
       ctx.restore();
