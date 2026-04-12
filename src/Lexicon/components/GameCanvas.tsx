@@ -245,21 +245,42 @@ export default function GameCanvas({
       for (const w of result.collected) {
         const screenY = w.y - scrollYRef.current;
         const color = w.meta.group !== undefined ? GROUP_COLORS[w.meta.group % 3] : [100, 160, 80] as [number, number, number];
-        addBurst(w.x, screenY, color);
 
         if (w.meta.type === 'time') {
+          // Time bonus: green expanding ring
           sfxTime();
           onTimeBonus(ANCHOR_TIME_BONUS);
-          addFloat(w.x, screenY, `+${ANCHOR_TIME_BONUS}s`, 'rgba(60,140,80,0.8)');
+          addBurst(w.x, screenY, [60, 200, 100], 50);
+          addFloat(w.x, screenY, `+${ANCHOR_TIME_BONUS}s`, 'rgba(40,180,80,0.9)');
         } else if (w.meta.type === 'anchor') {
+          // Anchor: blue pulse
           sfxTime();
           onTimeBonus(ANCHOR_TIME_BONUS);
-          addFloat(w.x, screenY, `+${ANCHOR_TIME_BONUS}s`, 'rgba(60,140,80,0.8)');
-        } else {
+          addBurst(w.x, screenY, [60, 120, 200], 45);
+          addFloat(w.x, screenY, `+${ANCHOR_TIME_BONUS}s`, 'rgba(50,120,200,0.9)');
+        } else if (w.meta.rarity === 'legendary') {
+          // Legendary: triple explosion burst + shatter particles
           sfxCollect(w.meta.group ?? 0);
           onWordCollected(w);
-          const colorStr = `rgb(${color[0]},${color[1]},${color[2]})`;
-          addFloat(w.x, screenY, w.meta.text, colorStr);
+          addBurst(w.x, screenY, [220, 180, 40], 90);
+          addBurst(w.x, screenY, [240, 200, 60], 60);
+          addBurst(w.x, screenY, [255, 220, 80], 35);
+          addShatter(w.x, screenY, w.meta.text); // explosion particles!
+          addFloat(w.x, screenY - 10, w.meta.text, 'rgba(200,160,30,1)');
+          screenShakeRef.current = 0.3;
+        } else if (w.meta.rarity === 'rare') {
+          // Rare: double burst
+          sfxCollect(w.meta.group ?? 0);
+          onWordCollected(w);
+          addBurst(w.x, screenY, color, 65);
+          addBurst(w.x, screenY, [255, 255, 255], 35);
+          addFloat(w.x, screenY, w.meta.text, `rgb(${color[0]},${color[1]},${color[2]})`);
+        } else {
+          // Common: single burst
+          sfxCollect(w.meta.group ?? 0);
+          onWordCollected(w);
+          addBurst(w.x, screenY, color);
+          addFloat(w.x, screenY, w.meta.text, `rgb(${color[0]},${color[1]},${color[2]})`);
         }
 
         // Pressure
@@ -271,12 +292,19 @@ export default function GameCanvas({
         }
       }
 
-      // Handle volatile chain
+      // Handle volatile chain — explosion effect!
       if (result.volatileTriggered.length > 0) {
         sfxVolatile();
+        screenShakeRef.current = Math.min(0.6, result.volatileTriggered.length * 0.2);
         for (const w of result.volatileTriggered) {
           const sy = w.y - scrollYRef.current;
-          addBurst(w.x, sy, [200, 160, 40], 80);
+          // Triple burst explosion
+          addBurst(w.x, sy, [240, 180, 40], 90);
+          addBurst(w.x, sy, [255, 200, 60], 55);
+          addBurst(w.x, sy, [200, 100, 30], 35);
+          // Letter explosion particles
+          addShatter(w.x, sy, w.meta.text || w.text);
+          addFloat(w.x, sy, 'CHAIN!', 'rgba(240,180,40,0.95)');
         }
         onVolatile(result.volatileTriggered);
       }
@@ -412,7 +440,7 @@ export default function GameCanvas({
         const fontSize = roundConfig.fontSize;
         ctx.font = `${fontSize}px ${FONT_FAMILY}`;
 
-        let alpha = 0.55; // normal word — higher contrast
+        let alpha = 0.68; // strong contrast for readability
         let color = INK;
 
         if (w.collected) {

@@ -1,70 +1,111 @@
 import type { RoundConfig, WordMeta } from '../types';
 
-// ── Act I: The Surface — intimate, everyday language ─────────────────────────
+// ── R1: Personal letter (intimate, handwritten feel) ─────────────────────────
 
-const PASSAGE_1 = `the morning came without announcement as mornings do
-light falling through the kitchen window at the angle that means autumn
-she held the cup in both hands not for warmth but for the weight of something real
+const PASSAGE_1 = `Dear someone I haven't met yet,
 
-the radio spoke of distances between cities measured in hours not miles
-somewhere a door closed and the house remembered it was empty
-dust settled on the books like a decision being made slowly
+I am writing this from the kitchen table where the morning light falls at the angle that means autumn. The coffee has gone cold but I keep holding the cup for the weight of something real in my hands.
 
-the clock disagreed with the light about what time it meant
-coffee grew cold while attention wandered through the rooms of an old argument
-a letter on the table waited with the patience of things that have already been read`;
+The radio says the distance between cities is measured in hours not miles. I think distance is measured in the number of things you forget to tell someone.
 
-const PASSAGE_2 = `he kept the photograph not because it was sharp but because it was honest
-the blur at the edges was what memory actually looks like
-nothing in focus but everything present
+A door closed somewhere and the house remembered it was empty. The dust settled on the books like a decision being made slowly. The clock on the wall disagrees with the light about what time it means.
 
-the train moved through the landscape like a sentence through silence
-each station a pause where meaning could board or disembark
-he watched the fields pass and understood that distance is just time wearing a different name
+I wanted to tell you that I found an old argument folded inside a letter. It waited with the patience of things that have already been read.
 
-rain collected in the gutters with a sound like applause for no one
-the cafe had three tables and a window that framed the street like a question
-he ordered something warm and sat with the luxury of having nowhere particular to be`;
+Yours, from a room that remembers`;
 
-// ── Act II: The Quarry — dense prose ─────────────────────────────────────────
+// ── R2: Database / log entries (technical, fragmented) ───────────────────────
 
-const PASSAGE_3 = `the library held its breath whenever someone entered as though afraid of being overheard
-between the shelves the air was thick with accumulated wondering
-each spine a compressed universe waiting for the pressure of attention to expand it
+const PASSAGE_2 = `[LOG 2024-11-07 03:42:17] QUERY: select * from memory where honest = true
+[LOG 2024-11-07 03:42:18] RESULT: 1 row — the blur at the edges was what memory actually looks like
+[LOG 2024-11-07 03:42:19] NOTE: nothing in focus but everything present
 
-language is not a tool but a territory and every sentence colonizes a different country of thought
-the margins of old books contain the real arguments
-where a reader pressed too hard and left a groove is where the meaning actually lived
+[LOG 2024-11-07 04:15:33] SIGNAL: train.departed(landscape, silence)
+[LOG 2024-11-07 04:15:34] TRACE: each station a pause where meaning could board or disembark
+[LOG 2024-11-07 04:15:35] WARN: distance is just time wearing a different name
 
-she read until the words became architecture
-whole cities built from syntax
-avenues of argument leading to plazas of sudden comprehension where pigeons of doubt still gathered`;
+[LOG 2024-11-07 05:00:01] EVENT: rain.collected(gutters, applause, no_one)
+[LOG 2024-11-07 05:00:02] CACHE: the cafe had three tables and a window that framed the street like a question
+[LOG 2024-11-07 05:00:03] STATUS: luxury = having_nowhere_particular_to_be
+[LOG 2024-11-07 05:00:04] COMMIT: fields pass without asking you to stay`;
 
-const PASSAGE_4 = `the ocean does not pause to consider what it carries beneath its surface
-it simply moves with the accumulated weight of everything that ever dissolved into it
-salt is just memory that water refuses to release
+// ── R3: Source code / pseudo-code (structured, logical) ──────────────────────
 
-the harbor at night is a catalogue of departures and the ones who stayed to watch them
+const PASSAGE_3 = `function library(visitor) {
+  const breath = hold(air, "afraid of being overheard");
+  const wondering = accumulate(shelves, thickness);
+  each(spine, universe => wait(pressure, "attention to expand it"));
+
+  // language is not a tool but a territory
+  // every sentence colonizes a different country of thought
+  const margins = old_books.find(groove =>
+    reader.pressed_too_hard(meaning)
+  );
+
+  while (reading) {
+    words = architecture;
+    cities = build(syntax);
+    avenues = argument.leading_to(
+      plazas.of(comprehension)
+      .where(doubt.still.gathered)
+    );
+  }
+  return understanding || undefined;
+}`;
+
+// ── R4: Corrupted transmission / glitch text ─────────────────────────────────
+
+const PASSAGE_4 = `>>> INCOMING SIGNAL — CHANNEL 7 — INTEGRITY 34% <<<
+
+the ocean does n0t pa██e to consider what it carries beneath its surface
+it simply moves with the accumu1ated weight of everything th▓t ever dissolved
+
+FRAGMENT RECOVERED: salt is just memory that water refuses to release
+
+the harbor at ███ht is a catalogue of departures
 every rope tied to a bollard is a promise made under conditions of uncertainty
-the lighthouse repeats itself not from conviction but from the inability to do otherwise
+the lighthouse rep░░ts itself not from conviction but from inability
 
-fog arrives like a theory that explains everything by making everything invisible
-the fishermen trust the engine and the engine trusts the fuel and the fuel trusts nothing at all
-somewhere between the dock and the horizon is the exact point where courage becomes stubbornness`;
+WARNING: fog arrives like a theory that explains everything by making ██erything invisible
+the fishermen trust the engine and the engine trusts the fuel and the fuel trusts nothing
 
-// ── Act III: The Depths — poetry, myth, compressed ───────────────────────────
+SIGNAL LOST — somewhere between the dock and the horizon
+is the exact point where courage becomes stubbornness
 
-const PASSAGE_5 = `silence is not empty it is full of answers to questions no one thought to ask
-the mountain does not climb itself and yet it arrives at the summit every morning
-what the river knows it learned by leaving
+>>> END TRANSMISSION — RETRY? [Y/N] <<<`;
 
-time is the only currency that cannot be counterfeited
-you spend it or it spends you there is no third option
-the clock face is the most honest mirror ever invented
+// ── R5: Poetry / myth (compressed, vertical) ────────────────────────────────
 
-between any two words is the ghost of every word that was almost chosen instead
-language fails precisely where it matters most
-which is why we keep trying`;
+const PASSAGE_5 = `silence
+is not empty
+it is full of answers
+to questions no one thought to ask
+
+the mountain does not climb itself
+and yet
+it arrives at the summit
+every morning
+
+what the river knows
+it learned
+by leaving
+
+time is the only currency
+that cannot be counterfeited
+you spend it
+or it spends you
+
+between any two words
+is the ghost
+of every word
+that was almost chosen instead
+
+language fails
+precisely where it matters most
+
+which is why
+we keep
+trying`;
 
 // ── Round configs ────────────────────────────────────────────────────────────
 
@@ -77,21 +118,22 @@ function time(text: string, brief: string, briefZh: string): WordMeta {
 }
 
 export const ROUNDS: RoundConfig[] = [
-  // ── Round 1 (Act I) ──────────────────────────────────────────────────────
+  // ── Round 1: Letter ────────────────────────────────────────────────────────
   {
     passage: PASSAGE_1,
     layoutMode: 'prose',
     fontSize: 17,
-    lineSpace: 32,
-    margin: 20,
+    lineSpace: 34,
+    margin: 24,
     timeLimit: 60,
-    scrollSpeed: 65,
+    scrollSpeed: 55,
+    passScore: 100,
     targets: [
       t('morning', 0, 'It arrives whether or not you were ready.', '不管你准没准备好，它都会来。'),
       t('weight', 0, 'The only proof that something is here.', '某物存在的唯一证明。'),
       t('settled', 0, 'What dust does when it gives up looking.', '灰尘放弃寻找后做的事。'),
       t('clock', 1, 'A machine for disagreeing with experience.', '一台与体验唱反调的机器。'),
-      t('hours', 1, 'The containers we pour distance into.', '我们把距离倒进去的容器。'),
+      t('distance', 1, 'Measured in things you forget to tell someone.', '用你忘记告诉某人的事情来衡量。'),
       t('cold', 1, 'What happens when attention looks away.', '注意力移开后发生的事。'),
       t('empty', 2, 'Not nothing — the specific shape of what left.', '不是虚无——是离去之物的精确轮廓。', 'rare'),
       t('dust', 2, 'Patience made visible.', '可见的耐心。'),
@@ -101,23 +143,23 @@ export const ROUNDS: RoundConfig[] = [
     ],
     phraseSets: [
       { name: 'Domestic Gravity', nameZh: '居家引力', words: ['morning', 'weight', 'settled'], bonus: 150 },
-      { name: "Time's Disagreement", nameZh: '时间的分歧', words: ['clock', 'hours', 'cold'], bonus: 150 },
+      { name: "Time's Disagreement", nameZh: '时间的分歧', words: ['clock', 'distance', 'cold'], bonus: 150 },
       { name: 'Empty Spaces', nameZh: '空的空间', words: ['empty', 'dust', 'door'], bonus: 200 },
     ],
-    passScore: 100,
     trapKeys: [],
-    volatileKeys: ['argument', 'distances', 'slowly'],
-    anchorKeys: ['patience', 'wandered'],
+    volatileKeys: ['argument', 'patience', 'remembers'],
+    anchorKeys: ['coffee', 'letter'],
   },
-  // ── Round 2 (Act I) ──────────────────────────────────────────────────────
+  // ── Round 2: Database logs ─────────────────────────────────────────────────
   {
     passage: PASSAGE_2,
     layoutMode: 'prose',
-    fontSize: 16,
-    lineSpace: 30,
-    margin: 22,
+    fontSize: 14,
+    lineSpace: 28,
+    margin: 16,
     timeLimit: 55,
-    scrollSpeed: 70,
+    scrollSpeed: 60,
+    passScore: 250,
     targets: [
       t('honest', 0, 'The blur at the edges of truth.', '真相边缘的模糊。'),
       t('blur', 0, 'What memory actually looks like.', '记忆真正的样子。'),
@@ -136,20 +178,20 @@ export const ROUNDS: RoundConfig[] = [
       { name: 'The Long Pause', nameZh: '漫长停顿', words: ['silence', 'pause', 'distance'], bonus: 200 },
       { name: 'Small Comforts', nameZh: '细微慰藉', words: ['rain', 'question', 'warm'], bonus: 150 },
     ],
-    passScore: 250,
     trapKeys: [],
-    volatileKeys: ['nowhere', 'sharp', 'gutters'],
-    anchorKeys: ['sat', 'collected'],
+    volatileKeys: ['QUERY', 'SIGNAL', 'COMMIT'],
+    anchorKeys: ['CACHE', 'STATUS'],
   },
-  // ── Round 3 (Act II) ─────────────────────────────────────────────────────
+  // ── Round 3: Source code ───────────────────────────────────────────────────
   {
     passage: PASSAGE_3,
     layoutMode: 'prose',
-    fontSize: 15,
-    lineSpace: 29,
-    margin: 18,
+    fontSize: 14,
+    lineSpace: 26,
+    margin: 14,
     timeLimit: 50,
-    scrollSpeed: 75,
+    scrollSpeed: 65,
+    passScore: 500,
     targets: [
       t('breath', 0, 'What a room holds when you enter it.', '你走进去时房间屏住的东西。'),
       t('wondering', 0, 'Air made thick by accumulated asking.', '因积累的追问而变稠的空气。'),
@@ -160,34 +202,33 @@ export const ROUNDS: RoundConfig[] = [
       t('architecture', 2, 'What words become when you read long enough.', '读得够久时文字变成的东西。', 'legendary'),
       t('syntax', 2, 'The skeleton that meaning drapes itself over.', '意义披在上面的骨架。'),
       t('comprehension', 2, 'A plaza you arrive at suddenly.', '你突然到达的广场。'),
-      time('spine', 'A compressed universe on a shelf.', '书架上的压缩宇宙。'),
+      time('understanding', 'Or undefined.', '或者 undefined。'),
     ],
     phraseSets: [
       { name: 'The Held Breath', nameZh: '屏住的呼吸', words: ['breath', 'wondering', 'pressure'], bonus: 200 },
       { name: 'Written Scars', nameZh: '书写的伤痕', words: ['territory', 'margins', 'groove'], bonus: 200 },
       { name: 'Cities of Syntax', nameZh: '语法之城', words: ['architecture', 'syntax', 'comprehension'], bonus: 300 },
     ],
-    passScore: 500,
     trapKeys: [],
-    volatileKeys: ['cities', 'colonizes', 'gathered'],
-    anchorKeys: ['avenues', 'argument'],
+    volatileKeys: ['function', 'return', 'undefined'],
+    anchorKeys: ['reading', 'build'],
   },
-  // ── Round 4 (Act II) ─────────────────────────────────────────────────────
+  // ── Round 4: Corrupted transmission ────────────────────────────────────────
   {
     passage: PASSAGE_4,
     layoutMode: 'prose',
     fontSize: 15,
-    lineSpace: 29,
+    lineSpace: 30,
     margin: 18,
     timeLimit: 50,
-    scrollSpeed: 80,
+    scrollSpeed: 72,
+    passScore: 800,
     targets: [
       t('surface', 0, 'Where the ocean keeps its secrets visible.', '海洋让秘密可见的地方。'),
       t('dissolved', 0, 'How things become part of the water.', '事物成为水的一部分的方式。'),
       t('salt', 0, 'Memory that water refuses to release.', '水拒绝释放的记忆。', 'rare'),
       t('departures', 1, 'A catalogue the harbor keeps at night.', '港口在夜间保存的目录。'),
       t('promise', 1, 'What every rope tied under uncertainty means.', '在不确定下系紧的每条绳子的意思。'),
-      t('repeats', 1, 'What the lighthouse does, not from conviction.', '灯塔做的事，不是出于信念。'),
       t('fog', 2, 'A theory that explains by hiding.', '通过隐藏来解释的理论。', 'rare'),
       t('trust', 2, 'What passes between engine and fuel.', '引擎和燃料之间传递的。'),
       t('courage', 2, 'The point just before stubbornness.', '固执之前的那个点。', 'legendary'),
@@ -195,23 +236,23 @@ export const ROUNDS: RoundConfig[] = [
     ],
     phraseSets: [
       { name: 'Salt Memory', nameZh: '盐的记忆', words: ['surface', 'dissolved', 'salt'], bonus: 200 },
-      { name: 'Harbor Promises', nameZh: '港口的承诺', words: ['departures', 'promise', 'repeats'], bonus: 200 },
-      { name: 'Fog & Courage', nameZh: '雾与勇气', words: ['fog', 'trust', 'courage'], bonus: 300 },
+      { name: 'Harbor Promises', nameZh: '港口的承诺', words: ['departures', 'promise'], bonus: 200 },
+      { name: 'Fog & Courage', nameZh: '雾与勇气', words: ['fog', 'trust', 'courage'], bonus: 350 },
     ],
-    passScore: 800,
     trapKeys: [],
-    volatileKeys: ['horizon', 'bollard', 'invisible'],
-    anchorKeys: ['dock', 'stubbornness'],
+    volatileKeys: ['SIGNAL', 'FRAGMENT', 'WARNING', 'horizon'],
+    anchorKeys: ['RECOVERED', 'RETRY'],
   },
-  // ── Round 5 (Act III) ────────────────────────────────────────────────────
+  // ── Round 5: Poetry ────────────────────────────────────────────────────────
   {
     passage: PASSAGE_5,
     layoutMode: 'verse',
-    fontSize: 19,
-    lineSpace: 34,
-    margin: 24,
+    fontSize: 20,
+    lineSpace: 36,
+    margin: 30,
     timeLimit: 45,
-    scrollSpeed: 70,
+    scrollSpeed: 50,
+    passScore: 1200,
     targets: [
       t('silence', 0, 'Full of answers to questions never asked.', '充满了从未被问过的问题的答案。', 'rare'),
       t('mountain', 0, 'It arrives at the summit every morning without climbing.', '每天早上不攀登就到达了顶峰。'),
@@ -224,20 +265,18 @@ export const ROUNDS: RoundConfig[] = [
       time('summit', 'Where everything has already been said.', '一切已被说尽的地方。'),
     ],
     phraseSets: [
-      { name: 'Silent Heights', nameZh: '沉默的高处', words: ['silence', 'mountain', 'river'], bonus: 250 },
-      { name: 'Honest Time', nameZh: '诚实的时间', words: ['currency', 'mirror'], bonus: 200 },
-      { name: 'The Ghost of Language', nameZh: '语言的幽灵', words: ['ghost', 'fails', 'trying'], bonus: 350 },
+      { name: 'Silent Heights', nameZh: '沉默的高处', words: ['silence', 'mountain', 'river'], bonus: 300 },
+      { name: 'Honest Time', nameZh: '诚实的时间', words: ['currency', 'mirror'], bonus: 250 },
+      { name: 'The Ghost of Language', nameZh: '语言的幽灵', words: ['ghost', 'fails', 'trying'], bonus: 400 },
     ],
-    passScore: 1200,
     trapKeys: [],
-    volatileKeys: ['answers', 'counterfeited', 'invented'],
-    anchorKeys: ['chosen'],
+    volatileKeys: ['answers', 'chosen', 'empty'],
+    anchorKeys: ['summit'],
   },
 ];
 
 export function getRound(n: number): RoundConfig {
   if (n < ROUNDS.length) return ROUNDS[n];
-  // Cycle through rounds with increasing difficulty
   const base = ROUNDS[n % ROUNDS.length];
   const tier = Math.floor(n / ROUNDS.length);
   return {
