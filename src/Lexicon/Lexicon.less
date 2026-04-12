@@ -185,133 +185,124 @@
   font-size: 10px; letter-spacing: 2px; color: @ink-dim; margin-top: 10px;
 }
 
-// ── Score Flip Cards — A + B = C chain ───────────────────────────────────────
+// ── Score Display — colored tags + big flip score ────────────────────────────
 .sf-container {
   position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 16;
   display: flex; flex-direction: column; align-items: center;
   justify-content: center;
   pointer-events: none;
-  padding-bottom: 20%;
 }
 
-// Chain row: [A] + [B] = [C]
-.sf-chain {
-  display: flex; align-items: center; gap: 0;
-  animation: sf-chain-enter 0.2s ease-out;
-  margin: 6px 0;
+.sf-group {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  margin: 8px 0;
 }
-@keyframes sf-chain-enter {
-  0% { opacity: 0; } 100% { opacity: 1; }
+.sf-group--leaving {
+  animation: sf-leave 0.5s ease-in forwards;
 }
-.sf-chain--leaving {
-  animation: sf-chain-leave 0.5s ease-in forwards;
-}
-@keyframes sf-chain-leave {
+@keyframes sf-leave {
   0% { opacity: 1; transform: translateY(0) scale(1); }
-  100% { opacity: 0; transform: translateY(-24px) scale(0.9); }
+  100% { opacity: 0; transform: translateY(-20px) scale(0.9); }
 }
 
-.sf-chain__slot {
-  display: flex; align-items: center;
+// ── Top row: small colored condition tags ──────────────────────────────────
+.sf-tags {
+  display: flex; gap: 6px; flex-wrap: wrap; justify-content: center;
+}
+.sf-tag {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 4px 10px; border-radius: 6px;
+  font-family: @font; font-size: 11px; letter-spacing: 1px;
+  opacity: 0; transform: translateY(6px) scale(0.9);
+  transition: opacity 0.25s, transform 0.25s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+.sf-tag--visible {
+  opacity: 1; transform: none;
+}
+.sf-tag__label {
+  font-weight: 400; white-space: nowrap;
+  max-width: 70px; overflow: hidden; text-overflow: ellipsis;
+}
+.sf-tag__value { font-weight: 600; }
+
+// Tag colors by type
+.sf-tag--base {
+  background: rgba(20, 12, 5, 0.08);
+  color: rgba(20, 12, 5, 0.65);
+}
+.sf-tag--streak {
+  background: rgba(60, 160, 90, 0.12);
+  color: rgba(40, 130, 70, 0.9);
+}
+.sf-tag--glyph {
+  background: rgba(130, 80, 210, 0.12);
+  color: rgba(120, 80, 200, 0.9);
+}
+.sf-tag--surge {
+  background: rgba(200, 50, 50, 0.12);
+  color: rgba(190, 50, 50, 0.9);
+}
+.sf-tag--phrase {
+  background: rgba(200, 140, 30, 0.12);
+  color: rgba(190, 130, 30, 0.9);
 }
 
-// Operator between cards (+, =)
-.sf-chain__op {
-  font-family: @font; font-size: 16px; font-weight: 500;
-  color: rgba(20, 12, 5, 0); // invisible until revealed
-  margin: 0 6px;
-  transition: color 0.3s;
+// ── Bottom: big score card with multi-flip ─────────────────────────────────
+.sf-big {
+  width: 110px; height: 72px;
+  perspective: 800px;
 }
-.sf-chain__op--visible {
-  color: rgba(20, 12, 5, 0.4);
-}
-
-// Individual flip card
-.sf-card {
-  width: 72px; height: 56px;
-  perspective: 700px;
-}
-.sf-card--result {
-  width: 80px; height: 60px;
-}
-.sf-card__inner {
+.sf-big__inner {
   width: 100%; height: 100%;
   position: relative;
   transform-style: preserve-3d;
-  transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
-  border-radius: 8px;
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 10px;
 }
-.sf-card--flipped .sf-card__inner {
-  transform: rotateY(180deg);
+// Initial: show back
+.sf-big__inner--back {
+  transform: rotateY(0deg);
 }
-.sf-card__back,
-.sf-card__front {
+// Each flip toggle
+.sf-big__inner--flip {
+  transform: rotateY(180deg) !important;
+  transition: transform 0.13s ease-in !important;
+}
+.sf-big__back,
+.sf-big__front {
   position: absolute; inset: 0;
-  border-radius: 8px;
+  border-radius: 10px;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  display: flex; align-items: center; justify-content: center;
 }
-.sf-card__back {
-  background: rgba(22, 18, 14, 0.88);
-  border: 1px solid rgba(245, 240, 230, 0.12);
-  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.25);
+.sf-big__back {
+  background: rgba(22, 18, 14, 0.9);
+  border: 1.5px solid rgba(245, 240, 230, 0.12);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  font-family: @font; font-size: 28px; color: rgba(245, 240, 230, 0.2);
+  transform: rotateY(0deg) translateZ(1px);
 }
-.sf-card__back-icon {
-  font-family: @font; font-size: 20px; color: rgba(245, 240, 230, 0.2);
-}
-.sf-card__front {
-  transform: rotateY(180deg);
+.sf-big__front {
+  transform: rotateY(180deg) translateZ(1px);
   background: rgba(22, 18, 14, 0.92);
-  border: 1px solid rgba(245, 240, 230, 0.18);
-  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.3);
-  padding: 4px;
+  border: 1.5px solid rgba(245, 240, 230, 0.2);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
 }
-.sf-card__label {
-  font-family: @font; font-size: 8px; letter-spacing: 2px;
-  color: rgba(245, 240, 230, 0.45); text-transform: uppercase;
-  margin-bottom: 2px; white-space: nowrap;
-  max-width: 100%; overflow: hidden; text-overflow: ellipsis;
+.sf-big__val {
+  font-family: @font; font-size: 30px; font-weight: 600;
+  color: rgba(245, 240, 230, 0.9); letter-spacing: 2px;
 }
-.sf-card__value {
-  font-family: @font; font-size: 18px; font-weight: 600;
-  color: rgba(245, 240, 230, 0.92); letter-spacing: 1px;
+// Settled bounce
+.sf-big--done {
+  animation: sf-big-land 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
-
-// Type colors on front
-.sf-card--streak .sf-card__value { color: rgba(100, 210, 130, 0.95); }
-.sf-card--glyph .sf-card__value { color: rgba(180, 140, 240, 0.95); }
-.sf-card--surge .sf-card__value { color: rgba(240, 80, 80, 0.95); }
-.sf-card--phrase .sf-card__value { color: rgba(240, 180, 50, 0.95); }
-.sf-card--total .sf-card__value {
-  font-size: 22px; color: rgba(245, 240, 230, 1);
-}
-// Result card slightly bigger appearance
-.sf-card--result .sf-card__front {
-  border-color: rgba(245, 240, 230, 0.3);
-}
-.sf-card--result.sf-card--flipped {
-  animation: sf-result-pop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-@keyframes sf-result-pop {
-  0% { transform: scale(1.15); } 100% { transform: scale(1); }
-}
-
-// Multi-flip: card physically rotates each time
-.sf-card__inner--flipping {
-  transform: rotateY(180deg) !important;
-  transition: transform 0.15s ease-in !important;
-}
-// After settling, the result card does a bounce
-.sf-card--settled {
-  animation: sf-settled-bounce 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-@keyframes sf-settled-bounce {
+@keyframes sf-big-land {
   0% { transform: scale(1.2); } 100% { transform: scale(1); }
 }
-.sf-card__value--settled {
-  color: rgba(245, 240, 230, 1) !important;
-  text-shadow: 0 0 12px rgba(245, 240, 230, 0.3);
+.sf-big--done .sf-big__val {
+  color: rgba(245, 240, 230, 1);
+  text-shadow: 0 0 16px rgba(245, 240, 230, 0.25);
 }
 
 // ── Toast ────────────────────────────────────────────────────────────────────
