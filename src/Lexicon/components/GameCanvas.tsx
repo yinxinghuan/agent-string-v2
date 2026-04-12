@@ -552,7 +552,7 @@ export default function GameCanvas({
         ctx.scale(scale, scale);
 
         // Badges (small circles above the score)
-        const badgeY = -30 - (se.badges.length > 3 ? 10 : 0);
+        const badgeY = -44 - (se.badges.length > 3 ? 10 : 0);
         const totalBadgeW = se.badges.length * (BADGE_R * 2 + 6) - 6;
         let bx = -totalBadgeW / 2 + BADGE_R;
         for (let bi = 0; bi < se.badges.length; bi++) {
@@ -586,11 +586,15 @@ export default function GameCanvas({
         }
 
         // Big score number (no frame, just text)
-        ctx.font = `700 48px ${SCORE_FONT}`;
+        // Score size scales with magnitude: bigger score = bigger text
+        const baseSize = 72;
+        const sizeBoost = Math.min(se.score / 50, 1) * 28; // up to +28px for 50+ scores
+        const fontSize = Math.round(baseSize + sizeBoost);
+        ctx.font = `700 ${fontSize}px ${SCORE_FONT}`;
         ctx.fillStyle = `rgba(20,12,5,${0.85 * alpha})`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText(`+${se.score}`, 0, 8);
+        ctx.fillText(`+${se.score}`, 0, 12);
 
         ctx.restore();
       }
