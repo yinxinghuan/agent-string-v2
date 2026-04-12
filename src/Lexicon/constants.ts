@@ -6,9 +6,9 @@ export const REPEL_R = 90;
 export const REPEL_F = 5.5;
 
 // ── Collection ───────────────────────────────────────────────────────────────
-export const COLLECT_R = 130;         // proximity radius for collection
-export const COLLECT_ALPHA_THRESH = 0.5;
-export const COLLECT_TIME = 0.15;     // seconds at high alpha to collect (faster than v1's 0.42s)
+export const COLLECT_R = 150;         // larger proximity — easier to trigger
+export const COLLECT_ALPHA_THRESH = 0.35;  // lower threshold — faster reveal
+export const COLLECT_TIME = 0.08;     // near-instant collection
 export const TRAP_R = 110;
 export const TRAP_ALPHA_THRESH = 0.45;
 export const TRAP_TIME = 0.25;
@@ -17,17 +17,18 @@ export const TRAP_TIME = 0.25;
 export const REDLINE_Y = 0.50;       // screen center — visual divider
 
 // ── Scoring ──────────────────────────────────────────────────────────────────
-export const BASE_SCORE_COMMON = 10;
-export const BASE_SCORE_RARE = 25;
-export const BASE_SCORE_LEGENDARY = 50;
+export const BASE_SCORE_COMMON = 15;
+export const BASE_SCORE_RARE = 40;
+export const BASE_SCORE_LEGENDARY = 80;
 export const VOLATILE_SCORE_MULT = 0.5;
 export const ANCHOR_TIME_BONUS = 5;
 export const TRAP_TIME_PENALTY = 5;
 
 // ── Streak multipliers ───────────────────────────────────────────────────────
 export function streakMultiplier(streak: number): number {
-  if (streak >= 8) return 5;
-  if (streak >= 5) return 3;
+  if (streak >= 8) return 8;
+  if (streak >= 6) return 5;
+  if (streak >= 4) return 3;
   if (streak >= 3) return 2;
   if (streak >= 2) return 1.5;
   return 1;

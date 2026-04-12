@@ -238,7 +238,7 @@ export function physicsStep(words: Word[], input: PhysicsInput): PhysicsResult {
       if (d < COLLECT_R) {
         // v1-style smooth alpha: goldAlpha += (bonus - goldAlpha) * 0.22
         const bonus = 1 - d / COLLECT_R;
-        w.revealAlpha += (bonus - w.revealAlpha) * 0.22;
+        w.revealAlpha += (bonus - w.revealAlpha) * 0.4;
         if (w.revealAlpha > COLLECT_ALPHA_THRESH) {
           w.revealTimer += sec;
           if (w.revealTimer >= COLLECT_TIME) {
@@ -249,7 +249,7 @@ export function physicsStep(words: Word[], input: PhysicsInput): PhysicsResult {
           w.revealTimer = Math.max(0, w.revealTimer - sec * 0.6);
         }
       } else {
-        w.revealAlpha += (0 - w.revealAlpha) * 0.22;
+        w.revealAlpha += (0 - w.revealAlpha) * 0.35;
         w.revealTimer = Math.max(0, w.revealTimer - sec * 0.6);
       }
     }
@@ -283,7 +283,7 @@ export function physicsStep(words: Word[], input: PhysicsInput): PhysicsResult {
       const dy = (w.y - scrollY) - pointerY;
       const d = Math.sqrt(dx * dx + dy * dy);
       const bonus = d < COLLECT_R ? 1 - d / COLLECT_R : 0;
-      w.revealAlpha += (bonus - w.revealAlpha) * 0.22;
+      w.revealAlpha += (bonus - w.revealAlpha) * 0.4;
     }
 
     // Anchor words
@@ -293,7 +293,7 @@ export function physicsStep(words: Word[], input: PhysicsInput): PhysicsResult {
       const d = Math.sqrt(dx * dx + dy * dy);
       if (d < COLLECT_R) {
         const bonus = 1 - d / COLLECT_R;
-        w.revealAlpha += (bonus - w.revealAlpha) * 0.22;
+        w.revealAlpha += (bonus - w.revealAlpha) * 0.4;
         if (w.revealAlpha > COLLECT_ALPHA_THRESH) {
           w.revealTimer += sec;
           if (w.revealTimer >= COLLECT_TIME) {
@@ -304,7 +304,7 @@ export function physicsStep(words: Word[], input: PhysicsInput): PhysicsResult {
           w.revealTimer = Math.max(0, w.revealTimer - sec * 0.6);
         }
       } else {
-        w.revealAlpha += (0 - w.revealAlpha) * 0.22;
+        w.revealAlpha += (0 - w.revealAlpha) * 0.35;
         w.revealTimer = Math.max(0, w.revealTimer - sec * 0.6);
       }
     }

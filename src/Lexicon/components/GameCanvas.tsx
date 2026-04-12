@@ -53,7 +53,7 @@ function spawnScoreEntity(entry: PipelineEntry, x: number, y: number, scrollY: n
     badges,
     age: 0,
     maxAge: 2.5,
-    repelR: 100,
+    repelR: 140,
   };
 }
 
@@ -127,8 +127,8 @@ export default function GameCanvas({
     wordsRef.current = words;
     totalHRef.current = totalHeight;
     // Start scroll negative so text begins well below the Redline, scrolling upward into play
-    // Small offset — text appears quickly, game starts immediately
-    scrollYRef.current = -(canvas.height * 0.25);
+    // Minimal offset — text visible almost immediately
+    scrollYRef.current = -(canvas.height * 0.1);
     initedRef.current = true;
   }, [roundConfig]);
 
