@@ -61,15 +61,19 @@ function BigScoreCard({ score, multiplier, active }: { score: number; multiplier
 
     seq.forEach((val, i) => {
       const isLast = i === seq.length - 1;
-      const interval = 220 + i * (180 / seq.length);
+      // Start fast (300ms), slow down toward end (550ms)
+      const interval = 300 + i * (250 / seq.length);
       delay += interval;
 
+      // Flip down (start rotation)
       timersRef.current.push(setTimeout(() => setIsFlipping(true), delay));
-      timersRef.current.push(setTimeout(() => { setDisplayVal(val); }, delay + 130));
+      // Change value at midpoint of rotation
+      timersRef.current.push(setTimeout(() => { setDisplayVal(val); }, delay + 160));
+      // Flip back up (complete rotation)
       timersRef.current.push(setTimeout(() => {
         setIsFlipping(false);
         if (isLast) { setIsDone(true); sfxPipelineFinal(); }
-      }, delay + 260));
+      }, delay + 320));
     });
   }, [score, multiplier]);
 
@@ -145,7 +149,7 @@ export default function ScoreFlip({ entryRef }: ScoreFlipProps) {
 
         // Leave after everything done
         const flipCount = Math.min(3 + Math.floor(mult) * 2, 12);
-        const flipTime = flipCount * 350;
+        const flipTime = flipCount * 450; // slower flips
         const leaveDelay = scoreDelay + flipTime + 1200;
 
         timersRef.current.push(setTimeout(() => {
@@ -173,13 +177,18 @@ export default function ScoreFlip({ entryRef }: ScoreFlipProps) {
           {/* Top row: small colored condition tags */}
           <div className="sf-tags">
             {group.tags.map((tag, i) => (
-              <span
+              <div
                 key={i}
                 className={`sf-tag sf-tag--${tag.type} ${tag.visible ? 'sf-tag--visible' : ''}`}
               >
-                <span className="sf-tag__label">{tag.label}</span>
-                <span className="sf-tag__value">{tag.value}</span>
-              </span>
+                <div className="sf-tag__inner">
+                  <div className="sf-tag__back" />
+                  <div className="sf-tag__face">
+                    <span className="sf-tag__label">{tag.label}</span>
+                    <span className="sf-tag__value">{tag.value}</span>
+                  </div>
+                </div>
+              </div>
             ))}
           </div>
           {/* Bottom: big score card with multi-flip */}
