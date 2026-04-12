@@ -127,7 +127,8 @@ export default function GameCanvas({
     wordsRef.current = words;
     totalHRef.current = totalHeight;
     // Start scroll negative so text begins well below the Redline, scrolling upward into play
-    scrollYRef.current = -(canvas.height * 0.7);
+    // Small offset — text appears quickly, game starts immediately
+    scrollYRef.current = -(canvas.height * 0.25);
     initedRef.current = true;
   }, [roundConfig]);
 
