@@ -1,12 +1,13 @@
-import { useRef, useEffect, useCallback } from 'react';
-import type { Word, RoundConfig, Burst } from '../types';
+import { useRef, useEffect, useCallback, type MutableRefObject } from 'react';
+import type { Word, RoundConfig, Burst, PipelineEntry, PipelineStep } from '../types';
 import { buildWords, physicsStep } from '../engine/wordField';
 import {
   INK, TRAP_RGB, GROUP_COLORS, FONT_FAMILY, BG_COLOR,
-  COLLECT_R, PRESSURE_PER_COLLECT, PRESSURE_PER_SHATTER, PRESSURE_MAX,
+  COLLECT_R, REPEL_F,
+  PRESSURE_PER_COLLECT, PRESSURE_PER_SHATTER, PRESSURE_MAX,
   SURGE_SPEED_MULT, ANCHOR_TIME_BONUS, TRAP_TIME_PENALTY,
 } from '../constants';
-import { sfxCollect, sfxTrap, sfxShatter, sfxTime, sfxVolatile, sfxSurgeStart, resumeAudio } from '../utils/sounds';
+import { sfxCollect, sfxTrap, sfxShatter, sfxTime, sfxVolatile, sfxSurgeStart, sfxPipelineBase, sfxPipelineStreak, sfxPipelineGlyph, sfxPipelinePhrase, sfxPipelineFinal, resumeAudio } from '../utils/sounds';
 
 const GLITCH_CHARS = '!@#$%^&*~<>[]{}?|01_';
 function glitchText(text: string, seed: number): string {
@@ -15,13 +16,63 @@ function glitchText(text: string, seed: number): string {
   return out;
 }
 
-// Score display uses simple float labels — no complex card system
+// ── Score Entity: lives in the word field, pushes words, fades out ────────────
+const SCORE_FONT = "'Cormorant Garamond', 'Georgia', serif";
+const BADGE_R = 14;  // badge circle radius
+const BADGE_COLORS: Record<string, string> = {
+  base:   '#6B7280',
+  streak: '#0D9488',
+  glyph:  '#8B5CF6',
+  surge:  '#EF4444',
+  phrase: '#CA8A04',
+};
+
+interface ScoreEntity {
+  x: number;        // passage-space x (like word.x)
+  y: number;        // passage-space y (like word.y)
+  score: number;    // total score to display
+  badges: { label: string; color: string }[];
+  age: number;      // seconds alive
+  maxAge: number;   // total lifetime
+  repelR: number;   // repulsion radius (pushes words)
+}
+
+function spawnScoreEntity(entry: PipelineEntry, x: number, y: number, scrollY: number): ScoreEntity {
+  const badges: { label: string; color: string }[] = [];
+  for (const step of entry.steps) {
+    if (step.type === 'final') continue;
+    const color = BADGE_COLORS[step.type] || BADGE_COLORS.base;
+    const label = step.type === 'base' ? `+${step.value}`
+      : step.operation === 'x' ? `×${step.value}` : `+${step.value}`;
+    badges.push({ label, color });
+  }
+  return {
+    x,
+    y: y + scrollY, // convert screen-y to passage-space
+    score: entry.totalScore,
+    badges,
+    age: 0,
+    maxAge: 2.5,
+    repelR: 100,
+  };
+}
+
+function stepSoundForType(step: PipelineStep): void {
+  switch (step.type) {
+    case 'base': sfxPipelineBase(); break;
+    case 'streak': sfxPipelineStreak(); break;
+    case 'glyph': sfxPipelineGlyph(); break;
+    case 'phrase': sfxPipelinePhrase(); break;
+    case 'final': sfxPipelineFinal(); break;
+  }
+}
 
 interface GameCanvasProps {
   roundConfig: RoundConfig;
   surgeActive: boolean;
   surgeTimer: number;
   pressure: number;
+  pipelineEntryRef: MutableRefObject<PipelineEntry | null>;
   onWordCollected: (word: Word) => void;
   onTrapHit: (word: Word) => void;
   onShatter: (word: Word) => void;
@@ -34,7 +85,7 @@ interface GameCanvasProps {
 }
 
 export default function GameCanvas({
-  roundConfig, surgeActive, surgeTimer, pressure,
+  roundConfig, surgeActive, surgeTimer, pressure, pipelineEntryRef,
   onWordCollected, onTrapHit, onShatter, onVolatile, onTimeBonus,
   onPressureChange, onSurgeStart, onSurgeEnd, onTimeUpdate,
 }: GameCanvasProps) {
@@ -47,7 +98,7 @@ export default function GameCanvas({
   const burstsRef = useRef<Burst[]>([]);
   const floatsRef = useRef<{ x: number; y: number; text: string; color: string; life: number; maxLife: number }[]>([]);
   const shatterPartsRef = useRef<{ x: number; y: number; vx: number; vy: number; char: string; life: number }[]>([]);
-  // Score cards removed — using simple float labels instead
+  const scoreEntitiesRef = useRef<ScoreEntity[]>([]);
   const screenShakeRef = useRef(0);
   const surgeRef = useRef({ active: false, timer: 0 });
   const pressureRef = useRef(0);
@@ -268,7 +319,46 @@ export default function GameCanvas({
         onShatter(w);
       }
 
-      // Pipeline entries are consumed by ScoreFlip component (DOM flip cards)
+      // Spawn score entities from pipeline entries
+      if (pipelineEntryRef.current) {
+        const entry = pipelineEntryRef.current;
+        pipelineEntryRef.current = null;
+        const word = wordsRef.current.find(w => w.id === entry.wordId);
+        const cx = word ? word.x : W / 2;
+        const cy = word ? (word.y - scrollYRef.current) : H * 0.4;
+        const entity = spawnScoreEntity(entry, cx, cy, scrollYRef.current);
+        scoreEntitiesRef.current.push(entity);
+        // Play sound for first step
+        if (entry.steps.length > 0) stepSoundForType(entry.steps[0]);
+      }
+
+      // Update score entities — they push words away
+      for (const se of scoreEntitiesRef.current) {
+        se.age += dt;
+        const seScreenY = se.y - scrollYRef.current;
+        // Push words away (same physics as pointer)
+        for (const w of wordsRef.current) {
+          if (w.collected || w.shattered) continue;
+          const wScreenY = w.y - scrollYRef.current;
+          const dx = w.x - se.x;
+          const dy = wScreenY - seScreenY;
+          const d = Math.sqrt(dx * dx + dy * dy);
+          if (d < se.repelR && d > 0.5) {
+            const f = (1 - d / se.repelR) * REPEL_F * 1.5; // stronger than finger
+            w.vx += (dx / d) * f;
+            w.vy += (dy / d) * f;
+
+            // If this pushes a target word enough, trigger collection!
+            if (!w.collected && (w.meta.type === 'target' || w.meta.type === 'time') && d < COLLECT_R * 0.6) {
+              w.revealAlpha = Math.min(1, w.revealAlpha + dt * 8);
+              if (w.revealAlpha > 0.6) {
+                w.revealTimer += dt * 2;
+              }
+            }
+          }
+        }
+      }
+      scoreEntitiesRef.current = scoreEntitiesRef.current.filter(se => se.age < se.maxAge);
 
       // Surge timer
       if (surgeRef.current.active) {
@@ -443,7 +533,67 @@ export default function GameCanvas({
         ctx.restore();
       }
 
-      // (Score display is now simple float labels, rendered above)
+      // Score entities — badges + big number in the word field
+      for (const se of scoreEntitiesRef.current) {
+        const seY = se.y - scrollYRef.current;
+        if (seY < -100 || seY > H + 100) continue;
+        const progress = se.age / se.maxAge;
+        // Fade in first 0.15s, fade out last 0.3
+        let alpha = 1;
+        if (se.age < 0.15) alpha = se.age / 0.15;
+        else if (progress > 0.7) alpha = 1 - (progress - 0.7) / 0.3;
+
+        // Scale: pop in, then settle
+        const scale = se.age < 0.2 ? 0.6 + (se.age / 0.2) * 0.5 : 1 + Math.sin(se.age * 3) * 0.02;
+
+        ctx.save();
+        ctx.globalAlpha = alpha;
+        ctx.translate(se.x, seY);
+        ctx.scale(scale, scale);
+
+        // Badges (small circles above the score)
+        const badgeY = -30 - (se.badges.length > 3 ? 10 : 0);
+        const totalBadgeW = se.badges.length * (BADGE_R * 2 + 6) - 6;
+        let bx = -totalBadgeW / 2 + BADGE_R;
+        for (let bi = 0; bi < se.badges.length; bi++) {
+          const badge = se.badges[bi];
+          // Stagger appearance
+          const badgeAge = se.age - bi * 0.12;
+          if (badgeAge < 0) { bx += BADGE_R * 2 + 6; continue; }
+          const bAlpha = Math.min(1, badgeAge / 0.1);
+          const bScale = badgeAge < 0.1 ? 0.5 + (badgeAge / 0.1) * 0.5 : 1;
+
+          ctx.save();
+          ctx.globalAlpha = bAlpha * alpha;
+          ctx.translate(bx, badgeY);
+          ctx.scale(bScale, bScale);
+
+          // Circle
+          ctx.beginPath();
+          ctx.arc(0, 0, BADGE_R, 0, Math.PI * 2);
+          ctx.fillStyle = badge.color;
+          ctx.fill();
+
+          // Label inside
+          ctx.font = `600 10px ${FONT_FAMILY}`;
+          ctx.fillStyle = '#fff';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(badge.label, 0, 0.5);
+
+          ctx.restore();
+          bx += BADGE_R * 2 + 6;
+        }
+
+        // Big score number (no frame, just text)
+        ctx.font = `700 48px ${SCORE_FONT}`;
+        ctx.fillStyle = `rgba(20,12,5,${0.85 * alpha})`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(`+${se.score}`, 0, 8);
+
+        ctx.restore();
+      }
 
       // Top/bottom gradient vignette
       const gradTop = ctx.createLinearGradient(0, 0, 0, 80);

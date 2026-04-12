@@ -9,7 +9,7 @@ import { SURGE_DURATION } from './constants';
 import { sfxStreak, sfxComplete, resumeAudio } from './utils/sounds';
 import GameCanvas from './components/GameCanvas';
 import HUD from './components/HUD';
-import ScoreFlip from './components/ScoreFlip';
+// ScoreFlip removed — scoring now rendered on canvas as physics entities
 import StartScreen from './components/StartScreen';
 import EndScreen from './components/EndScreen';
 import GlyphShop from './components/GlyphShop';
@@ -272,6 +272,7 @@ export default function Lexicon() {
             surgeActive={state.surgeActive}
             surgeTimer={state.surgeTimer}
             pressure={state.pressure}
+            pipelineEntryRef={pipelineEntryRef}
             onWordCollected={handleWordCollected}
             onTrapHit={handleTrapHit}
             onShatter={handleShatter}
@@ -293,7 +294,7 @@ export default function Lexicon() {
             collected={state.wordsCollectedThisRound.length}
             totalTargets={roundConfig.targets.filter(t => t.type === 'target').length}
           />
-          <ScoreFlip entryRef={pipelineEntryRef} />
+          {/* Scoring rendered on canvas */}
         </>
       )}
 
