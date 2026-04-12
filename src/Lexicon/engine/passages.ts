@@ -104,9 +104,10 @@ export const ROUNDS: RoundConfig[] = [
       { name: "Time's Disagreement", nameZh: '时间的分歧', words: ['clock', 'hours', 'cold'], bonus: 150 },
       { name: 'Empty Spaces', nameZh: '空的空间', words: ['empty', 'dust', 'door'], bonus: 200 },
     ],
-    trapKeys: ['distances', 'slowly', 'wandered'],
-    volatileKeys: ['argument'],
-    anchorKeys: ['patience'],
+    passScore: 100,
+    trapKeys: [],
+    volatileKeys: ['argument', 'distances', 'slowly'],
+    anchorKeys: ['patience', 'wandered'],
   },
   // ── Round 2 (Act I) ──────────────────────────────────────────────────────
   {
@@ -135,9 +136,10 @@ export const ROUNDS: RoundConfig[] = [
       { name: 'The Long Pause', nameZh: '漫长停顿', words: ['silence', 'pause', 'distance'], bonus: 200 },
       { name: 'Small Comforts', nameZh: '细微慰藉', words: ['rain', 'question', 'warm'], bonus: 150 },
     ],
-    trapKeys: ['sharp', 'gutters', 'collected'],
-    volatileKeys: ['nowhere'],
-    anchorKeys: ['sat'],
+    passScore: 250,
+    trapKeys: [],
+    volatileKeys: ['nowhere', 'sharp', 'gutters'],
+    anchorKeys: ['sat', 'collected'],
   },
   // ── Round 3 (Act II) ─────────────────────────────────────────────────────
   {
@@ -165,9 +167,10 @@ export const ROUNDS: RoundConfig[] = [
       { name: 'Written Scars', nameZh: '书写的伤痕', words: ['territory', 'margins', 'groove'], bonus: 200 },
       { name: 'Cities of Syntax', nameZh: '语法之城', words: ['architecture', 'syntax', 'comprehension'], bonus: 300 },
     ],
-    trapKeys: ['colonizes', 'gathered', 'argument'],
-    volatileKeys: ['cities'],
-    anchorKeys: ['avenues'],
+    passScore: 500,
+    trapKeys: [],
+    volatileKeys: ['cities', 'colonizes', 'gathered'],
+    anchorKeys: ['avenues', 'argument'],
   },
   // ── Round 4 (Act II) ─────────────────────────────────────────────────────
   {
@@ -195,9 +198,10 @@ export const ROUNDS: RoundConfig[] = [
       { name: 'Harbor Promises', nameZh: '港口的承诺', words: ['departures', 'promise', 'repeats'], bonus: 200 },
       { name: 'Fog & Courage', nameZh: '雾与勇气', words: ['fog', 'trust', 'courage'], bonus: 300 },
     ],
-    trapKeys: ['bollard', 'invisible', 'stubbornness'],
-    volatileKeys: ['horizon'],
-    anchorKeys: ['dock'],
+    passScore: 800,
+    trapKeys: [],
+    volatileKeys: ['horizon', 'bollard', 'invisible'],
+    anchorKeys: ['dock', 'stubbornness'],
   },
   // ── Round 5 (Act III) ────────────────────────────────────────────────────
   {
@@ -224,9 +228,10 @@ export const ROUNDS: RoundConfig[] = [
       { name: 'Honest Time', nameZh: '诚实的时间', words: ['currency', 'mirror'], bonus: 200 },
       { name: 'The Ghost of Language', nameZh: '语言的幽灵', words: ['ghost', 'fails', 'trying'], bonus: 350 },
     ],
-    trapKeys: ['counterfeited', 'invented', 'chosen'],
-    volatileKeys: ['answers'],
-    anchorKeys: [],
+    passScore: 1200,
+    trapKeys: [],
+    volatileKeys: ['answers', 'counterfeited', 'invented'],
+    anchorKeys: ['chosen'],
   },
 ];
 
@@ -237,7 +242,8 @@ export function getRound(n: number): RoundConfig {
   const tier = Math.floor(n / ROUNDS.length);
   return {
     ...base,
-    timeLimit: Math.max(40, base.timeLimit - tier * 8),
-    scrollSpeed: base.scrollSpeed + tier * 12,
+    timeLimit: Math.max(35, base.timeLimit - tier * 5),
+    scrollSpeed: base.scrollSpeed + tier * 10,
+    passScore: Math.round(base.passScore * (1 + tier * 0.6)),
   };
 }

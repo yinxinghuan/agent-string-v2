@@ -293,6 +293,7 @@ export default function Lexicon() {
             glyphs={state.activeGlyphs}
             collected={state.wordsCollectedThisRound.length}
             totalTargets={roundConfig.targets.filter(t => t.type === 'target').length}
+            passScore={roundConfig.passScore}
           />
           {/* Scoring rendered on canvas */}
         </>

@@ -329,15 +329,19 @@ export default function GameCanvas({
         const cy = word ? (word.y - scrollYRef.current) : H * 0.4;
         const entity = spawnScoreEntity(entry, cx, cy, scrollYRef.current);
         scoreEntitiesRef.current.push(entity);
-        // Play sound for first step
+        // Burst explosion effect at spawn point
+        const burstColor: [number, number, number] = entry.totalScore >= 50 ? [200, 160, 40] : [60, 140, 80];
+        addBurst(cx, cy, burstColor, 70);
+        addBurst(cx, cy, burstColor, 40);
+        // Play sound
         if (entry.steps.length > 0) stepSoundForType(entry.steps[0]);
       }
 
-      // Update score entities — they push words away
+      // Update score entities — they push words and trigger chain collections
       for (const se of scoreEntitiesRef.current) {
         se.age += dt;
         const seScreenY = se.y - scrollYRef.current;
-        // Push words away (same physics as pointer)
+        // Strong repulsion — pushes words dramatically + triggers collection
         for (const w of wordsRef.current) {
           if (w.collected || w.shattered) continue;
           const wScreenY = w.y - scrollYRef.current;
@@ -345,15 +349,15 @@ export default function GameCanvas({
           const dy = wScreenY - seScreenY;
           const d = Math.sqrt(dx * dx + dy * dy);
           if (d < se.repelR && d > 0.5) {
-            const f = (1 - d / se.repelR) * REPEL_F * 1.5; // stronger than finger
+            const f = (1 - d / se.repelR) * REPEL_F * 2.0; // much stronger than finger
             w.vx += (dx / d) * f;
             w.vy += (dy / d) * f;
 
-            // If this pushes a target word enough, trigger collection!
-            if (!w.collected && (w.meta.type === 'target' || w.meta.type === 'time') && d < COLLECT_R * 0.6) {
-              w.revealAlpha = Math.min(1, w.revealAlpha + dt * 8);
-              if (w.revealAlpha > 0.6) {
-                w.revealTimer += dt * 2;
+            // Chain reaction: nearby target words auto-collect
+            if (!w.collected && (w.meta.type === 'target' || w.meta.type === 'time' || w.meta.type === 'volatile') && d < COLLECT_R * 0.7) {
+              w.revealAlpha = Math.min(1, w.revealAlpha + dt * 12);
+              if (w.revealAlpha > 0.5) {
+                w.revealTimer += dt * 3;
               }
             }
           }

@@ -11,9 +11,10 @@ interface HUDProps {
   glyphs: Glyph[];
   collected: number;
   totalTargets: number;
+  passScore: number;
 }
 
-export default function HUD({ round, score, timeLeft, streak, pressure, surgeActive, glyphs, collected, totalTargets }: HUDProps) {
+export default function HUD({ round, score, timeLeft, streak, pressure, surgeActive, glyphs, collected, totalTargets, passScore }: HUDProps) {
   const mins = Math.floor(Math.max(0, timeLeft) / 60);
   const secs = Math.floor(Math.max(0, timeLeft) % 60);
   const timeStr = `${mins}:${secs.toString().padStart(2, '0')}`;
@@ -29,7 +30,8 @@ export default function HUD({ round, score, timeLeft, streak, pressure, surgeAct
         <span className={`lex-hud__time ${isLow ? 'lex-hud__time--low' : ''}`}>{timeStr}</span>
       </div>
       <div className="lex-hud__right">
-        <span className="lex-hud__score">{score}</span>
+        <span className={`lex-hud__score ${score >= passScore ? 'lex-hud__score--pass' : ''}`}>{score}</span>
+        <span className="lex-hud__pass">/{passScore}</span>
       </div>
 
       {/* Progress bar: collected / total */}

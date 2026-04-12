@@ -102,9 +102,10 @@ export interface RoundConfig {
   margin: number;
   timeLimit: number;
   scrollSpeed: number;
+  passScore: number;      // minimum score to pass this round
   targets: WordMeta[];
   phraseSets: PhraseSet[];
-  trapKeys: string[];
+  trapKeys: string[];     // kept for compatibility but can be empty
   volatileKeys: string[];
   anchorKeys: string[];
 }
