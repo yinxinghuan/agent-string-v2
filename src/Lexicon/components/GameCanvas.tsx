@@ -400,15 +400,8 @@ export default function GameCanvas({
         }
       }
 
-      // Auto-end: if all target words are collected, end round early
-      const hasUncollected = wordsRef.current.some(w =>
-        !w.collected && (w.meta.type === 'target' || w.meta.type === 'time')
-      );
-      if (!hasUncollected && scrollYRef.current > 0) {
-        onTimeUpdate(9999);
-      } else {
-        onTimeUpdate(dt);
-      }
+      // Always let timer run — player uses full time to chain and score
+      onTimeUpdate(dt);
 
       // Screen shake decay
       screenShakeRef.current *= 0.9;

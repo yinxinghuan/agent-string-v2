@@ -127,7 +127,7 @@ export const ROUNDS: RoundConfig[] = [
     margin: 24,
     timeLimit: 60,
     scrollSpeed: 80,
-    passScore: 100,
+    passScore: 3000,
     targets: [
       t('morning', 0, 'It arrives whether or not you were ready.', '不管你准没准备好，它都会来。'),
       t('weight', 0, 'The only proof that something is here.', '某物存在的唯一证明。'),
@@ -159,7 +159,7 @@ export const ROUNDS: RoundConfig[] = [
     margin: 16,
     timeLimit: 55,
     scrollSpeed: 90,
-    passScore: 250,
+    passScore: 1500,
     targets: [
       t('honest', 0, 'The blur at the edges of truth.', '真相边缘的模糊。'),
       t('blur', 0, 'What memory actually looks like.', '记忆真正的样子。'),
@@ -191,7 +191,7 @@ export const ROUNDS: RoundConfig[] = [
     margin: 14,
     timeLimit: 50,
     scrollSpeed: 95,
-    passScore: 500,
+    passScore: 3000,
     targets: [
       t('breath', 0, 'What a room holds when you enter it.', '你走进去时房间屏住的东西。'),
       t('wondering', 0, 'Air made thick by accumulated asking.', '因积累的追问而变稠的空气。'),
@@ -222,7 +222,7 @@ export const ROUNDS: RoundConfig[] = [
     margin: 18,
     timeLimit: 50,
     scrollSpeed: 100,
-    passScore: 800,
+    passScore: 5000,
     targets: [
       t('surface', 0, 'Where the ocean keeps its secrets visible.', '海洋让秘密可见的地方。'),
       t('dissolved', 0, 'How things become part of the water.', '事物成为水的一部分的方式。'),
@@ -252,7 +252,7 @@ export const ROUNDS: RoundConfig[] = [
     margin: 30,
     timeLimit: 45,
     scrollSpeed: 75,
-    passScore: 1200,
+    passScore: 8000,
     targets: [
       t('silence', 0, 'Full of answers to questions never asked.', '充满了从未被问过的问题的答案。', 'rare'),
       t('mountain', 0, 'It arrives at the summit every morning without climbing.', '每天早上不攀登就到达了顶峰。'),
