@@ -112,24 +112,33 @@ export default function Lexicon() {
 
   // ── Volatile chain ─────────────────────────────────────────────────────────
   const handleVolatile = useCallback((words: Word[]) => {
-    let totalVolatileScore = 0;
-    for (const w of words) {
-      const entry = resolvePipeline({
-        word: w.meta,
-        wordId: w.id,
-        streak: 0,
-        surgeActive: state.surgeActive,
-        glyphs: state.activeGlyphs,
-        wordsCollectedThisRound: state.wordsCollectedThisRound,
-        phraseSetsCompleted: state.phraseSetsCompleted,
-        phraseSets: roundConfig.phraseSets,
-        isVolatile: true,
-      });
-      totalVolatileScore += entry.totalScore;
-      pipelineEntryRef.current = entry;
-    }
-    setState(prev => ({ ...prev, score: prev.score + totalVolatileScore }));
-  }, [state, roundConfig]);
+    setState(prev => {
+      let totalVolatileScore = 0;
+      let newStreak = prev.streak;
+      for (const w of words) {
+        newStreak++; // chain-collected words build streak!
+        const entry = resolvePipeline({
+          word: w.meta,
+          wordId: w.id,
+          streak: newStreak,
+          surgeActive: prev.surgeActive,
+          glyphs: prev.activeGlyphs,
+          wordsCollectedThisRound: prev.wordsCollectedThisRound,
+          phraseSetsCompleted: prev.phraseSetsCompleted,
+          phraseSets: roundConfig.phraseSets,
+          isVolatile: true,
+        });
+        totalVolatileScore += entry.totalScore;
+        pipelineEntryRef.current = entry;
+      }
+      return {
+        ...prev,
+        score: prev.score + totalVolatileScore,
+        streak: newStreak,
+        bestStreak: Math.max(prev.bestStreak, newStreak),
+      };
+    });
+  }, [roundConfig]);
 
   // ── Trap hit ───────────────────────────────────────────────────────────────
   const handleTrapHit = useCallback((_word: Word) => {

@@ -17,17 +17,21 @@ export const TRAP_TIME = 0.25;
 export const REDLINE_Y = 0.50;       // screen center — visual divider
 
 // ── Scoring ──────────────────────────────────────────────────────────────────
-export const BASE_SCORE_COMMON = 15;
-export const BASE_SCORE_RARE = 40;
-export const BASE_SCORE_LEGENDARY = 80;
-export const VOLATILE_SCORE_MULT = 0.5;
+export const BASE_SCORE_COMMON = 20;
+export const BASE_SCORE_RARE = 50;
+export const BASE_SCORE_LEGENDARY = 120;
+export const VOLATILE_SCORE_MULT = 1.0;  // full score for chain-collected words
 export const ANCHOR_TIME_BONUS = 5;
 export const TRAP_TIME_PENALTY = 5;
 
-// ── Streak multipliers ───────────────────────────────────────────────────────
+// ── Streak multipliers — Balatro-style exponential ──────────────────────────
+// Consecutive collections (including chain-triggered) stack multipliers fast
 export function streakMultiplier(streak: number): number {
-  if (streak >= 8) return 8;
-  if (streak >= 6) return 5;
+  if (streak >= 12) return 20;
+  if (streak >= 10) return 15;
+  if (streak >= 8) return 10;
+  if (streak >= 6) return 6;
+  if (streak >= 5) return 4;
   if (streak >= 4) return 3;
   if (streak >= 3) return 2;
   if (streak >= 2) return 1.5;
@@ -39,7 +43,7 @@ export const PRESSURE_PER_COLLECT = 10;
 export const PRESSURE_PER_SHATTER = 25;
 export const PRESSURE_MAX = 100;
 export const SURGE_DURATION = 8;
-export const SURGE_SCORE_MULT = 2;
+export const SURGE_SCORE_MULT = 3;     // x3 during surge (was x2)
 export const SURGE_SPEED_MULT = 2;
 
 // ── Visual ───────────────────────────────────────────────────────────────────
