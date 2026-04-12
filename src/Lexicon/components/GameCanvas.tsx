@@ -791,7 +791,9 @@ export default function GameCanvas({
         const sizeBoost = Math.min(se.score / 50, 1) * 28; // up to +28px for 50+ scores
         const fontSize = Math.round(baseSize + sizeBoost);
         ctx.font = `700 ${fontSize}px ${SCORE_FONT}`;
-        ctx.fillStyle = `rgba(20,12,5,${0.85 * alpha})`;
+        // Score text color matches the level's text color for visibility
+        const tc = vis?.textColor ?? INK;
+        ctx.fillStyle = `rgba(${tc[0]},${tc[1]},${tc[2]},${0.9 * alpha})`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(`+${se.score}`, 0, 12);
@@ -804,19 +806,7 @@ export default function GameCanvas({
         drawEffects(ctx, vis, W, H, pulseTRef.current);
       }
 
-      // Top/bottom gradient vignette
-      const bgC = vis?.bgColor || BG_COLOR;
-      const gradTop = ctx.createLinearGradient(0, 0, 0, 80);
-      gradTop.addColorStop(0, bgC);
-      gradTop.addColorStop(1, 'rgba(0,0,0,0)');
-      ctx.fillStyle = gradTop;
-      ctx.fillRect(0, 0, W, 80);
-
-      const gradBot = ctx.createLinearGradient(0, H - 100, 0, H);
-      gradBot.addColorStop(0, 'rgba(0,0,0,0)');
-      gradBot.addColorStop(1, bgC);
-      ctx.fillStyle = gradBot;
-      ctx.fillRect(0, H - 100, W, 100);
+      // Top/bottom gradients removed — were ugly
 
       // Surge vignette
       if (surgeRef.current.active) {

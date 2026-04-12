@@ -298,6 +298,7 @@ export default function Lexicon() {
             collected={state.wordsCollectedThisRound.length}
             totalTargets={roundConfig.targets.filter(t => t.type === 'target').length}
             passScore={roundConfig.passScore}
+            visuals={roundConfig.visuals}
           />
           {/* Scoring rendered on canvas */}
         </>
