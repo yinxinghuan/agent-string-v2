@@ -1,46 +1,46 @@
 import { t, locale } from '../i18n';
-import type { GameState, PhraseSet } from '../types';
-
-const ACT_NAMES: Record<string, [string, string]> = {
-  '1': ['THE SURFACE', '表层'],
-  '2': ['THE SURFACE', '表层'],
-  '3': ['THE QUARRY', '采石场'],
-  '4': ['THE QUARRY', '采石场'],
-  '5': ['THE DEPTHS', '深处'],
-};
-
-function actName(round: number): string {
-  const names = ACT_NAMES[String(round)] ?? ['???', '???'];
-  return locale === 'zh' ? names[1] : names[0];
-}
+import type { GameState, PhraseSet, RoundConfig } from '../types';
 
 interface EndScreenProps {
   state: GameState;
+  roundConfig: RoundConfig;
   phraseSets: PhraseSet[];
   isRunEnd: boolean;
   onNext: () => void;
   onRetry: () => void;
 }
 
-export default function EndScreen({ state, phraseSets, isRunEnd, onNext, onRetry }: EndScreenProps) {
-  const title = isRunEnd ? t('runComplete') : t('roundComplete');
+export default function EndScreen({ state, roundConfig, phraseSets, isRunEnd, onNext, onRetry }: EndScreenProps) {
   const collected = state.wordsCollectedThisRound.length;
   const completedPhrases = Array.from(state.phraseSetsCompleted);
+  const passed = roundConfig.passScore > 0 && state.score >= roundConfig.passScore;
+  const isLastLevel = roundConfig.passScore === 0; // R30
+
+  const title = isLastLevel
+    ? (locale === 'zh' ? '信号终止' : 'SIGNAL TERMINATED')
+    : isRunEnd
+      ? t('runComplete')
+      : passed
+        ? (locale === 'zh' ? '通关' : 'CLEARED')
+        : (locale === 'zh' ? '信号丢失' : 'SIGNAL LOST');
 
   return (
-    <div className="lex-screen lex-end">
+    <div className="lex-screen lex-end" style={{ background: roundConfig.visuals?.bgColor || '#f5f0e6' }}>
       <div className="lex-end__inner">
-        <div className="lex-end__label">// R{state.round} · {actName(state.round)}</div>
+        <div className="lex-end__label">// R{state.round} · {locale === 'zh' ? roundConfig.actNameZh : roundConfig.actName}</div>
         <div className="lex-end__rule" />
-        <div className="lex-end__title">{title}</div>
+        <div className="lex-end__level-title">{locale === 'zh' ? roundConfig.levelTitleZh : roundConfig.levelTitle}</div>
+        <div className={`lex-end__title ${passed ? 'lex-end__title--pass' : 'lex-end__title--fail'}`}>{title}</div>
         <div className="lex-end__score">{state.score}</div>
-        <div className="lex-end__pts">PTS</div>
+        {roundConfig.passScore > 0 && (
+          <div className={`lex-end__pass-target ${passed ? 'lex-end__pass-target--pass' : ''}`}>
+            / {roundConfig.passScore}
+          </div>
+        )}
         <div className="lex-end__rule" />
 
         <div className="lex-end__stats">
           <span>{t('collected')}: {collected}</span>
-          <span>{t('shattered')}: {state.wordsShattered}</span>
-          <span>{t('traps')}: {state.trapHits}</span>
           <span>{t('bestStreak')}: {state.bestStreak}</span>
         </div>
 
@@ -68,24 +68,11 @@ export default function EndScreen({ state, phraseSets, isRunEnd, onNext, onRetry
           </>
         )}
 
-        {/* Run end: show round-by-round scores */}
-        {isRunEnd && state.roundScores.length > 0 && (
-          <>
-            <div className="lex-end__rule" />
-            <div className="lex-end__breakdown">
-              {state.roundScores.map((s, i) => (
-                <div key={i} className="lex-end__round-row">
-                  <span>R{i + 1}</span>
-                  <span>{s}</span>
-                </div>
-              ))}
-            </div>
-          </>
-        )}
-
         <div className="lex-end__rule" />
         <div className="lex-end__btns">
-          {!isRunEnd && <button className="lex-btn" onPointerDown={onNext}>{t('next')}</button>}
+          {passed && !isRunEnd && !isLastLevel && (
+            <button className="lex-btn" onPointerDown={onNext}>{t('next')}</button>
+          )}
           <button className="lex-btn lex-btn--ghost" onPointerDown={onRetry}>{t('retry')}</button>
         </div>
       </div>

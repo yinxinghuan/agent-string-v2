@@ -91,6 +91,23 @@ export interface GlyphResult {
   label: string;
 }
 
+// ── Level Visuals ────────────────────────────────────────────────────────────
+export interface LevelVisuals {
+  bgColor: string;
+  textColor: [number, number, number];
+  textAlpha: number;
+  accentColor: [number, number, number];
+  scanLines?: boolean;
+  grain?: number;          // 0-1
+  glitch?: number;         // 0-1
+  geometry?: number;       // count of floating shapes
+  inkSpots?: number;       // count of ink blots
+  noise?: number;          // 0-1 static/snow
+  vignette?: number;       // 0-1
+  chromatic?: number;      // px offset for RGB split
+  flicker?: number;        // 0-1 rate
+}
+
 // ── Round / Passage ──────────────────────────────────────────────────────────
 export type LayoutMode = 'prose' | 'verse';
 
@@ -102,10 +119,16 @@ export interface RoundConfig {
   margin: number;
   timeLimit: number;
   scrollSpeed: number;
-  passScore: number;      // minimum score to pass this round
+  passScore: number;
+  act: number;            // 1-5
+  actName: string;        // e.g. "THE SURFACE"
+  actNameZh: string;
+  levelTitle: string;     // e.g. "Personal Memo"
+  levelTitleZh: string;
+  visuals: LevelVisuals;
   targets: WordMeta[];
   phraseSets: PhraseSet[];
-  trapKeys: string[];     // kept for compatibility but can be empty
+  trapKeys: string[];
   volatileKeys: string[];
   anchorKeys: string[];
 }

@@ -67,6 +67,135 @@ function stepSoundForType(step: PipelineStep): void {
   }
 }
 
+// ── Visual Effects Renderers ──────────────────────────────────────────────────
+import type { LevelVisuals } from '../types';
+
+interface GeomShape {
+  x: number; y: number; vx: number; vy: number;
+  type: 'circle' | 'ring' | 'diamond';
+  size: number; spin: number; spinV: number;
+  repelR: number; strength: number; alpha: number;
+}
+
+function spawnGeom(W: number, H: number): GeomShape {
+  const types: GeomShape['type'][] = ['circle', 'ring', 'diamond'];
+  const roll = Math.random();
+  const size = roll < 0.4 ? 12 + Math.random() * 20 : roll < 0.75 ? 35 + Math.random() * 40 : 80 + Math.random() * 60;
+  const edge = Math.floor(Math.random() * 4);
+  const spd = 15 + Math.random() * 20;
+  let x: number, y: number, vx: number, vy: number;
+  if (edge === 0) { x = Math.random() * W; y = -size * 2; vx = (Math.random() - .5) * spd * .6; vy = spd; }
+  else if (edge === 1) { x = W + size * 2; y = Math.random() * H; vx = -spd; vy = (Math.random() - .5) * spd * .6; }
+  else if (edge === 2) { x = Math.random() * W; y = H + size * 2; vx = (Math.random() - .5) * spd * .6; vy = -spd; }
+  else { x = -size * 2; y = Math.random() * H; vx = spd; vy = (Math.random() - .5) * spd * .6; }
+  return {
+    x, y, vx, vy,
+    type: types[Math.floor(Math.random() * types.length)],
+    size, spin: Math.random() * Math.PI * 2, spinV: (Math.random() - .5) * 0.015,
+    repelR: size * 4, strength: 8 + Math.random() * 5, alpha: 0.15 + Math.random() * 0.1,
+  };
+}
+
+function drawEffects(ctx: CanvasRenderingContext2D, v: LevelVisuals, W: number, H: number, t: number): void {
+  // Scan lines
+  if (v.scanLines) {
+    ctx.save();
+    ctx.fillStyle = `rgba(0,0,0,0.03)`;
+    for (let y = 0; y < H; y += 3) {
+      ctx.fillRect(0, y, W, 1);
+    }
+    ctx.restore();
+  }
+
+  // Film grain
+  if (v.grain && v.grain > 0) {
+    ctx.save();
+    const intensity = v.grain;
+    for (let i = 0; i < W * H * 0.002 * intensity; i++) {
+      const x = Math.random() * W;
+      const y = Math.random() * H;
+      const a = Math.random() * 0.15 * intensity;
+      ctx.fillStyle = `rgba(0,0,0,${a})`;
+      ctx.fillRect(x, y, 1, 1);
+    }
+    ctx.restore();
+  }
+
+  // Ink spots
+  if (v.inkSpots && v.inkSpots > 0) {
+    ctx.save();
+    // Use time-seeded pseudo-random for stable positions
+    const seed = 42;
+    for (let i = 0; i < v.inkSpots; i++) {
+      const px = ((seed * (i + 1) * 7919) % 10000) / 10000 * W;
+      const py = ((seed * (i + 1) * 6271) % 10000) / 10000 * H;
+      const r = 2 + ((seed * (i + 1) * 3571) % 100) / 100 * 6;
+      ctx.beginPath();
+      ctx.arc(px, py, r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(0,0,0,${0.04 + Math.random() * 0.03})`;
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  // Static noise
+  if (v.noise && v.noise > 0) {
+    ctx.save();
+    const count = Math.round(W * H * 0.003 * v.noise);
+    for (let i = 0; i < count; i++) {
+      const x = Math.random() * W;
+      const y = Math.random() * H;
+      const bright = Math.random() > 0.5;
+      ctx.fillStyle = bright ? `rgba(255,255,255,${0.1 * v.noise})` : `rgba(0,0,0,${0.1 * v.noise})`;
+      ctx.fillRect(x, y, 1 + Math.random(), 1 + Math.random());
+    }
+    ctx.restore();
+  }
+
+  // Vignette
+  if (v.vignette && v.vignette > 0) {
+    const grad = ctx.createRadialGradient(W / 2, H / 2, H * 0.3, W / 2, H / 2, H * 0.85);
+    grad.addColorStop(0, 'rgba(0,0,0,0)');
+    grad.addColorStop(1, `rgba(0,0,0,${0.4 * v.vignette})`);
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, W, H);
+  }
+
+  // Chromatic aberration (RGB split on edges)
+  if (v.chromatic && v.chromatic > 0) {
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.globalAlpha = 0.03 * v.chromatic;
+    // Subtle red/cyan fringe at edges
+    const offset = v.chromatic;
+    ctx.drawImage(ctx.canvas, offset, 0);
+    ctx.drawImage(ctx.canvas, -offset, 0);
+    ctx.restore();
+  }
+
+  // Screen flicker
+  if (v.flicker && v.flicker > 0) {
+    if (Math.random() < v.flicker * 0.05) {
+      ctx.save();
+      ctx.fillStyle = `rgba(255,255,255,${0.03 + Math.random() * 0.05})`;
+      ctx.fillRect(0, 0, W, H);
+      ctx.restore();
+    }
+  }
+
+  // Glitch (horizontal slice displacement)
+  if (v.glitch && v.glitch > 0 && Math.random() < v.glitch * 0.08) {
+    const sliceY = Math.random() * H;
+    const sliceH = 2 + Math.random() * 10 * v.glitch;
+    const offset = (Math.random() - 0.5) * 20 * v.glitch;
+    ctx.save();
+    ctx.drawImage(ctx.canvas, 0, sliceY, W, sliceH, offset, sliceY, W, sliceH);
+    ctx.restore();
+  }
+
+  void t; // available for time-based effects
+}
+
 interface GameCanvasProps {
   roundConfig: RoundConfig;
   surgeActive: boolean;
@@ -99,6 +228,7 @@ export default function GameCanvas({
   const floatsRef = useRef<{ x: number; y: number; text: string; color: string; life: number; maxLife: number }[]>([]);
   const shatterPartsRef = useRef<{ x: number; y: number; vx: number; vy: number; char: string; life: number }[]>([]);
   const scoreEntitiesRef = useRef<ScoreEntity[]>([]);
+  const geomsRef = useRef<GeomShape[]>([]);
   const screenShakeRef = useRef(0);
   const surgeRef = useRef({ active: false, timer: 0 });
   const pressureRef = useRef(0);
@@ -417,12 +547,56 @@ export default function GameCanvas({
         ctx.translate(sx, sy);
       }
 
-      // Background
-      ctx.fillStyle = BG_COLOR;
+      // Background — use level visuals color
+      const vis = roundConfig.visuals;
+      ctx.fillStyle = vis?.bgColor || BG_COLOR;
       ctx.fillRect(-10, -10, W + 20, H + 20);
 
       const scrollY = scrollYRef.current;
-      // Redline removed — was causing confusion
+
+      // Update geometric shapes if level has them
+      if (vis?.geometry && vis.geometry > 0) {
+        while (geomsRef.current.length < vis.geometry) {
+          geomsRef.current.push(spawnGeom(W, H));
+        }
+        for (const g of geomsRef.current) {
+          g.x += g.vx * dt * (1 / 60);
+          g.y += g.vy * dt * (1 / 60);
+          g.spin += g.spinV;
+          // Remove if off screen
+          if (g.x < -g.size * 3 || g.x > W + g.size * 3 || g.y < -g.size * 3 || g.y > H + g.size * 3) {
+            Object.assign(g, spawnGeom(W, H));
+          }
+          // Repel words
+          for (const w of wordsRef.current) {
+            const dx = w.x - g.x;
+            const dy = (w.y - scrollY) - g.y;
+            const d = Math.sqrt(dx * dx + dy * dy);
+            if (d < g.repelR && d > 0.5) {
+              const f = (1 - d / g.repelR) * g.strength;
+              w.vx += (dx / d) * f;
+              w.vy += (dy / d) * f;
+            }
+          }
+          // Draw
+          ctx.save();
+          ctx.translate(g.x, g.y);
+          ctx.rotate(g.spin);
+          ctx.strokeStyle = `rgba(${vis.textColor[0]},${vis.textColor[1]},${vis.textColor[2]},${g.alpha})`;
+          ctx.lineWidth = 1.5;
+          if (g.type === 'circle') {
+            ctx.beginPath(); ctx.arc(0, 0, g.size, 0, Math.PI * 2); ctx.stroke();
+          } else if (g.type === 'ring') {
+            ctx.beginPath(); ctx.arc(0, 0, g.size, 0, Math.PI * 2); ctx.stroke();
+            ctx.beginPath(); ctx.arc(0, 0, g.size * 0.6, 0, Math.PI * 2); ctx.stroke();
+          } else {
+            ctx.beginPath();
+            ctx.moveTo(0, -g.size); ctx.lineTo(g.size, 0); ctx.lineTo(0, g.size); ctx.lineTo(-g.size, 0);
+            ctx.closePath(); ctx.stroke();
+          }
+          ctx.restore();
+        }
+      }
 
       // Words
       for (const w of wordsRef.current) {
@@ -433,8 +607,8 @@ export default function GameCanvas({
         const fontSize = roundConfig.fontSize;
         ctx.font = `${fontSize}px ${FONT_FAMILY}`;
 
-        let alpha = 0.68; // strong contrast for readability
-        let color = INK;
+        let alpha = vis?.textAlpha ?? 0.68;
+        let color: [number, number, number] = vis?.textColor ?? INK;
 
         if (w.collected) {
           // Collected: show faded with check
@@ -625,16 +799,22 @@ export default function GameCanvas({
         ctx.restore();
       }
 
+      // Level visual effects (grain, noise, scan lines, etc.)
+      if (vis) {
+        drawEffects(ctx, vis, W, H, pulseTRef.current);
+      }
+
       // Top/bottom gradient vignette
+      const bgC = vis?.bgColor || BG_COLOR;
       const gradTop = ctx.createLinearGradient(0, 0, 0, 80);
-      gradTop.addColorStop(0, BG_COLOR);
-      gradTop.addColorStop(1, 'rgba(245,240,230,0)');
+      gradTop.addColorStop(0, bgC);
+      gradTop.addColorStop(1, 'rgba(0,0,0,0)');
       ctx.fillStyle = gradTop;
       ctx.fillRect(0, 0, W, 80);
 
       const gradBot = ctx.createLinearGradient(0, H - 100, 0, H);
-      gradBot.addColorStop(0, 'rgba(245,240,230,0)');
-      gradBot.addColorStop(1, BG_COLOR);
+      gradBot.addColorStop(0, 'rgba(0,0,0,0)');
+      gradBot.addColorStop(1, bgC);
       ctx.fillStyle = gradBot;
       ctx.fillRect(0, H - 100, W, 100);
 

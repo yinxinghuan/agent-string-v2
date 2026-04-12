@@ -15,7 +15,6 @@ import EndScreen from './components/EndScreen';
 import GlyphShop from './components/GlyphShop';
 import './Lexicon.less';
 
-const MAX_ROUNDS = 5;
 const MAX_GLYPHS = 5;
 
 function initialState(): GameState {
@@ -188,18 +187,14 @@ export default function Lexicon() {
       const newSurgeTimer = prev.surgeActive ? prev.surgeTimer - dt : 0;
 
       if (newTime <= 0) {
-        // Round end — store per-round score delta
         const prevTotal = prev.roundScores.reduce((a, b) => a + b, 0);
         const thisRoundScore = prev.score - prevTotal;
-        const isLastRound = prev.round >= MAX_ROUNDS;
-        if (isLastRound) {
-          sfxComplete();
-        }
+        sfxComplete();
         return {
           ...prev,
           timeLeft: 0,
           surgeTimer: newSurgeTimer,
-          phase: isLastRound ? 'runEnd' : 'roundEnd',
+          phase: 'roundEnd',
           roundScores: [...prev.roundScores, thisRoundScore],
         };
       }
@@ -299,11 +294,12 @@ export default function Lexicon() {
         </>
       )}
 
-      {state.phase === 'roundEnd' && (
+      {(state.phase === 'roundEnd' || state.phase === 'runEnd') && (
         <EndScreen
           state={state}
+          roundConfig={roundConfig}
           phraseSets={roundConfig.phraseSets}
-          isRunEnd={false}
+          isRunEnd={state.phase === 'runEnd'}
           onNext={handleRoundEnd}
           onRetry={handleRetry}
         />
@@ -316,16 +312,6 @@ export default function Lexicon() {
           offered={shopOffered}
           active={state.activeGlyphs}
           onPick={handlePickGlyph}
-        />
-      )}
-
-      {state.phase === 'runEnd' && (
-        <EndScreen
-          state={state}
-          phraseSets={roundConfig.phraseSets}
-          isRunEnd={true}
-          onNext={handleRetry}
-          onRetry={handleRetry}
         />
       )}
     </div>
