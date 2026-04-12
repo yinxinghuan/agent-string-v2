@@ -6,8 +6,8 @@ interface StartScreenProps {
 
 export default function StartScreen({ onStart }: StartScreenProps) {
   const rules = locale === 'zh'
-    ? '滑动手指穿过文字\n发光的词是目标 · 靠近即可收集\n红线以上的词会碎裂消失\n避开陷阱词 · 在时间内尽可能多收集'
-    : 'Swipe through the text\nGlowing words are targets · get close to collect\nWords above the red line shatter\nAvoid traps · collect as many as you can';
+    ? '滑动手指穿过滚动的文字\n隐藏的目标词会在你靠近时发光\n停留片刻即可收集 · 避开陷阱词\n收集词组触发连锁加分'
+    : 'Swipe through scrolling text\nHidden target words glow as you approach\nStay close to collect · avoid traps\nComplete phrase sets for bonus chains';
 
   return (
     <div className="lex-screen lex-start">

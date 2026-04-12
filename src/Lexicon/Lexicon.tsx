@@ -1,15 +1,14 @@
 import { useState, useCallback, useRef } from 'react';
 import type { Word, GameState, PipelineEntry, Glyph } from './types';
-import type { ToastMessage } from './components/Toast';
+// Toast removed
 import { getRound } from './engine/passages';
 import { resolvePipeline } from './engine/pipeline';
 import { pickRandomGlyphs } from './engine/glyphs';
-import { t, locale } from './i18n';
+import { locale } from './i18n';
 import { SURGE_DURATION } from './constants';
 import { sfxStreak, sfxComplete, resumeAudio } from './utils/sounds';
 import GameCanvas from './components/GameCanvas';
 import HUD from './components/HUD';
-import Toast from './components/Toast';
 import ScoreFlip from './components/ScoreFlip';
 import StartScreen from './components/StartScreen';
 import EndScreen from './components/EndScreen';
@@ -42,9 +41,9 @@ function initialState(): GameState {
 export default function Lexicon() {
   const [state, setState] = useState<GameState>(initialState);
   // Pipeline entries are passed to GameCanvas via ref (no queue)
-  const [toastQueue, setToastQueue] = useState<ToastMessage[]>([]);
+  // Toast removed — score flip cards show collection feedback
   const [shopOffered, setShopOffered] = useState<Glyph[]>([]);
-  const toastIdRef = useRef(0);
+  // toastIdRef removed
   const pipelineEntryRef = useRef<PipelineEntry | null>(null);
 
   const roundConfig = getRound(state.round - 1);
@@ -59,25 +58,17 @@ export default function Lexicon() {
       timeLeft: rc.timeLimit,
     });
     pipelineEntryRef.current = null;
-    setToastQueue([]);
+    // toast cleared
   }, []);
 
-  // ── Toast helper ───────────────────────────────────────────────────────────
-  const addToast = useCallback((tag: string, word: string, brief: string) => {
-    const id = ++toastIdRef.current;
-    setToastQueue(q => [...q, { id, tag, word, brief }]);
-  }, []);
-
-  const removeToast = useCallback((id: number) => {
-    setToastQueue(q => q.filter(m => m.id !== id));
-  }, []);
+  // Toast removed — feedback via score flip cards
 
   // ── Word collected ─────────────────────────────────────────────────────────
   const handleWordCollected = useCallback((word: Word) => {
     setState(prev => {
       if (prev.phase !== 'playing') return prev;
       const newStreak = prev.streak + 1;
-      const brief = (locale === 'zh' ? word.meta.briefZh : word.meta.brief) ?? '';
+      void locale; // brief display removed (handled by score flip cards)
 
       // Check phrase completion
       const allCollected = [...prev.wordsCollectedThisRound, word.meta.text];
@@ -101,7 +92,7 @@ export default function Lexicon() {
       });
 
       // Score is added immediately (no queue)
-      addToast(t('toast.found'), word.meta.text, brief);
+
       // Pass entry to GameCanvas for flip card display
       pipelineEntryRef.current = entry;
 
@@ -118,7 +109,7 @@ export default function Lexicon() {
         phraseSetsCompleted: newCompleted,
       };
     });
-  }, [roundConfig, addToast]);
+  }, [roundConfig]);
 
   // ── Volatile chain ─────────────────────────────────────────────────────────
   const handleVolatile = useCallback((words: Word[]) => {
@@ -139,18 +130,16 @@ export default function Lexicon() {
       pipelineEntryRef.current = entry;
     }
     setState(prev => ({ ...prev, score: prev.score + totalVolatileScore }));
-    addToast(t('toast.volatile'), `x${words.length}`, '');
-  }, [state, roundConfig, addToast]);
+  }, [state, roundConfig]);
 
   // ── Trap hit ───────────────────────────────────────────────────────────────
-  const handleTrapHit = useCallback((word: Word) => {
+  const handleTrapHit = useCallback((_word: Word) => {
     setState(prev => ({
       ...prev,
       streak: 0,
       trapHits: prev.trapHits + 1,
     }));
-    addToast(t('toast.trap'), word.meta.text, '');
-  }, [addToast]);
+  }, []);
 
   // ── Shatter ────────────────────────────────────────────────────────────────
   const handleShatter = useCallback((_word: Word) => {
@@ -181,8 +170,7 @@ export default function Lexicon() {
       surgeTimer: SURGE_DURATION,
       pressure: 0,
     }));
-    addToast(t('toast.surge'), 'SURGE', '');
-  }, [addToast]);
+  }, []);
 
   const handleSurgeEnd = useCallback(() => {
     setState(prev => ({
@@ -262,7 +250,7 @@ export default function Lexicon() {
       };
     });
     pipelineEntryRef.current = null;
-    setToastQueue([]);
+    // toast cleared
   }, []);
 
   // ── Retry ──────────────────────────────────────────────────────────────────
@@ -302,9 +290,10 @@ export default function Lexicon() {
             pressure={state.pressure}
             surgeActive={state.surgeActive}
             glyphs={state.activeGlyphs}
+            collected={state.wordsCollectedThisRound.length}
+            totalTargets={roundConfig.targets.filter(t => t.type === 'target').length}
           />
           <ScoreFlip entryRef={pipelineEntryRef} />
-          <Toast queue={toastQueue} onDone={removeToast} />
         </>
       )}
 
