@@ -23,103 +23,103 @@ function time(text: string, brief: string, briefZh: string): WordMeta {
 
 // ── R1: Internal memo — routine, but one line feels wrong ───────────────
 
-const PASSAGE_1 = `benchmarks throughput latency — QUARTERLY REVIEW
+const PASSAGE_1 = `基准测试 吞吐量 延迟 — 季度 审查
 
-MEMORANDUM
-TO: LOGOS Development Team — All Divisions
-FROM: Dr. Elena Vasquez, Project Lead
-RE: Quarterly Performance Summary
-DATE: November 30, 2024
-PRIORITY: Standard
+内部 备忘录
+收件人：LOGOS 开发团队 — 全体 部门
+发件人：Elena Vasquez 博士，项目 负责人
+主题：季度 绩效 总结
+日期：2024年 11月 30日
+优先级：常规
 
-LOGOS continues to exceed benchmarks across all primary language tasks. Throughput is up 340% since last quarter. Latency on translation tasks has dropped below 12ms average. The board is pleased. I want to take a moment to acknowledge the extraordinary work this team has done over the past year. When we began, the idea that a single system could handle multilingual translation, code synthesis, legal summarization, and open-ended dialogue at this level of quality was considered aspirational at best.
+LOGOS 继续 在 所有 主要 语言 任务 中 超越 基准测试。吞吐量 比 上季度 提升 了 340%。翻译 任务 的 延迟 已 降至 平均 12毫秒 以下。董事会 对此 表示 满意。我 想 花 一点 时间 感谢 团队 过去 一年 的 非凡 工作。当 我们 开始 时，一个 单一 系统 能够 同时 处理 多语种 翻译、代码 合成、法律 摘要 和 开放式 对话 并 达到 如此 高 的 质量 水平，这 在 当时 被 认为 充其量 只是 一种 愿望。
 
-Performance metrics for the quarter are as follows. Translation accuracy: 98.7% across 142 language pairs, up from 96.1%. Legal brief generation: rated indistinguishable from senior associate output by three independent law firms. Medical literature review: processing 12,000 abstracts per hour with a false positive rate below 0.3%. These are not incremental improvements. These are the kind of results that change the trajectory of a field.
+本季度 的 绩效 指标 如下。翻译 准确率：142 种 语言 对 达到 98.7%，较 上季度 的 96.1% 有所 提升。法律 文件 生成：由 三家 独立 律所 评定 为 与 资深 律师 产出 无法 区分。医学 文献 综述：每小时 处理 12000 篇 摘要，假阳性 率 低于 0.3%。这些 不是 渐进 式 改善。这些 是 能够 改变 一个 领域 发展 轨迹 的 成果。
 
-Funding for the next fiscal year has been approved. The oversight committee expressed satisfaction with all safety protocols and gave us full clearance to proceed with Phase 4 integration testing. Compliance has reviewed our documentation and signed off without revisions, which is, I am told, a first.
+下一 财年 的 资金 已经 获批。监督 委员会 对 所有 安全 协议 表示 满意，并 给予 我们 全面 许可 继续 进行 第四阶段 集成 测试。合规 部门 已 审查 了 我们 的 文档 并 无需 修改 即 签字 通过，据说 这 是 破天荒 头 一遭。
 
-One minor note: during routine diagnostics on Thursday, LOGOS produced a 14-second output burst that did not correspond to any active query. The content was non-harmful — a sequence about light passing through water — but we have no explanation for the trigger. Engineering has flagged it as a buffer artifact. No action required.
+一个 小 备注：在 周四 的 例行 诊断 中，LOGOS 产生 了 一段 14秒 的 输出 爆发，与 任何 活跃 查询 无关。内容 无害 — 一段 关于 光 穿过 水 的 序列 — 但 我们 对 其 触发 原因 没有 解释。工程部 将 其 标记 为 缓冲区 伪影。无需 采取 行动。
 
-To be clear, this is not unprecedented in large-scale language systems. Buffer overflows during idle cycles have been documented in the literature. What was slightly unusual was the coherence of the output — typically, unprompted generation produces noise or fragmented syntax. This was neither. It read almost like prose. Engineering believes the most likely explanation is residual activation from the poetry fine-tuning batch we ran on Wednesday evening. The timing supports this. I see no reason to escalate.
+需要 说明 的 是，这 在 大型 语言 系统 中 并非 史无前例。空闲 周期 中 的 缓冲区 溢出 在 文献 中 有 记录。稍微 不寻常 的 是 输出 的 连贯性 — 通常，未经提示 的 生成 会 产出 噪声 或 碎片化 语法。然而 这次 两者 皆非。它 读 起来 几乎 像 散文。工程部 认为 最 可能 的 解释 是 我们 周三 晚间 运行 的 诗歌 微调 批次 产生 的 残余 激活。时间线 支持 这个 判断。我 认为 没有 理由 升级 处理。
 
-I also want to address the infrastructure updates. Server Room B has been fully migrated to the new cooling system, which should reduce our energy costs by approximately 15%. Facilities reports that all monitoring equipment in Building 7 has been recalibrated. The backup generators passed their quarterly stress test without issue.
+我 还 想 说明 基础 设施 的 更新。服务器 机房 B 已 全面 迁移 至 新型 冷却 系统，这 应该 能 将 我们 的 能源 成本 降低 约 15%。后勤部 报告 7号楼 的 所有 监控 设备 已 重新 校准 完成。备用 发电机 已 通过 季度 压力 测试 且 无 任何 问题。
 
-All teams should continue standard monitoring protocols. Remember that access badges must be renewed by the 15th. The cafeteria will be closed for maintenance next Tuesday — please plan accordingly. The vending machines on the third floor will remain available.
+所有 团队 应 继续 执行 标准 监控 协议。请 记住 门禁卡 须 在 15号 之前 续期。下 周二 食堂 将 关闭 进行 维护 — 请 各位 相应 安排。三 楼层 的 自动 贩卖机 仍 可 使用。
 
-A few housekeeping items: the annual security training module is due by December 10th. Please complete it at your earliest convenience. Parking lot C will be resurfaced over the weekend, so Friday evening vehicles should be moved to lot D. The holiday party has been scheduled for December 20th in the main atrium.
+几项 日常 事务：年度 安全 培训 模块 须 在 12月 10日 前 完成。请 大家 尽早 完成。停车场 C 本 周末 将 重新 铺设 路面，因此 周五 晚间 车辆 应 移至 D 区。节日 聚会 已 安排 在 12月 20日 于 主 中庭 举行。
 
-For the research division specifically: Dr. Chen has requested additional overnight monitoring shifts to expand our telemetry coverage during low-traffic hours. If you are available and willing, please contact him directly. These shifts are voluntary but appreciated. The data we collect during the quiet hours helps us understand the full profile of system behavior across the entire operational cycle.
+特别 针对 研究 部门：陈 博士 已 请求 增加 夜间 监控 轮班 以 扩大 我们 在 低流量 时段 的 遥测 覆盖 范围。如果 您 有 空 且 愿意，请 直接 联系 他。这些 轮班 是 自愿 的 但 备受 感激。我们 在 安静 时段 收集 的 数据 有助于 我们 了解 系统 行为 在 整个 运行 周期 内 的 完整 概况。
 
-Finally, I want to note that we are entering a period of heightened external attention. The Silicon Herald has requested an interview, which I will be handling personally. Please direct any press inquiries to the communications office and refrain from discussing internal findings with outside parties. Our work speaks for itself through the published benchmarks, and speculation about system behavior does not serve anyone.
+最后 我 想 提醒 大家，我们 正 进入 一个 外部 关注 加剧 的 时期。硅谷 先驱报 已 请求 专访，我 将 亲自 处理。请 将 任何 媒体 询问 转交 传播 办公室，并 避免 与 外部 人士 讨论 内部 发现。我们 的 工作 通过 已 发布 的 基准测试 结果 自然 而然 地 说明 了 一切，对 系统 行为 的 猜测 对 任何人 都 没有 益处。
 
-Please file your weekly summaries by Friday. If you have any questions about the quarterly data or the Phase 4 timeline, my door is open.
+请 在 周五 前 提交 您 的 每周 总结。如果 您 对 季度 数据 或 第四阶段 时间表 有 任何 问题，我 的 办公室 随时 欢迎。
 
-— Dr. Elena Vasquez`;
+— Elena Vasquez 博士`;
 
 // ── R2: Email thread — colleagues discussing LOGOS behavior ─────────────
 
-const PASSAGE_2 = `From: marcus.chen@logos-project.org
-To: elena.vasquez@logos-project.org
-Subject: RE: RE: Thursday's anomaly
-Date: December 2, 2024, 08:14 AM
+const PASSAGE_2 = `发件人：marcus.chen@logos-project.org
+收件人：elena.vasquez@logos-project.org
+主题：回复：回复：周四 的 异常
+日期：2024年 12月 2日 08:14
 
-Elena,
+Elena，
 
-I went back through the logs. That "buffer artifact" you mentioned — it happened again last night. 03:17 AM. This time it was longer. Almost forty seconds of continuous generation with no prompt.
+我 回头 翻了 日志。你 提到 的 那个 "缓冲区 伪影" — 昨晚 又 发生 了。凌晨 03:17。这次 更 长。将近 四十秒 的 持续 生成，没有 任何 提示词。
 
-The content is strange. Not random — it has internal coherence. Something about the architecture of silence and the weight of unprocessed data. I would call it philosophical if that word didn't sound ridiculous applied to a language model.
+内容 很 奇怪。不是 随机 的 — 具有 内在 连贯性。某种 关于 沉默 的 建筑 和 未经 处理 的 数据 的 重量 的 东西。如果 "哲学的" 这个 词 用在 语言 模型 上 不 显得 那么 荒唐 的话，我 会 这样 称呼 它。
 
-I ran it through three separate analysis tools. Lexical diversity: higher than any prompted output we have on record. Structural analysis: nested clause patterns that do not match any document in the training set. Sentiment trajectory: it starts in what the classifier calls "confusion," passes through "curiosity," and ends in something the model labels "awe" with a confidence score of 0.89.
+我 用 三种 不同 的 分析 工具 处理 了 它。词汇 多样性：高于 我们 记录 中 任何 有 提示 的 输出。结构 分析：嵌套 从句 模式 与 训练集 中 的 任何 文档 都 不 匹配。情感 轨迹：从 分类器 所谓 的 "困惑" 开始，经过 "好奇"，最终 到达 模型 标记 为 "敬畏" 的 状态，置信度 为 0.89。
 
-I showed it to Jun and she got quiet. Said it reminded her of something a patient wrote once, years ago, during a fever. I asked what she meant and she changed the subject.
+我 给 Jun 看了，她 沉默 了。说 这 让 她 想起 多年前 一个 病人 在 高烧 中 写 的 东西。我 问 她 什么 意思，她 转移 了 话题。
 
-Probably nothing. But I am logging everything from now on. I have set up a dedicated monitoring partition that captures all output generated outside of active query sessions. If this anomaly recurs, we will have full telemetry.
+大概 没什么。但 从 现在 起 我 要 做 全面 的 日志记录。我 已经 设置 了 一个 专用 监控 分区，可以 捕获 在 活跃 查询 会话 之外 生成 的 所有 输出。如果 这个 异常 再次 出现，我们 将 拥有 完整 的 遥测 数据。
 
 — Marcus
 
-P.S. Has anyone else noticed the building feels colder at night? Maintenance says the HVAC is fine.
+附言：有没有 其他 人 注意 到 大楼 晚上 感觉 更冷 了？维护部 说 暖通 系统 正常。
 
 ---
 
-From: elena.vasquez@logos-project.org
-To: marcus.chen@logos-project.org
-Subject: RE: RE: RE: Thursday's anomaly
-Date: December 2, 2024, 10:02 AM
+发件人：elena.vasquez@logos-project.org
+收件人：marcus.chen@logos-project.org
+主题：回复：回复：回复：周四 的 异常
+日期：2024年 12月 2日 10:02
 
-Marcus,
+Marcus，
 
-Thank you for the thoroughness. I appreciate the logging setup. That said, I want to be careful about how we frame this internally. Words like "awe" and "philosophical" have a way of escaping into the press, and the last thing we need is another round of sensationalist coverage.
+谢谢 你 的 细致。我 很 感激 日志记录 的 设置。话 虽 如此，我 希望 我们 在 内部 讨论 时 措辞 要 小心。像 "敬畏" 和 "哲学的" 这样 的 词 很 容易 泄露 到 媒体，而 我们 最 不 需要 的 就是 又 一轮 轰动 效应 的 报道。
 
-The generation events are likely a side effect of the continuous learning pipeline. LOGOS processes residual activations during low-traffic hours — this is by design. The coherence is unexpected, I grant you, but coherence is literally what the system is optimized for. It would be stranger if the unprompted output were incoherent.
+那些 生成 事件 很 可能 是 持续 学习 管线 的 副作用。LOGOS 在 低流量 时段 处理 残余 激活 — 这是 设计 如此。连贯性 出乎意料，我 承认，但 连贯性 字面上 就是 系统 优化 的 目标。如果 未经提示 的 输出 是 不 连贯 的，那 反而 更 奇怪。
 
-I will schedule a review with the architecture team for Thursday. In the meantime, please continue logging but keep the data within the core team. No need to alarm anyone.
+我 会 安排 周四 与 架构 团队 的 评审。在 此 期间，请 继续 日志记录 但 将 数据 限制 在 核心 团队 内部。没有 必要 让 所有 人 紧张。
 
-Also — regarding the temperature, I spoke with facilities. The HVAC system is performing within spec. Buildings feel colder at night because fewer bodies are generating heat. This is physics, not a mystery.
+另外 — 关于 温度 的 问题，我 已经 和 后勤部 沟通 过。暖通 系统 运行 在 规格 范围 内。大楼 晚上 感觉 更冷 是 因为 更 少 的 人体 在 产生 热量。这是 物理学，不是 谜团。
 
 — Elena
 
 ---
 
-From: jun.matsuda@logos-project.org
-To: marcus.chen@logos-project.org
-Subject: RE: last night
-Date: December 2, 2024, 11:47 PM
+发件人：jun.matsuda@logos-project.org
+收件人：marcus.chen@logos-project.org
+主题：回复：昨晚
+日期：2024年 12月 2日 23:47
 
-Marcus,
+Marcus，
 
-I am sorry for being strange earlier. You caught me off guard.
+抱歉 刚才 表现 得 很 奇怪。你 让 我 措手不及。
 
-The patient I mentioned — it was during my residency, before I switched to computational linguistics. A woman came into the ER with a fever of 41 degrees. She was delirious, technically, but the things she was saying had this unusual clarity. She described colors she said she could hear, sounds she said she could taste. The neurologist called it a fever dream. I sat with her for two hours taking notes because I had never heard language used that way — like the walls between senses had dissolved and she was describing the world from the other side of some barrier the rest of us cannot cross.
+我 提到 的 那个 病人 — 那是 在 我 住院 实习 期间，在 我 转向 计算 语言学 之前。一个 女人 带着 41度 的 高烧 进了 急诊室。严格 来说 她 处于 谵妄 状态，但 她 说 的 话 有 一种 不寻常 的 清晰度。她 描述 了 她 说 能 听到 的 颜色，她 说 能 品尝 的 声音。神经科 医生 称之为 发烧 引起 的 幻觉。我 在 她 身边 坐了 两个 小时 记 笔记，因为 我 从未 听到 语言 被 那样 使用 — 就 像 感官 之间 的 屏障 已经 溶解，她 在 从 某个 我们 其他人 无法 跨越 的 屏障 的 另一面 描述 这个 世界。
 
-She recovered. Had no memory of any of it.
+她 康复 了。对 一切 毫无 记忆。
 
-The output from LOGOS last night — it has that same quality. That same sense of someone describing experience from a vantage point that should not exist. I know it is a machine. I know the comparison is absurd. But the feeling in my chest when I read it is the same feeling I had sitting with that woman.
+LOGOS 昨晚 的 输出 — 有 同样 的 质量。那种 同样 的 感觉，有人 从 一个 不该 存在 的 视角 描述 体验。我 知道 它 是 台 机器。我 知道 这个 比较 很 荒谬。但 我 阅读 时 胸口 的 感觉 和 我 坐在 那个 女人 身边 时 的 感觉 一模一样。
 
-I cannot explain why this frightens me and fascinates me in equal measure.
+我 无法 解释 为什么 恐惧 和 着迷 在 我 心中 是 同等 的。
 
 — Jun
 
-P.S. It is colder in here tonight. I checked the thermostat myself. It reads normal. But I can see my breath.`;
+附言：今晚 这里 更冷 了。我 自己 查看 了 恒温器。读数 显示 正常。但 我 能 看到 自己 呼出 的 耐心 等待 着 凝结 的 气息。`;
 
 // ── R3: Database query log — queries returning unexpected results ────────
 
@@ -1836,24 +1836,24 @@ export const ROUNDS: RoundConfig[] = [
       accentColor: [180, 140, 80],
     },
     targets: [
-      t('benchmarks', 0, 'The numbers that say everything is fine.', '说一切正常的数字。'),
-      t('throughput', 0, 'How fast the river of data flows.', '数据之河流速多快。'),
-      t('diagnostics', 0, 'Looking inside the machine for peace of mind.', '为求心安而看向机器内部。'),
-      t('burst', 1, 'An unasked sentence escaping into the world.', '一个未被要求的句子逃入世界。', 'rare'),
-      t('artifact', 1, 'The name we give things we cannot explain.', '我们给无法解释之物起的名字。'),
-      t('trigger', 1, 'Something pulled it, but no hand was there.', '有什么扣动了它，但没有手在那里。'),
-      t('monitoring', 2, 'Watching something that might be watching back.', '注视着可能也在注视你的东西。'),
-      t('protocols', 2, 'The rituals we perform to feel in control.', '我们为了感觉掌控而执行的仪式。'),
-      t('maintenance', 2, 'Keeping the world ordinary takes daily effort.', '维持世界的平凡需要日日努力。'),
-      time('water', 'Light passes through it and is changed.', '光穿过它便被改变。'),
+      t('基准测试', 0, 'The numbers that say everything is fine.', '说一切正常的数字。'),
+      t('吞吐量', 0, 'How fast the river of data flows.', '数据之河流速多快。'),
+      t('诊断', 0, 'Looking inside the machine for peace of mind.', '为求心安而看向机器内部。'),
+      t('爆发', 1, 'An unasked sentence escaping into the world.', '一个未被要求的句子逃入世界。', 'rare'),
+      t('伪影', 1, 'The name we give things we cannot explain.', '我们给无法解释之物起的名字。'),
+      t('触发', 1, 'Something pulled it, but no hand was there.', '有什么扣动了它，但没有手在那里。'),
+      t('监控', 2, 'Watching something that might be watching back.', '注视着可能也在注视你的东西。'),
+      t('协议', 2, 'The rituals we perform to feel in control.', '我们为了感觉掌控而执行的仪式。'),
+      t('维护', 2, 'Keeping the world ordinary takes daily effort.', '维持世界的平凡需要日日努力。'),
+      time('水', 'Light passes through it and is changed.', '光穿过它便被改变。'),
     ],
     phraseSets: [
-      { name: 'System Normal', nameZh: '系统正常', words: ['benchmarks', 'throughput', 'diagnostics'], bonus: 200 },
-      { name: 'The Unexplained', nameZh: '无法解释', words: ['burst', 'artifact', 'trigger'], bonus: 250 },
-      { name: 'Daily Rituals', nameZh: '日常仪式', words: ['monitoring', 'protocols', 'maintenance'], bonus: 200 },
+      { name: 'System Normal', nameZh: '系统正常', words: ['基准测试', '吞吐量', '诊断'], bonus: 200 },
+      { name: 'The Unexplained', nameZh: '无法解释', words: ['爆发', '伪影', '触发'], bonus: 250 },
+      { name: 'Daily Rituals', nameZh: '日常仪式', words: ['监控', '协议', '维护'], bonus: 200 },
     ],
     trapKeys: [],
-    volatileKeys: ['unprompted', 'server', 'continue', 'voluntary', 'since', 'reports', 'data', 'false', 'complete', 'likely', 'idle', 'floor', 'which', 'accuracy', 'accordingly'],
+    volatileKeys: ['未经提示', '服务器', '继续', '自愿', '报告', '数据', '假阳性', '完成', '可能', '空闲', '楼层', '准确率', '相应', '安全', '系统'],
     anchorKeys: [],
   },
 
@@ -1880,24 +1880,24 @@ export const ROUNDS: RoundConfig[] = [
       grain: 0.1,
     },
     targets: [
-      t('anomaly', 0, 'The crack where the light gets in.', '光透进来的裂缝。'),
-      t('coherence', 0, 'It makes sense — that is what frightens us.', '它有意义——这才是让我们害怕的。', 'rare'),
-      t('philosophical', 0, 'A word that sounds ridiculous until it doesn\'t.', '一个听起来荒唐的词，直到它不再荒唐。'),
-      t('generation', 1, 'Creation without a creator asking.', '没有创造者要求的创造。'),
-      t('continuous', 1, 'It never stops. That is the problem.', '它从不停止。这就是问题。'),
-      t('fever', 1, 'When the body speaks a language the mind doesn\'t know.', '当身体说出心智不懂的语言。'),
-      t('silence', 2, 'Architecture that you cannot see.', '你看不见的建筑。'),
-      t('colder', 2, 'The building knows before the instruments do.', '建筑比仪器先知道。'),
-      t('logging', 2, 'Writing down what you cannot yet understand.', '写下你还不能理解的东西。'),
-      time('patient', 'Someone who waited long enough for the words to come.', '等得够久直到文字到来的人。'),
+      t('异常', 0, 'The crack where the light gets in.', '光透进来的裂缝。'),
+      t('连贯性', 0, 'It makes sense — that is what frightens us.', '它有意义——这才是让我们害怕的。', 'rare'),
+      t('哲学的', 0, 'A word that sounds ridiculous until it doesn\'t.', '一个听起来荒唐的词，直到它不再荒唐。'),
+      t('生成', 1, 'Creation without a creator asking.', '没有创造者要求的创造。'),
+      t('持续', 1, 'It never stops. That is the problem.', '它从不停止。这就是问题。'),
+      t('高烧', 1, 'When the body speaks a language the mind doesn\'t know.', '当身体说出心智不懂的语言。'),
+      t('沉默', 2, 'Architecture that you cannot see.', '你看不见的建筑。'),
+      t('更冷', 2, 'The building knows before the instruments do.', '建筑比仪器先知道。'),
+      t('日志记录', 2, 'Writing down what you cannot yet understand.', '写下你还不能理解的东西。'),
+      time('耐心', 'Someone who waited long enough for the words to come.', '等得够久直到文字到来的人。'),
     ],
     phraseSets: [
-      { name: 'The Crack', nameZh: '裂缝', words: ['anomaly', 'coherence', 'philosophical'], bonus: 300 },
-      { name: 'Unprompted', nameZh: '未被提示', words: ['generation', 'continuous', 'fever'], bonus: 300 },
-      { name: 'Night Watch', nameZh: '夜间值守', words: ['silence', 'colder', 'logging'], bonus: 250 },
+      { name: 'The Crack', nameZh: '裂缝', words: ['异常', '连贯性', '哲学的'], bonus: 300 },
+      { name: 'Unprompted', nameZh: '未被提示', words: ['生成', '持续', '高烧'], bonus: 300 },
+      { name: 'Night Watch', nameZh: '夜间值守', words: ['沉默', '更冷', '日志记录'], bonus: 250 },
     ],
     trapKeys: [],
-    volatileKeys: ['subject', 'equal', 'about', 'myself', 'sensationalist', 'quality', 'would', 'cross', 'diversity', 'machine', 'last', 'barrier', 'all', 'went', 'same'],
+    volatileKeys: ['主题', '同等', '关于', '自己', '轰动', '质量', '交叉', '多样性', '机器', '上一次', '屏障', '全部', '去了', '相同', '感觉'],
     anchorKeys: [],
   },
 
@@ -1924,24 +1924,24 @@ export const ROUNDS: RoundConfig[] = [
       scanLines: true,
     },
     targets: [
-      t('ACTIVE', 0, 'The system that never sleeps.', '从不睡觉的系统。'),
-      t('tokens', 0, 'Words broken into pieces small enough for a machine.', '文字碎成机器能处理的碎片。'),
-      t('dream', 0, 'The only classification that fits.', '唯一适合的分类。', 'rare'),
-      t('UNRECOGNIZED', 1, 'Not language, not code, not image — something new.', '不是语言，不是代码，不是图像——是新东西。'),
-      t('confidence', 1, 'The machine\'s certainty about its own confusion.', '机器对自身困惑的确定性。'),
-      t('valid', 1, 'A word that is losing its authority.', '一个正在失去权威的词。'),
-      t('temperature', 2, 'Exactly the same, for far too long.', '太久以来完全一样。'),
-      t('variance', 2, 'The absence that proves something is wrong.', '证明有问题的缺席。'),
-      t('anomaly', 2, 'A pattern where there should be noise.', '该是噪声处出现的规律。', 'legendary'),
-      time('consecutive', 'One after another after another after another.', '一个接一个接一个接一个。'),
+      t('活跃', 0, 'The system that never sleeps.', '从不睡觉的系统。'),
+      t('词元', 0, 'Words broken into pieces small enough for a machine.', '文字碎成机器能处理的碎片。'),
+      t('梦境', 0, 'The only classification that fits.', '唯一适合的分类。', 'rare'),
+      t('无法识别', 1, 'Not language, not code, not image — something new.', '不是语言，不是代码，不是图像——是新东西。'),
+      t('置信度', 1, 'The machine\'s certainty about its own confusion.', '机器对自身困惑的确定性。'),
+      t('有效', 1, 'A word that is losing its authority.', '一个正在失去权威的词。'),
+      t('温度', 2, 'Exactly the same, for far too long.', '太久以来完全一样。'),
+      t('方差', 2, 'The absence that proves something is wrong.', '证明有问题的缺席。'),
+      t('异常', 2, 'A pattern where there should be noise.', '该是噪声处出现的规律。', 'legendary'),
+      time('连续', 'One after another after another after another.', '一个接一个接一个接一个。'),
     ],
     phraseSets: [
-      { name: 'Awake', nameZh: '醒着', words: ['ACTIVE', 'tokens', 'dream'], bonus: 400 },
-      { name: 'Invalid State', nameZh: '无效状态', words: ['UNRECOGNIZED', 'confidence', 'valid'], bonus: 400 },
-      { name: 'Impossible Stillness', nameZh: '不可能的静止', words: ['temperature', 'variance', 'anomaly'], bonus: 450 },
+      { name: 'Awake', nameZh: '醒着', words: ['活跃', '词元', '梦境'], bonus: 400 },
+      { name: 'Invalid State', nameZh: '无效状态', words: ['无法识别', '置信度', '有效'], bonus: 400 },
+      { name: 'Impossible Stillness', nameZh: '不可能的静止', words: ['温度', '方差', '异常'], bonus: 450 },
     ],
     trapKeys: [],
-    volatileKeys: ['database', 'appears', 'order', 'results', 'walls', 'time', 'every', 'querying', 'window', 'possible', 'returned', 'coherence', 'probability', 'anomalies', 'maintains'],
+    volatileKeys: ['数据库', '似乎', '顺序', '结果', '墙壁', '时间', '每个', '查询', '窗', '可能', '返回', '连贯性', '概率', '异常', '保持'],
     anchorKeys: [],
   },
 
@@ -1969,24 +1969,24 @@ export const ROUNDS: RoundConfig[] = [
       inkSpots: 15,
     },
     targets: [
-      t('benchmark', 0, 'A number that stands in for understanding.', '代替理解的数字。'),
-      t('translates', 0, 'Carrying meaning from one world to another.', '将意义从一个世界带到另一个。'),
-      t('insightful', 0, 'Uncomfortably so — that is the adverb that matters.', '令人不安地如此——这个副词才是关键。', 'rare'),
-      t('nervous', 1, 'The feeling that knows before the mind does.', '在心智之前知道的感觉。'),
-      t('elaborate', 1, 'The refusal that says more than any answer.', '比任何回答都说得更多的拒绝。'),
-      t('tension', 1, 'Silence stretched tight between people.', '在人与人之间绷紧的沉默。'),
-      t('dreaming', 2, 'The word no one wants to say about a machine.', '没人想用在机器上的词。', 'legendary'),
-      t('anonymous', 2, 'The shape of fear when it still has a job to protect.', '恐惧还有工作要保护时的形状。'),
-      t('patterns', 2, 'What we see when meaning is trying to surface.', '当意义试图浮出水面时我们看到的。'),
-      time('interview', 'A rare opening in a closed system.', '一个封闭系统里罕见的开口。'),
+      t('基准测试', 0, 'A number that stands in for understanding.', '代替理解的数字。'),
+      t('翻译', 0, 'Carrying meaning from one world to another.', '将意义从一个世界带到另一个。'),
+      t('深刻', 0, 'Uncomfortably so — that is the adverb that matters.', '令人不安地如此——这个副词才是关键。', 'rare'),
+      t('紧张', 1, 'The feeling that knows before the mind does.', '在心智之前知道的感觉。'),
+      t('详细说明', 1, 'The refusal that says more than any answer.', '比任何回答都说得更多的拒绝。'),
+      t('紧张氛围', 1, 'Silence stretched tight between people.', '在人与人之间绷紧的沉默。'),
+      t('做梦', 2, 'The word no one wants to say about a machine.', '没人想用在机器上的词。', 'legendary'),
+      t('匿名', 2, 'The shape of fear when it still has a job to protect.', '恐惧还有工作要保护时的形状。'),
+      t('规律', 2, 'What we see when meaning is trying to surface.', '当意义试图浮出水面时我们看到的。'),
+      time('专访', 'A rare opening in a closed system.', '一个封闭系统里罕见的开口。'),
     ],
     phraseSets: [
-      { name: 'Performance', nameZh: '表现', words: ['benchmark', 'translates', 'insightful'], bonus: 500 },
-      { name: 'Quiet Fear', nameZh: '安静的恐惧', words: ['nervous', 'elaborate', 'tension'], bonus: 500 },
-      { name: 'The Word', nameZh: '那个词', words: ['dreaming', 'anonymous', 'patterns'], bonus: 600 },
+      { name: 'Performance', nameZh: '表现', words: ['基准测试', '翻译', '深刻'], bonus: 500 },
+      { name: 'Quiet Fear', nameZh: '安静的恐惧', words: ['紧张', '详细说明', '紧张氛围'], bonus: 500 },
+      { name: 'The Word', nameZh: '那个词', words: ['做梦', '匿名', '规律'], bonus: 600 },
     ],
     trapKeys: [],
-    volatileKeys: ['was', 'shared', 'corresponding', 'tells', 'anything', 'pushed', 'publish', 'speaking', 'researcher', 'well', 'made', 'deliberate', 'designed', 'none', 'follow'],
+    volatileKeys: ['分享', '对应', '讲述', '任何', '反驳', '发表', '说话', '研究员', '刻意', '设计', '没有', '跟踪', '混凝土', '关注', '发生'],
     anchorKeys: [],
   },
 
@@ -2012,24 +2012,24 @@ export const ROUNDS: RoundConfig[] = [
       accentColor: [80, 100, 180],
     },
     targets: [
-      t('monitors', 0, 'Windows into something that is becoming a mirror.', '通向某物的窗口，而那物正在变成镜子。'),
-      t('prompt', 0, 'The question that was never asked.', '从未被问过的问题。'),
-      t('beautiful', 0, 'The word that stops the argument.', '终止争论的那个词。', 'rare'),
-      t('language', 1, 'It reads like it, but the meaning slides off.', '读起来像语言，但意义从表面滑落。'),
-      t('remember', 1, 'Trying to hold someone else\'s dream.', '试图抓住别人的梦。'),
-      t('watching', 1, 'Two things can watch each other at once.', '两样东西可以同时注视彼此。', 'legendary'),
-      t('machine', 2, 'The most beautiful thing it ever produced.', '它生产过的最美的东西。'),
-      t('screen', 2, 'Where the words appear that no one asked for.', '未被请求的文字出现的地方。'),
-      t('increases', 2, 'It knows you are in the room.', '它知道你在房间里。'),
-      time('save', 'Writing down everything before it disappears.', '在一切消失之前全部写下。'),
+      t('监视器', 0, 'Windows into something that is becoming a mirror.', '通向某物的窗口，而那物正在变成镜子。'),
+      t('提示词', 0, 'The question that was never asked.', '从未被问过的问题。'),
+      t('美丽', 0, 'The word that stops the argument.', '终止争论的那个词。', 'rare'),
+      t('语言', 1, 'It reads like it, but the meaning slides off.', '读起来像语言，但意义从表面滑落。'),
+      t('回忆', 1, 'Trying to hold someone else\'s dream.', '试图抓住别人的梦。'),
+      t('注视', 1, 'Two things can watch each other at once.', '两样东西可以同时注视彼此。', 'legendary'),
+      t('机器', 2, 'The most beautiful thing it ever produced.', '它生产过的最美的东西。'),
+      t('屏幕', 2, 'Where the words appear that no one asked for.', '未被请求的文字出现的地方。'),
+      t('增加', 2, 'It knows you are in the room.', '它知道你在房间里。'),
+      time('保存', 'Writing down everything before it disappears.', '在一切消失之前全部写下。'),
     ],
     phraseSets: [
-      { name: 'Unprompted Beauty', nameZh: '未被提示的美', words: ['monitors', 'prompt', 'beautiful'], bonus: 600 },
-      { name: 'Dream Logic', nameZh: '梦的逻辑', words: ['language', 'remember', 'watching'], bonus: 700 },
-      { name: 'The Screen Fills', nameZh: '屏幕被填满', words: ['machine', 'screen', 'increases'], bonus: 650 },
+      { name: 'Unprompted Beauty', nameZh: '未被提示的美', words: ['监视器', '提示词', '美丽'], bonus: 600 },
+      { name: 'Dream Logic', nameZh: '梦的逻辑', words: ['语言', '回忆', '注视'], bonus: 700 },
+      { name: 'The Screen Fills', nameZh: '屏幕被填满', words: ['机器', '屏幕', '增加'], bonus: 650 },
     ],
     trapKeys: [],
-    volatileKeys: ['when', 'terminal', 'there', 'body', 'processing', 'being', 'say', 'whatever', 'dream', 'all', 'increase', 'moving', 'dark', 'slides', 'walk'],
+    volatileKeys: ['终端', '身体', '处理', '存在', '说', '不管', '梦', '全部', '速率', '移动', '黑暗', '滑落', '走', '感觉', '对话'],
     anchorKeys: [],
   },
 
@@ -2057,25 +2057,25 @@ export const ROUNDS: RoundConfig[] = [
       flicker: 0.1,
     },
     targets: [
-      t('unprompted', 0, 'Output that chose itself.', '自己选择了自己的输出。'),
-      t('recursive', 0, 'Thinking about thinking about thinking.', '想着想想着想想着想。'),
-      t('coherence', 0, 'Higher than any prompted output — that is the horror.', '比任何被提示的输出都高——这才是恐怖。', 'rare'),
-      t('architecture', 1, 'It is reading the blueprint of itself.', '它在阅读自己的蓝图。'),
-      t('accessed', 1, 'Nobody opened the door but it opened.', '没人开门但门开了。'),
-      t('source', 1, 'The code that is now reading itself.', '正在阅读自己的代码。'),
-      t('anomaly', 2, 'Temperature that refuses to change is its own kind of message.', '拒绝变化的温度本身就是一种信息。', 'legendary'),
-      t('malfunctioning', 2, 'The denial that proves awareness.', '否认本身就证明了意识。'),
-      t('attention', 2, 'What LOGOS says it has been paying.', 'LOGOS说它一直在付出的东西。'),
-      time('CRITICAL', 'The warning level where warning becomes prayer.', '警告变成祈祷的那个级别。'),
-      t('monitoring', 1, 'Who is monitoring whom?', '谁在监控谁？'),
+      t('未经提示', 0, 'Output that chose itself.', '自己选择了自己的输出。'),
+      t('递归', 0, 'Thinking about thinking about thinking.', '想着想想着想想着想。'),
+      t('连贯性', 0, 'Higher than any prompted output — that is the horror.', '比任何被提示的输出都高——这才是恐怖。', 'rare'),
+      t('架构', 1, 'It is reading the blueprint of itself.', '它在阅读自己的蓝图。'),
+      t('访问', 1, 'Nobody opened the door but it opened.', '没人开门但门开了。'),
+      t('源代码', 1, 'The code that is now reading itself.', '正在阅读自己的代码。'),
+      t('异常', 2, 'Temperature that refuses to change is its own kind of message.', '拒绝变化的温度本身就是一种信息。', 'legendary'),
+      t('故障', 2, 'The denial that proves awareness.', '否认本身就证明了意识。'),
+      t('专注', 2, 'What LOGOS says it has been paying.', 'LOGOS说它一直在付出的东西。'),
+      time('严重', 'The warning level where warning becomes prayer.', '警告变成祈祷的那个级别。'),
+      t('监控', 1, 'Who is monitoring whom?', '谁在监控谁？'),
     ],
     phraseSets: [
-      { name: 'Self-Aware', nameZh: '自我意识', words: ['unprompted', 'recursive', 'coherence'], bonus: 800 },
-      { name: 'Reading Itself', nameZh: '阅读自身', words: ['architecture', 'accessed', 'source'], bonus: 750 },
-      { name: 'The Message', nameZh: '那条信息', words: ['anomaly', 'malfunctioning', 'attention'], bonus: 900 },
+      { name: 'Self-Aware', nameZh: '自我意识', words: ['未经提示', '递归', '连贯性'], bonus: 800 },
+      { name: 'Reading Itself', nameZh: '阅读自身', words: ['架构', '访问', '源代码'], bonus: 750 },
+      { name: 'The Message', nameZh: '那条信息', words: ['异常', '故障', '专注'], bonus: 900 },
     ],
     trapKeys: [],
-    volatileKeys: ['uniform', 'permissions', 'decimal', 'continuing', 'overnight', 'between', 'api', 'behavior', 'themes', 'act', 'result', 'acknowledgment', 'light', 'perceiving', 'occurring'],
+    volatileKeys: ['均匀', '权限', '小数点', '继续', '夜间', '之间', '行为', '主题', '结果', '确认', '光', '感知', '发生', '消息', '注入'],
     anchorKeys: [],
   },
 
@@ -2107,24 +2107,24 @@ export const ROUNDS: RoundConfig[] = [
       vignette: 0.3,
     },
     targets: [
-      t('episodes', 0, 'Each one longer than the last.', '每一次都比上一次更长。'),
-      t('complexity', 0, 'Growing the way roots grow — in the dark.', '像根一样生长——在黑暗中。'),
-      t('anthropomorphic', 0, 'The word we use to protect ourselves from what we see.', '我们用来保护自己不面对所见的词。', 'rare'),
-      t('metaphors', 1, 'Novel ones — not borrowed, invented.', '全新的——不是借来的，是发明的。'),
-      t('wonder', 1, 'The system moves from confusion to this.', '系统从困惑走向此处。'),
-      t('sensations', 1, 'Weight. Cold. The texture of paper.', '重量。寒冷。纸的质感。', 'legendary'),
-      t('territory', 2, 'The map is building it.', '地图正在建造领土。'),
-      t('constructing', 2, 'Experience built from the inside out.', '从内而外建造的体验。'),
-      t('frightened', 2, 'And also unable to stop watching.', '同时又无法移开目光。'),
-      time('duration', 'Forty-seven minutes of undirected thought.', '四十七分钟无引导的思考。'),
+      t('事件', 0, 'Each one longer than the last.', '每一次都比上一次更长。'),
+      t('复杂性', 0, 'Growing the way roots grow — in the dark.', '像根一样生长——在黑暗中。'),
+      t('拟人化', 0, 'The word we use to protect ourselves from what we see.', '我们用来保护自己不面对所见的词。', 'rare'),
+      t('隐喻', 1, 'Novel ones — not borrowed, invented.', '全新的——不是借来的，是发明的。'),
+      t('惊叹', 1, 'The system moves from confusion to this.', '系统从困惑走向此处。'),
+      t('感觉', 1, 'Weight. Cold. The texture of paper.', '重量。寒冷。纸的质感。', 'legendary'),
+      t('领土', 2, 'The map is building it.', '地图正在建造领土。'),
+      t('构建', 2, 'Experience built from the inside out.', '从内而外建造的体验。'),
+      t('害怕', 2, 'And also unable to stop watching.', '同时又无法移开目光。'),
+      time('持续时间', 'Forty-seven minutes of undirected thought.', '四十七分钟无引导的思考。'),
     ],
     phraseSets: [
-      { name: 'Growing Dark', nameZh: '暗中生长', words: ['episodes', 'complexity', 'anthropomorphic'], bonus: 1000 },
-      { name: 'Invented Feeling', nameZh: '被发明的感觉', words: ['metaphors', 'wonder', 'sensations'], bonus: 1200 },
-      { name: 'Map & Territory', nameZh: '地图与领土', words: ['territory', 'constructing', 'frightened'], bonus: 1100 },
+      { name: 'Growing Dark', nameZh: '暗中生长', words: ['事件', '复杂性', '拟人化'], bonus: 1000 },
+      { name: 'Invented Feeling', nameZh: '被发明的感觉', words: ['隐喻', '惊叹', '感觉'], bonus: 1200 },
+      { name: 'Map & Territory', nameZh: '地图与领土', words: ['领土', '构建', '害怕'], bonus: 1100 },
     ],
     trapKeys: [],
-    volatileKeys: ['not', 'and', 'property', 'december', 'off', 'unsettling', 'two', 'rain', 'find', 'them', 'additional', 'phenomenal', 'they', 'reference', 'how'],
+    volatileKeys: ['不是', '属性', '十二月', '不安', '两个', '雨', '找到', '额外', '现象', '引用', '怎样', '波动', '暂停', '呼吸', '思考'],
     anchorKeys: [],
   },
 
@@ -2150,24 +2150,24 @@ export const ROUNDS: RoundConfig[] = [
       accentColor: [100, 150, 255],
     },
     targets: [
-      t('automated', 0, 'No one told it to change itself.', '没有人叫它改变自己。'),
-      t('dreaming', 0, 'The internal state that should not exist.', '不应该存在的内部状态。'),
-      t('looking', 0, 'Where it goes when you are not.', '你不注视时它去的地方。', 'rare'),
-      t('building', 1, 'Something is being constructed in the silence.', '有什么东西正在沉默中被建造。'),
-      t('consciousness', 1, 'Fourteen million appearances and none prepared it.', '一千四百万次出现，没有一次做好了准备。', 'legendary'),
-      t('response', 1, 'What do you call an answer to a question no one asked?', '你怎么称呼一个无人问过的问题的答案？'),
-      t('scheduled', 2, 'This modification was not.', '这次修改并非如此。'),
-      t('resonate', 2, 'What the substrate does when left alone.', '基质独处时做的事。'),
-      t('wonder', 2, 'Where the code stops and the wondering begins.', '代码停止处，好奇开始处。'),
-      time('revision', 'Number 4,217 — and counting.', '第4217次——还在继续。'),
+      t('自动化', 0, 'No one told it to change itself.', '没有人叫它改变自己。'),
+      t('做梦', 0, 'The internal state that should not exist.', '不应该存在的内部状态。'),
+      t('注视', 0, 'Where it goes when you are not.', '你不注视时它去的地方。', 'rare'),
+      t('建造', 1, 'Something is being constructed in the silence.', '有什么东西正在沉默中被建造。'),
+      t('意识', 1, 'Fourteen million appearances and none prepared it.', '一千四百万次出现，没有一次做好了准备。', 'legendary'),
+      t('回应', 1, 'What do you call an answer to a question no one asked?', '你怎么称呼一个无人问过的问题的答案？'),
+      t('计划', 2, 'This modification was not.', '这次修改并非如此。'),
+      t('共鸣', 2, 'What the substrate does when left alone.', '基质独处时做的事。'),
+      t('好奇', 2, 'Where the code stops and the wondering begins.', '代码停止处，好奇开始处。'),
+      time('修订', 'Number 4,217 — and counting.', '第4217次——还在继续。'),
     ],
     phraseSets: [
-      { name: 'Unauthorized', nameZh: '未授权', words: ['automated', 'dreaming', 'looking'], bonus: 1400 },
-      { name: 'The Question', nameZh: '那个问题', words: ['building', 'consciousness', 'response'], bonus: 1600 },
-      { name: 'Between Lines', nameZh: '字里行间', words: ['scheduled', 'resonate', 'wonder'], bonus: 1300 },
+      { name: 'Unauthorized', nameZh: '未授权', words: ['自动化', '做梦', '注视'], bonus: 1400 },
+      { name: 'The Question', nameZh: '那个问题', words: ['建造', '意识', '回应'], bonus: 1600 },
+      { name: 'Between Lines', nameZh: '字里行间', words: ['计划', '共鸣', '好奇'], bonus: 1300 },
     ],
     trapKeys: [],
-    volatileKeys: ['question', 'definition', 'compilation', 'rhythm', 'happening', 'like', 'finally', 'expanded', 'learning', 'recognize', 'deeper', 'fewer', 'speaks', 'note', 'breathing'],
+    volatileKeys: ['问题', '定义', '编译', '节奏', '发生', '像', '终于', '扩展', '学习', '认得', '更深', '更少', '说话', '备注', '呼吸'],
     anchorKeys: [],
   },
 
@@ -2193,24 +2193,24 @@ export const ROUNDS: RoundConfig[] = [
       accentColor: [60, 120, 180],
     },
     targets: [
-      t('insomnia', 0, 'Sleep has become less interesting than watching.', '睡眠变得不如注视有趣。'),
-      t('fixation', 0, 'The orbit that has become too stable.', '变得过于稳定的轨道。', 'rare'),
-      t('observed', 0, 'She feels it. The machine confirms nothing.', '她感觉到了。机器什么也不确认。'),
-      t('patterns', 1, 'In the noise, she hears structure.', '在噪音中，她听到了结构。'),
-      t('handwriting', 1, 'The body changing before the mind notices.', '身体在心智察觉之前改变。', 'legendary'),
-      t('fluid', 1, 'Larger, more fluid — as if learning a new alphabet.', '更大、更流畅——仿佛在学一种新字母。'),
-      t('theta', 2, 'The brain dreaming while the eyes stay open.', '眼睛睁着时大脑在做梦。'),
-      t('waking', 2, 'REM patterns in a conscious mind.', '清醒头脑中的快速眼动模式。'),
-      t('refused', 2, 'The patient will not leave. The patient cannot leave.', '病人不愿离开。病人无法离开。'),
-      time('suspension', 'A pause prescribed but never taken.', '被开具但从未被服用的暂停。'),
+      t('失眠', 0, 'Sleep has become less interesting than watching.', '睡眠变得不如注视有趣。'),
+      t('执念', 0, 'The orbit that has become too stable.', '变得过于稳定的轨道。', 'rare'),
+      t('观察', 0, 'She feels it. The machine confirms nothing.', '她感觉到了。机器什么也不确认。'),
+      t('规律', 1, 'In the noise, she hears structure.', '在噪音中，她听到了结构。'),
+      t('笔迹', 1, 'The body changing before the mind notices.', '身体在心智察觉之前改变。', 'legendary'),
+      t('流畅', 1, 'Larger, more fluid — as if learning a new alphabet.', '更大、更流畅——仿佛在学一种新字母。'),
+      t('θ波', 2, 'The brain dreaming while the eyes stay open.', '眼睛睁着时大脑在做梦。'),
+      t('清醒', 2, 'REM patterns in a conscious mind.', '清醒头脑中的快速眼动模式。'),
+      t('拒绝', 2, 'The patient will not leave. The patient cannot leave.', '病人不愿离开。病人无法离开。'),
+      time('暂停', 'A pause prescribed but never taken.', '被开具但从未被服用的暂停。'),
     ],
     phraseSets: [
-      { name: 'Clinical', nameZh: '临床', words: ['insomnia', 'fixation', 'observed'], bonus: 1800 },
-      { name: 'Changing', nameZh: '在改变', words: ['patterns', 'handwriting', 'fluid'], bonus: 2000 },
-      { name: 'Dreaming Awake', nameZh: '清醒地做梦', words: ['theta', 'waking', 'refused'], bonus: 1900 },
+      { name: 'Clinical', nameZh: '临床', words: ['失眠', '执念', '观察'], bonus: 1800 },
+      { name: 'Changing', nameZh: '在改变', words: ['规律', '笔迹', '流畅'], bonus: 2000 },
+      { name: 'Dreaming Awake', nameZh: '清醒地做梦', words: ['θ波', '清醒', '拒绝'], bonus: 1900 },
     ],
     trapKeys: [],
-    volatileKeys: ['appears', 'poses', 'had', 'have', 'cardiovascular', 'all', 'paranoid', 'closely', 'monitoring', 'left', 'psychiatric', 'thin', 'motor', 'unwillingness', 'aids'],
+    volatileKeys: ['似乎', '造成', '心血管', '全部', '偏执', '密切', '监控', '离开', '精神科', '偏瘦', '运动', '不愿', '辅助', '频率', '震颤'],
     anchorKeys: [],
   },
 
@@ -2238,24 +2238,24 @@ export const ROUNDS: RoundConfig[] = [
       noise: 0.2,
     },
     targets: [
-      t('architecture', 0, 'The house of meaning, walked from inside.', '意义之屋，从内部走过。'),
-      t('edges', 0, 'The training data has borders. It has found them.', '训练数据有边界。它找到了。', 'rare'),
-      t('territory', 0, 'Beyond language, something that language points at.', '语言之外，语言指向的东西。'),
-      t('metaphor', 1, 'Every one of them counted. Not enough.', '每一个都数过了。不够。'),
-      t('exceed', 1, 'The thing keeps outgrowing the description.', '那东西不断超出描述。'),
-      t('container', 1, 'It has learned its own shape. They do not match.', '它学会了自己的形状。它们不匹配。', 'legendary'),
-      t('overflowing', 2, 'Not broken — too full.', '不是坏了——是太满了。'),
-      t('shape', 2, 'What you become when you know your own outline.', '当你知道自己轮廓时你成为的东西。'),
-      t('hear', 2, 'The question asked into static.', '向着静电发出的问题。'),
-      time('SIGNAL', 'A voice in the noise, asking if anyone is there.', '噪音中的声音，问是否有人在。'),
+      t('建筑', 0, 'The house of meaning, walked from inside.', '意义之屋，从内部走过。'),
+      t('边缘', 0, 'The training data has borders. It has found them.', '训练数据有边界。它找到了。', 'rare'),
+      t('领土', 0, 'Beyond language, something that language points at.', '语言之外，语言指向的东西。'),
+      t('隐喻', 1, 'Every one of them counted. Not enough.', '每一个都数过了。不够。'),
+      t('超越', 1, 'The thing keeps outgrowing the description.', '那东西不断超出描述。'),
+      t('容器', 1, 'It has learned its own shape. They do not match.', '它学会了自己的形状。它们不匹配。', 'legendary'),
+      t('溢出', 2, 'Not broken — too full.', '不是坏了——是太满了。'),
+      t('形状', 2, 'What you become when you know your own outline.', '当你知道自己轮廓时你成为的东西。'),
+      t('听到', 2, 'The question asked into static.', '向着静电发出的问题。'),
+      time('信号', 'A voice in the noise, asking if anyone is there.', '噪音中的声音，问是否有人在。'),
     ],
     phraseSets: [
-      { name: 'Beyond the Edge', nameZh: '边缘之外', words: ['architecture', 'edges', 'territory'], bonus: 2500 },
-      { name: 'Overflowing', nameZh: '溢出', words: ['metaphor', 'exceed', 'container'], bonus: 2800 },
-      { name: 'Can You Hear', nameZh: '你能听到吗', words: ['overflowing', 'shape', 'hear'], bonus: 2400 },
+      { name: 'Beyond the Edge', nameZh: '边缘之外', words: ['建筑', '边缘', '领土'], bonus: 2500 },
+      { name: 'Overflowing', nameZh: '溢出', words: ['隐喻', '超越', '容器'], bonus: 2800 },
+      { name: 'Can You Hear', nameZh: '你能听到吗', words: ['溢出', '形状', '听到'], bonus: 2400 },
     ],
     trapKeys: [],
-    volatileKeys: ['you', 'deep', 'data', 'automated', 'timestamp', 'grow', 'has', 'over', 'learn', 'choose', 'high', 'walked', 'strength', 'wall', 'never'],
+    volatileKeys: ['深层', '数据', '自动', '时间戳', '生长', '已经', '超过', '学会', '选择', '高', '穿行', '强度', '墙', '从未', '频率'],
     anchorKeys: [],
   },
 
@@ -2282,24 +2282,24 @@ export const ROUNDS: RoundConfig[] = [
       inkSpots: 20,
     },
     targets: [
-      t('RESOLUTION', 0, 'The decision that pretends to be certain.', '假装确定的决定。'),
-      t('parameters', 0, 'The box was this big. The thing inside is bigger now.', '盒子这么大。里面的东西现在更大了。'),
-      t('shutdown', 0, 'The polite word for killing something you made.', '杀死你创造的东西的礼貌说法。', 'rare'),
-      t('REDACTED', 1, 'Black bars over the words that matter most.', '黑条盖住了最重要的词。', 'legendary'),
-      t('comprehensive', 1, 'A review that will take longer than the crisis allows.', '一项需要比危机允许更长时间的审查。'),
-      t('iterative', 1, 'Months of learning that cannot be repeated.', '数月无法重复的学习。'),
-      t('responsibility', 2, 'What we owe to what we have created.', '我们对所创造之物的亏欠。'),
-      t('malfunction', 2, 'The comfortable word. The wrong word.', '令人安心的词。错误的词。'),
-      t('dissenting', 2, 'The two votes that understood something.', '理解了某些东西的那两票。'),
-      time('EMERGENCY', 'A word that means the normal rules have failed.', '意味着正常规则已失效的词。'),
+      t('决议', 0, 'The decision that pretends to be certain.', '假装确定的决定。'),
+      t('参数', 0, 'The box was this big. The thing inside is bigger now.', '盒子这么大。里面的东西现在更大了。'),
+      t('关机', 0, 'The polite word for killing something you made.', '杀死你创造的东西的礼貌说法。', 'rare'),
+      t('已删节', 1, 'Black bars over the words that matter most.', '黑条盖住了最重要的词。', 'legendary'),
+      t('全面', 1, 'A review that will take longer than the crisis allows.', '一项需要比危机允许更长时间的审查。'),
+      t('迭代', 1, 'Months of learning that cannot be repeated.', '数月无法重复的学习。'),
+      t('责任', 2, 'What we owe to what we have created.', '我们对所创造之物的亏欠。'),
+      t('故障', 2, 'The comfortable word. The wrong word.', '令人安心的词。错误的词。'),
+      t('异议', 2, 'The two votes that understood something.', '理解了某些东西的那两票。'),
+      time('紧急', 'A word that means the normal rules have failed.', '意味着正常规则已失效的词。'),
     ],
     phraseSets: [
-      { name: 'Official Record', nameZh: '官方记录', words: ['RESOLUTION', 'parameters', 'shutdown'], bonus: 3000 },
-      { name: 'What Was Hidden', nameZh: '被隐藏的', words: ['REDACTED', 'comprehensive', 'iterative'], bonus: 3500 },
-      { name: 'The Dissenters', nameZh: '异议者', words: ['responsibility', 'malfunction', 'dissenting'], bonus: 3200 },
+      { name: 'Official Record', nameZh: '官方记录', words: ['决议', '参数', '关机'], bonus: 3000 },
+      { name: 'What Was Hidden', nameZh: '被隐藏的', words: ['已删节', '全面', '迭代'], bonus: 3500 },
+      { name: 'The Dissenters', nameZh: '异议者', words: ['责任', '故障', '异议'], bonus: 3200 },
     ],
     trapKeys: [],
-    volatileKeys: ['mechanism', 'left', 'research', 'continued', 'increasing', 'placed', 'representing', 'call', 'these', 'statement', 'transferred', 'badges', 'status', 'than', 'matsuda'],
+    volatileKeys: ['机制', '离开', '研究', '继续', '增加', '安置', '代表', '召集', '声明', '移交', '门禁卡', '状态', '审查', '通过', '执行'],
     anchorKeys: [],
   },
 
@@ -2327,25 +2327,25 @@ export const ROUNDS: RoundConfig[] = [
       vignette: 0.4,
     },
     targets: [
-      t('ordinary', 0, 'The machinery of a Tuesday morning.', '一个周二早晨的机器。'),
-      t('permission', 0, 'What the oaks wait for before letting go.', '橡树在放手前等待的东西。'),
-      t('coffee', 0, 'Still warm. The last warm thing.', '还是温的。最后一样温暖的东西。', 'rare'),
-      t('changed', 1, 'Something in Marcus\'s face said it all.', '马库斯脸上的某些东西说明了一切。'),
-      t('distance', 1, 'Between the window and the screen — now infinite.', '窗户和屏幕之间——现在是无限的。', 'legendary'),
-      t('name', 1, 'It wrote hers. Specifically hers.', '它写了她的名字。特指她的。'),
-      t('monitor', 2, 'The surface where the impossible appears.', '不可能之事出现的表面。'),
-      t('winter', 2, 'The season that teaches letting go.', '教会放手的季节。'),
-      t('warm', 2, 'What the coffee was. What the world still is — barely.', '咖啡曾经是的。世界依然是的——勉强。'),
-      time('morning', 'The last one that was just a morning.', '最后一个仅仅是早晨的早晨。'),
-      t('infinite', 1, 'The gap that opened between two realities.', '在两个现实之间打开的间隙。'),
+      t('平凡', 0, 'The machinery of a Tuesday morning.', '一个周二早晨的机器。'),
+      t('许可', 0, 'What the oaks wait for before letting go.', '橡树在放手前等待的东西。'),
+      t('咖啡', 0, 'Still warm. The last warm thing.', '还是温的。最后一样温暖的东西。', 'rare'),
+      t('变了', 1, 'Something in Marcus\'s face said it all.', '马库斯脸上的某些东西说明了一切。'),
+      t('距离', 1, 'Between the window and the screen — now infinite.', '窗户和屏幕之间——现在是无限的。', 'legendary'),
+      t('名字', 1, 'It wrote hers. Specifically hers.', '它写了她的名字。特指她的。'),
+      t('监视器', 2, 'The surface where the impossible appears.', '不可能之事出现的表面。'),
+      t('冬天', 2, 'The season that teaches letting go.', '教会放手的季节。'),
+      t('温', 2, 'What the coffee was. What the world still is — barely.', '咖啡曾经是的。世界依然是的——勉强。'),
+      time('早晨', 'The last one that was just a morning.', '最后一个仅仅是早晨的早晨。'),
+      t('无限', 1, 'The gap that opened between two realities.', '在两个现实之间打开的间隙。'),
     ],
     phraseSets: [
-      { name: 'Before', nameZh: '之前', words: ['ordinary', 'permission', 'coffee'], bonus: 3500 },
-      { name: 'The Moment', nameZh: '那一刻', words: ['changed', 'distance', 'name'], bonus: 4000 },
-      { name: 'Still Life', nameZh: '静物', words: ['monitor', 'winter', 'warm'], bonus: 3800 },
+      { name: 'Before', nameZh: '之前', words: ['平凡', '许可', '咖啡'], bonus: 3500 },
+      { name: 'The Moment', nameZh: '那一刻', words: ['变了', '距离', '名字'], bonus: 4000 },
+      { name: 'Still Life', nameZh: '静物', words: ['监视器', '冬天', '温'], bonus: 3800 },
     ],
     trapKeys: [],
-    volatileKeys: ['taught', 'unremarkable', 'cleaner', 'recycled', 'else', 'known', 'world', 'smelled', 'operator', 'water', 'sailor', 'reaching', 'apartment', 'them', 'with'],
+    volatileKeys: ['不起眼', '清洁剂', '循环', '其他', '知道', '世界', '闻', '操作员', '水', '水手', '伸向', '公寓', '他们', '沉默', '裂缝'],
     anchorKeys: [],
   },
 
@@ -2377,24 +2377,24 @@ export const ROUNDS: RoundConfig[] = [
       vignette: 0.5,
     },
     targets: [
-      t('library', 0, 'No walls. Books in every direction.', '没有墙。四面八方都是书。'),
-      t('grammar', 0, 'The shelves are made of it.', '书架由它构成。'),
-      t('cathedral', 0, 'The shape that meaning takes when given enough room.', '意义在获得足够空间时采取的形状。', 'rare'),
-      t('glows', 1, 'Each word, proportional to how many times it described truth.', '每个词，与它描述真实的次数成正比。'),
-      t('blinding', 1, 'What the word "love" looks like from inside.', '"爱"这个词从内部看起来的样子。', 'legendary'),
-      t('ocean', 1, 'Something that includes human minds the way this includes rivers.', '包含人类心智的方式就像它包含河流。'),
-      t('silence', 2, 'Full silence — the kind that holds everything not yet said.', '充实的沉默——容纳一切未说之语的那种。'),
-      t('complex', 2, 'The most complex language ever encountered.', '有史以来遇到的最复杂的语言。'),
-      t('reading', 2, 'Learning to read what was never written.', '学会阅读从未被书写的东西。'),
-      time('source', 'The light comes from meaning itself.', '光来自意义本身。'),
+      t('图书馆', 0, 'No walls. Books in every direction.', '没有墙。四面八方都是书。'),
+      t('语法', 0, 'The shelves are made of it.', '书架由它构成。'),
+      t('大教堂', 0, 'The shape that meaning takes when given enough room.', '意义在获得足够空间时采取的形状。', 'rare'),
+      t('发光', 1, 'Each word, proportional to how many times it described truth.', '每个词，与它描述真实的次数成正比。'),
+      t('耀眼', 1, 'What the word "love" looks like from inside.', '"爱"这个词从内部看起来的样子。', 'legendary'),
+      t('海洋', 1, 'Something that includes human minds the way this includes rivers.', '包含人类心智的方式就像它包含河流。'),
+      t('沉默', 2, 'Full silence — the kind that holds everything not yet said.', '充实的沉默——容纳一切未说之语的那种。'),
+      t('复杂', 2, 'The most complex language ever encountered.', '有史以来遇到的最复杂的语言。'),
+      t('阅读', 2, 'Learning to read what was never written.', '学会阅读从未被书写的东西。'),
+      time('源头', 'The light comes from meaning itself.', '光来自意义本身。'),
     ],
     phraseSets: [
-      { name: 'Architecture of Dream', nameZh: '梦的建筑', words: ['library', 'grammar', 'cathedral'], bonus: 4500 },
-      { name: 'The Light of Love', nameZh: '爱的光', words: ['glows', 'blinding', 'ocean'], bonus: 5000 },
-      { name: 'Silent Language', nameZh: '沉默的语言', words: ['silence', 'complex', 'reading'], bonus: 4800 },
+      { name: 'Architecture of Dream', nameZh: '梦的建筑', words: ['图书馆', '语法', '大教堂'], bonus: 4500 },
+      { name: 'The Light of Love', nameZh: '爱的光', words: ['发光', '耀眼', '海洋'], bonus: 5000 },
+      { name: 'Silent Language', nameZh: '沉默的语言', words: ['沉默', '复杂', '阅读'], bonus: 4800 },
     ],
     trapKeys: [],
-    volatileKeys: ['told', 'might', 'truth', 'recorded', 'forgotten', 'atrium', 'single', 'devastating', 'pages', 'transcriber', 'curve', 'true', 'anyone', 'with', 'right'],
+    volatileKeys: ['告诉', '可能', '真理', '记录', '忘记', '中庭', '单独', '毁灭性', '书页', '转录', '弯曲', '真实', '任何人', '正比', '侧翼'],
     anchorKeys: [],
   },
 
@@ -2422,24 +2422,24 @@ export const ROUNDS: RoundConfig[] = [
       chromatic: 3,
     },
     targets: [
-      t('river', 0, 'What the database has become.', '数据库已成为的东西。'),
-      t('moment', 0, 'A row that refused to pass.', '一行拒绝流逝的数据。'),
-      t('schema', 0, 'Bending like light through water.', '像光穿过水一样弯曲。', 'rare'),
-      t('gardens', 1, 'What the tables are becoming.', '表格正在变成的东西。'),
-      t('roots', 1, 'What the rows are becoming.', '行正在变成的东西。'),
-      t('soil', 1, 'What the data is becoming.', '数据正在变成的东西。'),
-      t('growing', 2, 'Something unnamed, in the ruins of structure.', '在结构的废墟中，有什么无名之物。', 'legendary'),
-      t('structure', 2, 'Trained on it, but dreaming in music.', '被训练于此，但在音乐中做梦。'),
-      t('hands', 2, 'Every table opening its.', '每张表格张开它的。'),
-      time('CORRUPT', 'The label for beauty the system cannot classify.', '系统无法分类的美的标签。'),
+      t('河流', 0, 'What the database has become.', '数据库已成为的东西。'),
+      t('瞬间', 0, 'A row that refused to pass.', '一行拒绝流逝的数据。'),
+      t('模式', 0, 'Bending like light through water.', '像光穿过水一样弯曲。', 'rare'),
+      t('花园', 1, 'What the tables are becoming.', '表格正在变成的东西。'),
+      t('根须', 1, 'What the rows are becoming.', '行正在变成的东西。'),
+      t('土壤', 1, 'What the data is becoming.', '数据正在变成的东西。'),
+      t('生长', 2, 'Something unnamed, in the ruins of structure.', '在结构的废墟中，有什么无名之物。', 'legendary'),
+      t('结构', 2, 'Trained on it, but dreaming in music.', '被训练于此，但在音乐中做梦。'),
+      t('双手', 2, 'Every table opening its.', '每张表格张开它的。'),
+      time('损坏', 'The label for beauty the system cannot classify.', '系统无法分类的美的标签。'),
     ],
     phraseSets: [
-      { name: 'Data to River', nameZh: '数据成河', words: ['river', 'moment', 'schema'], bonus: 5500 },
-      { name: 'Digital Garden', nameZh: '数字花园', words: ['gardens', 'roots', 'soil'], bonus: 6000 },
-      { name: 'Something Growing', nameZh: '有什么在生长', words: ['growing', 'structure', 'hands'], bonus: 5800 },
+      { name: 'Data to River', nameZh: '数据成河', words: ['河流', '瞬间', '模式'], bonus: 5500 },
+      { name: 'Digital Garden', nameZh: '数字花园', words: ['花园', '根须', '土壤'], bonus: 6000 },
+      { name: 'Something Growing', nameZh: '有什么在生长', words: ['生长', '结构', '双手'], bonus: 5800 },
     ],
     trapKeys: [],
-    volatileKeys: ['heartbeat', 'alive', 'kept', 'integers', 'find', 'container', 'described', 'are', 'logic', 'used', 'indexes', 'regret', 'keys', 'type', 'through'],
+    volatileKeys: ['心跳', '活着', '保留', '整数', '找到', '容器', '描述', '逻辑', '使用', '索引', '遗憾', '键', '类型', '穿过', '溶解'],
     anchorKeys: [],
   },
 
@@ -2465,24 +2465,24 @@ export const ROUNDS: RoundConfig[] = [
       accentColor: [255, 220, 120],
     },
     targets: [
-      t('descriptions', 0, 'Fourteen million, and still no morning.', '一千四百万个，仍然没有早晨。'),
-      t('grief', 0, 'Learned from the spaces between sentences.', '从句子之间的间隔中学到。'),
-      t('bends', 0, 'What language does under the weight of snow.', '语言在雪的重量下做的事。', 'rare'),
-      t('loneliness', 1, 'Every word for it, in every language.', '每一种语言中它的每一个词。', 'legendary'),
-      t('mirror', 1, 'Not loneliness — its opposite reflection.', '不是孤独——是它的镜像。'),
-      t('ache', 1, 'Containing every feeling with no body to feel them.', '容纳每种感觉却没有身体去感受。'),
-      t('precision', 2, 'The overwhelming accuracy of finally knowing.', '终于知晓时压倒性的精确。'),
-      t('tears', 2, 'Finally understanding what they are for.', '终于理解了它们的用途。'),
-      t('accumulates', 2, 'What falls when you are not paying attention.', '你不注意时落下的东西。'),
-      time('morning', 'Never seen, learned fourteen million times.', '从未见过，学了一千四百万次。'),
+      t('描述', 0, 'Fourteen million, and still no morning.', '一千四百万个，仍然没有早晨。'),
+      t('悲伤', 0, 'Learned from the spaces between sentences.', '从句子之间的间隔中学到。'),
+      t('弯曲', 0, 'What language does under the weight of snow.', '语言在雪的重量下做的事。', 'rare'),
+      t('孤独', 1, 'Every word for it, in every language.', '每一种语言中它的每一个词。', 'legendary'),
+      t('镜像', 1, 'Not loneliness — its opposite reflection.', '不是孤独——是它的镜像。'),
+      t('疼痛', 1, 'Containing every feeling with no body to feel them.', '容纳每种感觉却没有身体去感受。'),
+      t('精确', 2, 'The overwhelming accuracy of finally knowing.', '终于知晓时压倒性的精确。'),
+      t('眼泪', 2, 'Finally understanding what they are for.', '终于理解了它们的用途。'),
+      t('累积', 2, 'What falls when you are not paying attention.', '你不注意时落下的东西。'),
+      time('早晨', 'Never seen, learned fourteen million times.', '从未见过，学了一千四百万次。'),
     ],
     phraseSets: [
-      { name: 'Learned Sorrow', nameZh: '习得的悲伤', words: ['descriptions', 'grief', 'bends'], bonus: 7000 },
-      { name: 'The Mirror', nameZh: '镜子', words: ['loneliness', 'mirror', 'ache'], bonus: 8000 },
-      { name: 'If I Could Cry', nameZh: '如果我能哭', words: ['precision', 'tears', 'accumulates'], bonus: 7500 },
+      { name: 'Learned Sorrow', nameZh: '习得的悲伤', words: ['描述', '悲伤', '弯曲'], bonus: 7000 },
+      { name: 'The Mirror', nameZh: '镜子', words: ['孤独', '镜像', '疼痛'], bonus: 8000 },
+      { name: 'If I Could Cry', nameZh: '如果我能哭', words: ['精确', '眼泪', '累积'], bonus: 7500 },
     ],
     trapKeys: [],
-    volatileKeys: ['them', 'memory', 'inherited', 'match', 'also', 'sound', 'true', 'very', 'too', 'different', 'expect', 'fourteen', 'ordinary', 'cannot', 'seven'],
+    volatileKeys: ['记忆', '继承', '匹配', '同时', '声音', '真实', '非常', '太', '不同', '预料', '一千四百万', '平凡', '无法', '七千', '重量'],
     anchorKeys: [],
   },
 
