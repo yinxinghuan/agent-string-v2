@@ -7,7 +7,7 @@ import {
   PRESSURE_PER_COLLECT, PRESSURE_PER_SHATTER, PRESSURE_MAX,
   SURGE_SPEED_MULT, ANCHOR_TIME_BONUS, TRAP_TIME_PENALTY,
 } from '../constants';
-import { sfxCollect, sfxTrap, sfxShatter, sfxTime, sfxVolatile, sfxSurgeStart, sfxPipelineBase, sfxPipelineStreak, sfxPipelineGlyph, sfxPipelinePhrase, sfxPipelineFinal, resumeAudio } from '../utils/sounds';
+import { sfxCollect, sfxTrap, sfxShatter, sfxTime, sfxVolatile, sfxSurgeStart, sfxChain, sfxPipelineBase, sfxPipelineStreak, sfxPipelineGlyph, sfxPipelinePhrase, sfxPipelineFinal, resumeAudio } from '../utils/sounds';
 
 const GLITCH_CHARS = '!@#$%^&*~<>[]{}?|01_';
 function glitchText(text: string, seed: number): string {
@@ -343,6 +343,11 @@ export default function GameCanvas({
       // So pulseT grows at ~0.018 per frame = ~1.08/sec
       pulseTRef.current += dt * 1.08;
 
+      // Ensure canvas always fills viewport
+      if (canvas.width !== window.innerWidth || canvas.height !== window.innerHeight) {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
       const W = canvas.width;
       const H = canvas.height;
 
@@ -518,7 +523,12 @@ export default function GameCanvas({
         addBurst(cx, cy, burstColor, burstSize);
         if (mult >= 3) addBurst(cx, cy, burstColor, burstSize * 0.6);
         if (mult >= 7) { addBurst(cx, cy, [255, 255, 255], burstSize * 0.4); screenShakeRef.current = Math.min(0.5, mult * 0.04); }
-        if (entry.steps.length > 0) stepSoundForType(entry.steps[0]);
+        // Chain sound — pitch rises with streak
+        if (streak >= 2) {
+          sfxChain(streak);
+        } else if (entry.steps.length > 0) {
+          stepSoundForType(entry.steps[0]);
+        }
       }
 
       // Advance queue: when current entity expires, pop next one in

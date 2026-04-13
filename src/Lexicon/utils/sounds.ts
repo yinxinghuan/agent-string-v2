@@ -77,6 +77,17 @@ export function sfxPipelineFinal(): void {
   _tone(1568, 'sine', 0.12, 0.005, 0.4, 0.05);
 }
 
+// ── Chain reaction — pitch rises with streak count ───────────────────────────
+
+export function sfxChain(streak: number): void {
+  // Base pitch rises with streak: C5 → up chromatically
+  const base = 523 * Math.pow(1.06, Math.min(streak, 20));
+  _tone(base, 'sine', 0.14, 0.003, 0.25);
+  // Add shimmer overtone for high streaks
+  if (streak >= 5) _tone(base * 1.5, 'sine', 0.06, 0.003, 0.15, 0.02);
+  if (streak >= 10) _tone(base * 2, 'sine', 0.04, 0.003, 0.1, 0.04);
+}
+
 // ── Streak ───────────────────────────────────────────────────────────────────
 
 export function sfxStreak(count: number): void {
