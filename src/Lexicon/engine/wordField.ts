@@ -276,13 +276,27 @@ export function physicsStep(words: Word[], input: PhysicsInput): PhysicsResult {
       }
     }
 
-    // Volatile proximity
+    // Volatile proximity — COLLECTIBLE by finger, same as targets!
     if (pointerActive && w.meta.type === 'volatile') {
       const dx = w.x - pointerX;
       const dy = (w.y - scrollY) - pointerY;
       const d = Math.sqrt(dx * dx + dy * dy);
-      const bonus = d < COLLECT_R ? 1 - d / COLLECT_R : 0;
-      w.revealAlpha += (bonus - w.revealAlpha) * 0.4;
+      if (d < COLLECT_R) {
+        const bonus = 1 - d / COLLECT_R;
+        w.revealAlpha += (bonus - w.revealAlpha) * 0.5; // fast reveal
+        if (w.revealAlpha > COLLECT_ALPHA_THRESH) {
+          w.revealTimer += sec;
+          if (w.revealTimer >= COLLECT_TIME) {
+            w.collected = true;
+            collected.push(w);
+          }
+        } else {
+          w.revealTimer = Math.max(0, w.revealTimer - sec * 0.6);
+        }
+      } else {
+        w.revealAlpha += (0 - w.revealAlpha) * 0.35;
+        w.revealTimer = Math.max(0, w.revealTimer - sec * 0.6);
+      }
     }
 
     // Anchor words
