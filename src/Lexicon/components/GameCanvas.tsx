@@ -56,7 +56,7 @@ function spawnScoreEntity(entry: PipelineEntry, screenX: number, screenY: number
     multiplier,
     badges,
     age: 0,
-    maxAge: 0.9,  // quick cycle: appear → show → fade → next in queue
+    maxAge: 1.5,
     repelR: 140,
   };
 }
@@ -812,18 +812,24 @@ export default function GameCanvas({
           bx += BADGE_R * 2 + 6;
         }
 
-        // Score + multiplier as a single line: "+9 ×3"
-        const baseSize = se.multiplier >= 10 ? 72 : se.multiplier >= 5 ? 64 : se.multiplier >= 2 ? 58 : 48;
-        const scoreFontSize = baseSize;
         const tc = vis?.textColor ?? INK;
 
-        // Draw score
+        // Multiplier on top (small, monospace)
+        if (se.multiplier >= 2) {
+          ctx.font = `600 18px ${FONT_FAMILY}`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillStyle = `rgba(${tc[0]},${tc[1]},${tc[2]},${0.55 * alpha})`;
+          ctx.fillText(`×${se.multiplier}`, 0, -28);
+        }
+
+        // Score below (large, serif)
+        const scoreFontSize = se.multiplier >= 10 ? 64 : se.multiplier >= 5 ? 56 : se.multiplier >= 2 ? 50 : 42;
         ctx.font = `700 ${scoreFontSize}px ${SCORE_FONT}`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillStyle = `rgba(${tc[0]},${tc[1]},${tc[2]},${0.9 * alpha})`;
-        const scoreText = se.multiplier >= 2 ? `+${se.score}  ×${se.multiplier}` : `+${se.score}`;
-        ctx.fillText(scoreText, 0, 0);
+        ctx.fillText(`+${se.score}`, 0, 8);
 
         ctx.restore();
       }
