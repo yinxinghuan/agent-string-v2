@@ -349,8 +349,8 @@ export default function GameCanvas({
       for (const w of wordsRef.current) {
         const sy = w.y - scrollYRef.current;
         if (sy < -80) {
-          // Target words (non-volatile) stay collected permanently
-          if (w.collected && w.meta.type === 'target') continue;
+          // Target/time/anchor words stay collected permanently (one-time rewards)
+          if (w.collected && (w.meta.type === 'target' || w.meta.type === 'time' || w.meta.type === 'anchor')) continue;
           if (w.trapTriggered) continue;
           // Volatile/anchor/time words: reset and recycle for re-collection!
           w.collected = false;
