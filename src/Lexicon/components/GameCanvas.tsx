@@ -56,7 +56,7 @@ function spawnScoreEntity(entry: PipelineEntry, x: number, y: number, scrollY: n
     multiplier,
     badges,
     age: 0,
-    maxAge: 2.5,
+    maxAge: 1.2,
     repelR: 140,
   };
 }
@@ -500,10 +500,14 @@ export default function GameCanvas({
         const mult = streakStep ? streakStep.value : 1;
         const streak = mult >= 50 ? 15 : mult >= 30 ? 12 : mult >= 20 ? 10 : mult >= 12 ? 8 : mult >= 7 ? 6 : mult >= 5 ? 5 : mult >= 3 ? 4 : mult >= 2 ? 3 : 1;
         const entity = spawnScoreEntity(entry, cx, cy, scrollYRef.current, streak, mult);
+        // Limit max score entities to prevent performance death
+        if (scoreEntitiesRef.current.length >= 12) {
+          scoreEntitiesRef.current.shift(); // remove oldest
+        }
         scoreEntitiesRef.current.push(entity);
         // Burst scales with multiplier — bigger chains = bigger explosions!
         const burstSize = 40 + Math.min(mult * 8, 80);
-        const burstColor: [number, number, number] = mult >= 10 ? [255, 60, 60] : mult >= 5 ? [240, 180, 40] : mult >= 2 ? [100, 200, 120] : [60, 140, 80];
+        const burstColor: [number, number, number] = mult >= 10 ? [255, 220, 160] : mult >= 5 ? [220, 180, 60] : mult >= 2 ? [100, 200, 120] : [60, 140, 80];
         addBurst(cx, cy, burstColor, burstSize);
         if (mult >= 3) addBurst(cx, cy, burstColor, burstSize * 0.6);
         if (mult >= 7) { addBurst(cx, cy, [255, 255, 255], burstSize * 0.4); screenShakeRef.current = Math.min(0.5, mult * 0.04); }
@@ -806,23 +810,23 @@ export default function GameCanvas({
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
 
-        // Color escalates: gray → green → gold → red with multiplier
+        // Color escalates: subtle → green → gold → bright white-gold
         const tc = vis?.textColor ?? INK;
         if (se.multiplier >= 10) {
-          ctx.fillStyle = `rgba(240,60,60,${0.95 * alpha})`; // red = massive
+          ctx.fillStyle = `rgba(255,230,180,${0.95 * alpha})`; // champagne white = massive
         } else if (se.multiplier >= 5) {
-          ctx.fillStyle = `rgba(230,170,40,${0.95 * alpha})`; // gold = big
+          ctx.fillStyle = `rgba(220,180,60,${0.95 * alpha})`; // warm gold = big
         } else if (se.multiplier >= 2) {
-          ctx.fillStyle = `rgba(60,180,80,${0.9 * alpha})`; // green = growing
+          ctx.fillStyle = `rgba(80,180,100,${0.9 * alpha})`; // green = growing
         } else {
-          ctx.fillStyle = `rgba(${tc[0]},${tc[1]},${tc[2]},${0.7 * alpha})`; // normal = subtle
+          ctx.fillStyle = `rgba(${tc[0]},${tc[1]},${tc[2]},${0.75 * alpha})`; // normal
         }
         ctx.fillText(`+${se.score}`, 0, 8);
 
         // Show multiplier below the score when streak >= 2
         if (se.multiplier >= 2) {
           ctx.font = `600 ${Math.round(scoreFontSize * 0.35)}px ${FONT_FAMILY}`;
-          const multColor = se.multiplier >= 10 ? '240,80,80' : se.multiplier >= 5 ? '220,160,40' : '60,160,80';
+          const multColor = se.multiplier >= 10 ? '255,220,160' : se.multiplier >= 5 ? '210,170,50' : '70,170,90';
           ctx.fillStyle = `rgba(${multColor},${0.8 * alpha})`;
           ctx.fillText(`×${se.multiplier}`, 0, 8 + scoreFontSize * 0.4);
         }
