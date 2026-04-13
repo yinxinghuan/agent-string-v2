@@ -789,7 +789,7 @@ export default function GameCanvas({
         ctx.scale(scale, scale);
 
         // Badges (small circles above the score)
-        const badgeY = -44 - (se.badges.length > 3 ? 10 : 0);
+        const badgeY = -56 - (se.badges.length > 3 ? 10 : 0);
         const totalBadgeW = se.badges.length * (BADGE_R * 2 + 6) - 6;
         let bx = -totalBadgeW / 2 + BADGE_R;
         for (let bi = 0; bi < se.badges.length; bi++) {
@@ -829,15 +829,15 @@ export default function GameCanvas({
         ctx.textBaseline = 'middle';
         ctx.fillStyle = `rgba(${tc[0]},${tc[1]},${tc[2]},${0.9 * alpha})`;
 
-        // Multiplier on top, tight spacing
+        // Multiplier just above score, close together
         if (se.multiplier >= 2) {
-          ctx.font = `600 18px ${FONT_FAMILY}`;
-          ctx.fillText(`×${se.multiplier}`, 0, -scoreFontSize * 0.38);
+          ctx.font = `600 16px ${FONT_FAMILY}`;
+          ctx.fillText(`×${se.multiplier}`, 0, -scoreFontSize * 0.28);
         }
 
-        // Score below
+        // Score
         ctx.font = `700 ${scoreFontSize}px ${SCORE_FONT}`;
-        ctx.fillText(`+${se.score}`, 0, se.multiplier >= 2 ? 10 : 0);
+        ctx.fillText(`+${se.score}`, 0, se.multiplier >= 2 ? 14 : 0);
 
         ctx.restore();
       }
