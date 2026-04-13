@@ -814,22 +814,20 @@ export default function GameCanvas({
 
         const tc = vis?.textColor ?? INK;
 
-        // Multiplier on top (small, monospace)
-        if (se.multiplier >= 2) {
-          ctx.font = `600 18px ${FONT_FAMILY}`;
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-          ctx.fillStyle = `rgba(${tc[0]},${tc[1]},${tc[2]},${0.55 * alpha})`;
-          ctx.fillText(`×${se.multiplier}`, 0, -28);
-        }
-
-        // Score below (large, serif)
         const scoreFontSize = se.multiplier >= 10 ? 64 : se.multiplier >= 5 ? 56 : se.multiplier >= 2 ? 50 : 42;
-        ctx.font = `700 ${scoreFontSize}px ${SCORE_FONT}`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillStyle = `rgba(${tc[0]},${tc[1]},${tc[2]},${0.9 * alpha})`;
-        ctx.fillText(`+${se.score}`, 0, 8);
+
+        // Multiplier on top, tight spacing
+        if (se.multiplier >= 2) {
+          ctx.font = `600 18px ${FONT_FAMILY}`;
+          ctx.fillText(`×${se.multiplier}`, 0, -scoreFontSize * 0.38);
+        }
+
+        // Score below
+        ctx.font = `700 ${scoreFontSize}px ${SCORE_FONT}`;
+        ctx.fillText(`+${se.score}`, 0, se.multiplier >= 2 ? 10 : 0);
 
         ctx.restore();
       }
