@@ -314,21 +314,7 @@ export function physicsStep(words: Word[], input: PhysicsInput): PhysicsResult {
     }
   }
 
-  // Check volatile chain reactions for collected targets
-  const volatileTriggered: Word[] = [];
-  for (const cw of collected) {
-    for (const w of words) {
-      if (w.meta.type === 'volatile' && !w.collected && !w.shattered) {
-        const dx = w.x - cw.x;
-        const dy = w.y - cw.y;
-        const d = Math.sqrt(dx * dx + dy * dy);
-        if (d < 180) {
-          w.collected = true;
-          volatileTriggered.push(w);
-        }
-      }
-    }
-  }
-
-  return { collected, trapped, shattered, volatileTriggered };
+  // Chain reactions are handled by score entity repulsion in GameCanvas
+  // (staggered by distance for visible cascade effect)
+  return { collected, trapped, shattered, volatileTriggered: [] };
 }

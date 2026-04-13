@@ -622,8 +622,13 @@ export default function GameCanvas({
         let color: [number, number, number] = vis?.textColor ?? INK;
 
         if (w.collected) {
-          // Collected: show faded with check
-          alpha = 0.25;
+          // Target words: stay faded. Volatile: briefly flash then normal
+          if (w.meta.type === 'target') {
+            alpha = 0.2;
+          } else {
+            // Volatile/anchor/time: quick fade then back to normal on recycle
+            alpha = 0.35;
+          }
         } else if (w.shattered) {
           continue; // don't render
         } else if (w.trapTriggered) {
