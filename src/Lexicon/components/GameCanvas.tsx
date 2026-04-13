@@ -56,7 +56,7 @@ function spawnScoreEntity(entry: PipelineEntry, x: number, y: number, scrollY: n
     multiplier,
     badges,
     age: 0,
-    maxAge: 1.2,
+    maxAge: 2.5,
     repelR: 140,
   };
 }
@@ -810,23 +810,15 @@ export default function GameCanvas({
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
 
-        // Color escalates: subtle → green → gold → bright white-gold
+        // Score text color matches level text color
         const tc = vis?.textColor ?? INK;
-        if (se.multiplier >= 10) {
-          ctx.fillStyle = `rgba(255,230,180,${0.95 * alpha})`; // champagne white = massive
-        } else if (se.multiplier >= 5) {
-          ctx.fillStyle = `rgba(220,180,60,${0.95 * alpha})`; // warm gold = big
-        } else if (se.multiplier >= 2) {
-          ctx.fillStyle = `rgba(80,180,100,${0.9 * alpha})`; // green = growing
-        } else {
-          ctx.fillStyle = `rgba(${tc[0]},${tc[1]},${tc[2]},${0.75 * alpha})`; // normal
-        }
+        ctx.fillStyle = `rgba(${tc[0]},${tc[1]},${tc[2]},${0.9 * alpha})`;
         ctx.fillText(`+${se.score}`, 0, 8);
 
         // Show multiplier below the score when streak >= 2
         if (se.multiplier >= 2) {
           ctx.font = `600 ${Math.round(scoreFontSize * 0.35)}px ${FONT_FAMILY}`;
-          const multColor = se.multiplier >= 10 ? '255,220,160' : se.multiplier >= 5 ? '210,170,50' : '70,170,90';
+          const multColor = `${tc[0]},${tc[1]},${tc[2]}`;
           ctx.fillStyle = `rgba(${multColor},${0.8 * alpha})`;
           ctx.fillText(`×${se.multiplier}`, 0, 8 + scoreFontSize * 0.4);
         }
