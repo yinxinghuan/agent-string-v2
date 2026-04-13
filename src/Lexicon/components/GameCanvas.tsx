@@ -28,16 +28,18 @@ const BADGE_COLORS: Record<string, string> = {
 };
 
 interface ScoreEntity {
-  x: number;        // passage-space x (like word.x)
-  y: number;        // passage-space y (like word.y)
-  score: number;    // total score to display
+  x: number;
+  y: number;
+  score: number;
+  streak: number;     // current streak when this was spawned
+  multiplier: number; // streak multiplier applied
   badges: { label: string; color: string }[];
-  age: number;      // seconds alive
-  maxAge: number;   // total lifetime
-  repelR: number;   // repulsion radius (pushes words)
+  age: number;
+  maxAge: number;
+  repelR: number;
 }
 
-function spawnScoreEntity(entry: PipelineEntry, x: number, y: number, scrollY: number): ScoreEntity {
+function spawnScoreEntity(entry: PipelineEntry, x: number, y: number, scrollY: number, streak: number, multiplier: number): ScoreEntity {
   const badges: { label: string; color: string }[] = [];
   for (const step of entry.steps) {
     if (step.type === 'final') continue;
@@ -48,8 +50,10 @@ function spawnScoreEntity(entry: PipelineEntry, x: number, y: number, scrollY: n
   }
   return {
     x,
-    y: y + scrollY, // convert screen-y to passage-space
+    y: y + scrollY,
     score: entry.totalScore,
+    streak,
+    multiplier,
     badges,
     age: 0,
     maxAge: 2.5,
@@ -491,13 +495,18 @@ export default function GameCanvas({
         const word = wordsRef.current.find(w => w.id === entry.wordId);
         const cx = word ? word.x : W / 2;
         const cy = word ? (word.y - scrollYRef.current) : H * 0.4;
-        const entity = spawnScoreEntity(entry, cx, cy, scrollYRef.current);
+        // Extract streak multiplier from pipeline steps
+        const streakStep = entry.steps.find(s => s.type === 'streak');
+        const mult = streakStep ? streakStep.value : 1;
+        const streak = mult >= 50 ? 15 : mult >= 30 ? 12 : mult >= 20 ? 10 : mult >= 12 ? 8 : mult >= 7 ? 6 : mult >= 5 ? 5 : mult >= 3 ? 4 : mult >= 2 ? 3 : 1;
+        const entity = spawnScoreEntity(entry, cx, cy, scrollYRef.current, streak, mult);
         scoreEntitiesRef.current.push(entity);
-        // Burst explosion effect at spawn point
-        const burstColor: [number, number, number] = entry.totalScore >= 50 ? [200, 160, 40] : [60, 140, 80];
-        addBurst(cx, cy, burstColor, 70);
-        addBurst(cx, cy, burstColor, 40);
-        // Play sound
+        // Burst scales with multiplier — bigger chains = bigger explosions!
+        const burstSize = 40 + Math.min(mult * 8, 80);
+        const burstColor: [number, number, number] = mult >= 10 ? [255, 60, 60] : mult >= 5 ? [240, 180, 40] : mult >= 2 ? [100, 200, 120] : [60, 140, 80];
+        addBurst(cx, cy, burstColor, burstSize);
+        if (mult >= 3) addBurst(cx, cy, burstColor, burstSize * 0.6);
+        if (mult >= 7) { addBurst(cx, cy, [255, 255, 255], burstSize * 0.4); screenShakeRef.current = Math.min(0.5, mult * 0.04); }
         if (entry.steps.length > 0) stepSoundForType(entry.steps[0]);
       }
 
@@ -789,18 +798,34 @@ export default function GameCanvas({
           bx += BADGE_R * 2 + 6;
         }
 
-        // Big score number (no frame, just text)
-        // Score size scales with magnitude: bigger score = bigger text
-        const baseSize = 72;
-        const sizeBoost = Math.min(se.score / 50, 1) * 28; // up to +28px for 50+ scores
-        const fontSize = Math.round(baseSize + sizeBoost);
-        ctx.font = `700 ${fontSize}px ${SCORE_FONT}`;
-        // Score text color matches the level's text color for visibility
-        const tc = vis?.textColor ?? INK;
-        ctx.fillStyle = `rgba(${tc[0]},${tc[1]},${tc[2]},${0.9 * alpha})`;
+        // Score number — size and color escalate with multiplier
+        const baseSize = se.multiplier >= 10 ? 96 : se.multiplier >= 5 ? 84 : se.multiplier >= 2 ? 76 : 56;
+        const sizeBoost = Math.min(se.score / 80, 1) * 20;
+        const scoreFontSize = Math.round(baseSize + sizeBoost);
+        ctx.font = `700 ${scoreFontSize}px ${SCORE_FONT}`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText(`+${se.score}`, 0, 12);
+
+        // Color escalates: gray → green → gold → red with multiplier
+        const tc = vis?.textColor ?? INK;
+        if (se.multiplier >= 10) {
+          ctx.fillStyle = `rgba(240,60,60,${0.95 * alpha})`; // red = massive
+        } else if (se.multiplier >= 5) {
+          ctx.fillStyle = `rgba(230,170,40,${0.95 * alpha})`; // gold = big
+        } else if (se.multiplier >= 2) {
+          ctx.fillStyle = `rgba(60,180,80,${0.9 * alpha})`; // green = growing
+        } else {
+          ctx.fillStyle = `rgba(${tc[0]},${tc[1]},${tc[2]},${0.7 * alpha})`; // normal = subtle
+        }
+        ctx.fillText(`+${se.score}`, 0, 8);
+
+        // Show multiplier below the score when streak >= 2
+        if (se.multiplier >= 2) {
+          ctx.font = `600 ${Math.round(scoreFontSize * 0.35)}px ${FONT_FAMILY}`;
+          const multColor = se.multiplier >= 10 ? '240,80,80' : se.multiplier >= 5 ? '220,160,40' : '60,160,80';
+          ctx.fillStyle = `rgba(${multColor},${0.8 * alpha})`;
+          ctx.fillText(`×${se.multiplier}`, 0, 8 + scoreFontSize * 0.4);
+        }
 
         ctx.restore();
       }
