@@ -20,18 +20,19 @@ export const REDLINE_Y = 0.50;       // screen center — visual divider
 export const BASE_SCORE_COMMON = 20;
 export const BASE_SCORE_RARE = 50;
 export const BASE_SCORE_LEGENDARY = 120;
-export const VOLATILE_SCORE_MULT = 0.3;  // low base for volatile, but streak multiplier makes chains huge
+export const VOLATILE_SCORE_MULT = 0.15; // tiny base (3pts), but streak x20 = 60pts. Chains are everything.
 export const ANCHOR_TIME_BONUS = 5;
 export const TRAP_TIME_PENALTY = 5;
 
 // ── Streak multipliers — Balatro-style exponential ──────────────────────────
 // Consecutive collections (including chain-triggered) stack multipliers fast
 export function streakMultiplier(streak: number): number {
-  if (streak >= 12) return 20;
-  if (streak >= 10) return 15;
-  if (streak >= 8) return 10;
-  if (streak >= 6) return 6;
-  if (streak >= 5) return 4;
+  if (streak >= 15) return 50;
+  if (streak >= 12) return 30;
+  if (streak >= 10) return 20;
+  if (streak >= 8) return 12;
+  if (streak >= 6) return 7;
+  if (streak >= 5) return 5;
   if (streak >= 4) return 3;
   if (streak >= 3) return 2;
   if (streak >= 2) return 1.5;
