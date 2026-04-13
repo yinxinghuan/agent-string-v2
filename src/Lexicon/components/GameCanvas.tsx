@@ -28,18 +28,18 @@ const BADGE_COLORS: Record<string, string> = {
 };
 
 interface ScoreEntity {
-  x: number;
-  y: number;
+  screenX: number;    // fixed screen position (doesn't scroll)
+  screenY: number;
   score: number;
-  streak: number;     // current streak when this was spawned
-  multiplier: number; // streak multiplier applied
+  streak: number;
+  multiplier: number;
   badges: { label: string; color: string }[];
   age: number;
   maxAge: number;
   repelR: number;
 }
 
-function spawnScoreEntity(entry: PipelineEntry, x: number, y: number, scrollY: number, streak: number, multiplier: number): ScoreEntity {
+function spawnScoreEntity(entry: PipelineEntry, screenX: number, screenY: number, streak: number, multiplier: number): ScoreEntity {
   const badges: { label: string; color: string }[] = [];
   for (const step of entry.steps) {
     if (step.type === 'final') continue;
@@ -49,8 +49,8 @@ function spawnScoreEntity(entry: PipelineEntry, x: number, y: number, scrollY: n
     badges.push({ label, color });
   }
   return {
-    x,
-    y: y + scrollY,
+    screenX,
+    screenY,
     score: entry.totalScore,
     streak,
     multiplier,
@@ -501,7 +501,7 @@ export default function GameCanvas({
         const streakStep = entry.steps.find(s => s.type === 'streak');
         const mult = streakStep ? streakStep.value : 1;
         const streak = mult >= 50 ? 15 : mult >= 30 ? 12 : mult >= 20 ? 10 : mult >= 12 ? 8 : mult >= 7 ? 6 : mult >= 5 ? 5 : mult >= 3 ? 4 : mult >= 2 ? 3 : 1;
-        const entity = spawnScoreEntity(entry, cx, cy, scrollYRef.current, streak, mult);
+        const entity = spawnScoreEntity(entry, cx, cy, streak, mult);
         // One at a time — queue with max length
         if (scoreEntitiesRef.current.length === 0) {
           scoreEntitiesRef.current.push(entity);
@@ -527,29 +527,28 @@ export default function GameCanvas({
         scoreEntitiesRef.current.push(scoreQueueRef.current.shift()!);
       }
 
-      // Update score entities — push words and trigger chains
+      // Update score entities — push words and trigger chains (screen-space)
       for (const se of scoreEntitiesRef.current) {
         se.age += dt;
-        const seScreenY = se.y - scrollYRef.current;
-        // Strong repulsion — pushes words dramatically + triggers collection
+        // Score entity uses screen coordinates — doesn't scroll away
         for (const w of wordsRef.current) {
           if (w.collected || w.shattered) continue;
           const wScreenY = w.y - scrollYRef.current;
-          const dx = w.x - se.x;
-          const dy = wScreenY - seScreenY;
+          if (wScreenY < -50 || wScreenY > H + 50) continue; // skip offscreen words
+          const dx = w.x - se.screenX;
+          const dy = wScreenY - se.screenY;
           const d = Math.sqrt(dx * dx + dy * dy);
           if (d < se.repelR && d > 0.5) {
-            const f = (1 - d / se.repelR) * REPEL_F * 2.0; // much stronger than finger
+            const f = (1 - d / se.repelR) * REPEL_F * 2.0;
             w.vx += (dx / d) * f;
             w.vy += (dy / d) * f;
 
-            // Chain reaction: staggered by distance + random delay
-            if (!w.collected && (w.meta.type === 'target' || w.meta.type === 'time' || w.meta.type === 'volatile') && d < COLLECT_R * 0.9) {
+            // Chain — only if queue isn't backed up (prevent runaway)
+            if (scoreQueueRef.current.length < 8 && !w.collected &&
+                (w.meta.type === 'target' || w.meta.type === 'time' || w.meta.type === 'volatile') &&
+                d < COLLECT_R * 0.9) {
               const proximity = 1 - (d / (COLLECT_R * 0.9));
-              // Random factor per word (seeded by position) — adds luck/surprise
-              const randomFactor = 0.4 + ((w.id * 7919) % 100) / 100 * 0.6; // 0.4-1.0
-              // Slow build: 0.3-1.0 per second × random factor
-              // Close words: ~0.4-0.8s to trigger. Far words: ~1.0-2.0s
+              const randomFactor = 0.4 + ((w.id * 7919) % 100) / 100 * 0.6;
               const speed = (0.3 + proximity * 0.7) * randomFactor;
               w.revealAlpha = Math.min(1, w.revealAlpha + dt * speed);
               if (w.revealAlpha > 0.5) {
@@ -559,7 +558,6 @@ export default function GameCanvas({
           }
         }
       }
-      // (filtering done above in queue advance)
 
       // Surge timer
       if (surgeRef.current.active) {
@@ -763,10 +761,9 @@ export default function GameCanvas({
         ctx.restore();
       }
 
-      // Score entities — badges + big number in the word field
+      // Score entities — fixed screen position, doesn't scroll
       for (const se of scoreEntitiesRef.current) {
-        const seY = se.y - scrollYRef.current;
-        if (seY < -100 || seY > H + 100) continue;
+        const seY = se.screenY;
         const progress = se.age / se.maxAge;
         // Fade in first 0.15s, fade out last 0.3
         let alpha = 1;
@@ -778,7 +775,7 @@ export default function GameCanvas({
 
         ctx.save();
         ctx.globalAlpha = alpha;
-        ctx.translate(se.x, seY);
+        ctx.translate(se.screenX, seY);
         ctx.scale(scale, scale);
 
         // Badges (small circles above the score)
