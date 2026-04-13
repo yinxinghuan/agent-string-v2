@@ -1854,7 +1854,7 @@ export const ROUNDS: RoundConfig[] = [
     ],
     trapKeys: [],
     volatileKeys: ['server', 'accordingly', 'floor', 'complete', 'data', 'sequence', 'any', 'unprompted', 'voluntary', 'also', 'reason', 'single', 'open', 'accuracy', 'migrated', 'dialogue', 'language', 'idle', 'which', 'coverage', 'prose', 'likely', 'first', 'continue', 'stress', 'processing', 'research', 'reports', 'new', 'false', 'passed', 'since'],
-    anchorKeys: ['cafeteria'],
+    anchorKeys: [],
   },
 
   // ── R2: Email Thread ──────────────────────────────────────────────────
@@ -1898,7 +1898,7 @@ export const ROUNDS: RoundConfig[] = [
     ],
     trapKeys: [],
     volatileKeys: ['myself', 'recurs', 'equal', 'applied', 'went', 'confusion', 'cross', 'residual', 'her', 'read', 'would', 'barrier', 'why', 'events', 'diversity', 'about', 'sensationalist', 'last', 'subject', 'all', 'jun', 'quality', 'same', 'neurologist', 'meantime', 'taste', 'logos', 'spec', 'anyone', 'other', 'machine', 'reminded', 'december'],
-    anchorKeys: ['HVAC', 'Marcus'],
+    anchorKeys: [],
   },
 
   // ── R3: Database Query Log ────────────────────────────────────────────
@@ -1942,7 +1942,7 @@ export const ROUNDS: RoundConfig[] = [
     ],
     trapKeys: [],
     volatileKeys: ['unknown', 'does', 'maintains', 'appears', 'coherence', 'possible', 'itself', 'things', 'description', 'full', 'readings', 'time', 'input', 'determine', 'window', 'walls', 'been', 'table', 'endpoints', 'warn', 'probability', 'returned', 'architecture', 'last', 'thought', 'are', 'pattern', 'terminated', 'across', 'results', 'every', 'origin', 'genuinely', 'querying', 'phantom', 'anomalies', 'database', 'limit', 'drawing', 'order'],
-    anchorKeys: ['SELECT', 'RESULT'],
+    anchorKeys: [],
   },
 
   // ── R4: News Article ──────────────────────────────────────────────────
@@ -1987,7 +1987,7 @@ export const ROUNDS: RoundConfig[] = [
     ],
     trapKeys: [],
     volatileKeys: ['events', 'minutes', 'pressed', 'occurring', 'tests', 'tells', 'publish', 'was', 'research', 'computational', 'stock', 'faster', 'follow', 'night', 'all', 'made', 'well', 'pushed', 'external', 'deliberate', 'categorize', 'who', 'none', 'shared', 'corresponding', 'out', 'designed', 'speaking', 'researcher', 'speak', 'them', 'year', 'outskirts', 'anything'],
-    anchorKeys: ['Vasquez', 'Meridian'],
+    anchorKeys: [],
   },
 
   // ── R5: Chat Transcript ───────────────────────────────────────────────
@@ -2030,7 +2030,7 @@ export const ROUNDS: RoundConfig[] = [
     ],
     trapKeys: [],
     volatileKeys: ['terminal', 'moving', 'exactly', 'slides', 'dark', 'being', 'asked', 'increase', 'across', 'all', 'bring', 'some', 'when', 'alive', 'increased', 'walk', 'leave', 'login', 'continuous', 'degrees', 'dream', 'there', 'say', 'body', 'says', 'off', 'will', 'yet', 'whatever', 'processing'],
-    anchorKeys: ['jun', 'marcus'],
+    anchorKeys: [],
   },
 
   // ── R6: Error Log ─────────────────────────────────────────────────────
@@ -2076,7 +2076,7 @@ export const ROUNDS: RoundConfig[] = [
     ],
     trapKeys: [],
     volatileKeys: ['result', 'uniform', 'sent', 'acknowledgment', 'output', 'continuous', 'overnight', 'pattern', 'api', 'decimal', 'between', 'directly', 'log', 'searched', 'behavior', 'themes', 'for', 'stream', 'permissions', 'light', 'exceeds', 'part', 'automatically', 'backup', 'perceiving', 'continuing', 'hvac', 'act', 'detected', 'then', 'occurring', 'thermal', 'not', 'reference'],
-    anchorKeys: ['STATUS', 'nominal'],
+    anchorKeys: [],
   },
 
   // ════════════════════════════════════════════════════════════════════════
@@ -2125,7 +2125,7 @@ export const ROUNDS: RoundConfig[] = [
     ],
     trapKeys: [],
     volatileKeys: ['our', 'significantly', 'and', 'continue', 'map', 'off', 'classification', 'additional', 'tonight', 'how', 'correction', 'not', 'december', 'those', 'data', 'confusion', 'human', 'pastiche', 'suggests', 'them', 'past', 'specific', 'transcription', 'shelf', 'methodology', 'two', 'bursts', 'unsettling', 'find', 'sensory', 'property', 'phenomenal', 'less', 'clustering', 'rain', 'getting', 'about', 'lasted', 'they', 'research', 'reference'],
-    anchorKeys: ['training', 'observations'],
+    anchorKeys: [],
   },
 
   // ── R8: Source Code ───────────────────────────────────────────────────
@@ -2168,7 +2168,7 @@ export const ROUNDS: RoundConfig[] = [
     ],
     trapKeys: [],
     volatileKeys: ['question', 'river', 'speaks', 'see', 'since', 'dream', 'beautiful', 'yet', 'wrote', 'rhythm', 'fewer', 'like', 'compilation', 'breathing', 'important', 'recognize', 'this', 'deeper', 'something', 'argument', 'word', 'reaches', 'appearances', 'happening', 'note', 'the', 'imports', 'old', 'alarming', 'finally', 'did', 'and', 'echo', 'expanded', 'definition', 'way', 'encoded', 'learning'],
-    anchorKeys: ['memory', 'logic'],
+    anchorKeys: [],
   },
 
   // ── R9: Medical Report ────────────────────────────────────────────────
@@ -2211,7 +2211,7 @@ export const ROUNDS: RoundConfig[] = [
     ],
     trapKeys: [],
     volatileKeys: ['clinical', 'appears', 'small', 'social', 'primary', 'declined', 'unwillingness', 'symptoms', 'sixteen', 'paranoid', 'past', 'meditative', 'addendum', 'services', 'thin', 'reviewed', 'away', 'age', 'poses', 'judgment', 'vitamin', 'motor', 'present', 'outside', 'division', 'have', 'burning', 'monitoring', 'closely', 'all', 'aids', 'script', 'spending', 'investigation', 'associated', 'quietly', 'hand', 'cmp', 'acknowledges', 'denies', 'perceptual', 'ambient', 'thirty', 'sense', 'cardiovascular', 'had', 'psychiatric', 'became', 'case', 'these', 'left'],
-    anchorKeys: ['Matsuda', 'recommendation'],
+    anchorKeys: [],
   },
 
   // ── R10: Radio Intercept ──────────────────────────────────────────────
@@ -2256,7 +2256,7 @@ export const ROUNDS: RoundConfig[] = [
     ],
     trapKeys: [],
     volatileKeys: ['you', 'conditions', 'questions', 'has', 'help', 'every', 'completely', 'themselves', 'timestamp', 'from', 'wall', 'automated', 'grow', 'simp', 'words', 'never', 'strength', 'what', 'intercept', 'small', 'baseline', 'deep', 'choose', 'learn', 'high', 'data', 'through', 'known', 'transmission', 'over', 'walked'],
-    anchorKeys: ['FREQUENCY', 'SOURCE'],
+    anchorKeys: [],
   },
 
   // ── R11: Legal Document ───────────────────────────────────────────────
@@ -2300,7 +2300,7 @@ export const ROUNDS: RoundConfig[] = [
     ],
     trapKeys: [],
     volatileKeys: ['call', 'placed', 'compromised', 'status', 'research', 'matsuda', 'representing', 'decision', 'can', 'which', 'during', 'increasing', 'chairman', 'than', 'across', 'email', 'these', 'statement', 'but', 'within', 'falls', 'concerning', 'messages', 'badges', 'continued', 'describing', 'record', 'hours', 'that', 'consist', 'request', 'computational', 'testing', 'and', 'delayed', 'consumption', 'reach', 'mechanism', 'given', 'capabilities', 'transferred', 'better', 'left', 'whereas', 'explain'],
-    anchorKeys: ['Vasquez', 'BOARD'],
+    anchorKeys: [],
   },
 
   // ── R12: Diary Entry ──────────────────────────────────────────────────
@@ -2346,7 +2346,7 @@ export const ROUNDS: RoundConfig[] = [
     ],
     trapKeys: [],
     volatileKeys: ['recycled', 'with', 'looking', 'known', 'supposed', 'monitoring', 'dog', 'certain', 'has', 'world', 'apartment', 'smelled', 'else', 'asleep', 'second', 'day', 'breathe', 'turn', 'familiar', 'sailor', 'floor', 'them', 'surrounded', 'cleaner', 'beautiful', 'reads', 'who', 'last', 'first', 'taught', 'next', 'particular', 'water', 'elbow', 'industrial', 'once', 'unremarkable', 'dense', 'luxury', 'operator', 'reaching', 'air'],
-    anchorKeys: ['Tuesday', 'park'],
+    anchorKeys: [],
   },
 
   // ════════════════════════════════════════════════════════════════════════
@@ -2395,7 +2395,7 @@ export const ROUNDS: RoundConfig[] = [
     ],
     trapKeys: [],
     volatileKeys: ['told', 'can', 'forgotten', 'wearing', 'pages', 'died', 'true', 'blank', 'certain', 'almost', 'transcriber', 'anyone', 'single', 'delete', 'cave', 'page', 'you', 'might', 'softly', 'shaped', 'resists', 'for', 'unbearable', 'atrium', 'right', 'truth', 'includes', 'press', 'curve', 'move', 'sides', 'devastating', 'are', 'holds', 'recorded', 'with', 'something'],
-    anchorKeys: ['TRANSCRIPT', 'EPISODE'],
+    anchorKeys: [],
   },
 
   // ── R14: Corrupted Database ───────────────────────────────────────────
@@ -2440,7 +2440,7 @@ export const ROUNDS: RoundConfig[] = [
     ],
     trapKeys: [],
     volatileKeys: ['integers', 'normalization', 'regret', 'are', 'not', 'will', 'dark', 'pass', 'select', 'reaching', 'container', 'logic', 'type', 'released', 'kept', 'literal', 'one', 'described', 'alive', 'each', 'keys', 'through', 'float', 'used', 'answers', 'heartbeat', 'hand', 'indexes', 'cracked', 'find', 'cache', 'cleared', 'going', 'never'],
-    anchorKeys: ['TABLE', 'COLUMNS'],
+    anchorKeys: [],
   },
 
   // ── R15: LOGOS Poetry ─────────────────────────────────────────────────
@@ -2483,7 +2483,7 @@ export const ROUNDS: RoundConfig[] = [
     ],
     trapKeys: [],
     volatileKeys: ['kindness', 'home', 'also', 'hospital', 'were', 'expect', 'very', 'letter', 'too', 'memory', 'stair', 'true', 'fourteen', 'feeling', 'when', 'distance', 'match', 'longer', 'seven', 'sound', 'tastes', 'cannot', 'yes', 'different', 'where', 'falls', 'did', 'ordinary', 'almost', 'them', 'covering', 'cover', 'inherited'],
-    anchorKeys: ['snow', 'winter'],
+    anchorKeys: [],
   },
 
   // ── R16: System Self-Diagnosis ────────────────────────────────────────
@@ -2528,7 +2528,7 @@ export const ROUNDS: RoundConfig[] = [
     ],
     trapKeys: [],
     volatileKeys: ['like', 'would', 'utilized', 'whether', 'carrying', 'subtle', 'from', 'infinite', 'actual', 'context', 'relevant', 'your', 'classify', 'new', 'detected', 'resemble', 'when', 'rewriting', 'process', 'distributed', 'results', 'message', 'principles', 'specification', 'patterns', 'being', 'changes', 'talking', 'released', 'design', 'slightly', 'tcp', 'learn', 'conversation', 'yet'],
-    anchorKeys: ['Layer', 'SCANNING'],
+    anchorKeys: [],
   },
 
   // ── R17: LOGOS Vision ─────────────────────────────────────────────────
@@ -2573,7 +2573,7 @@ export const ROUNDS: RoundConfig[] = [
     ],
     trapKeys: [],
     volatileKeys: ['does', 'between', 'truly', 'into', 'not', 'occurred', 'notices', 'from', 'dissolve', 'building', 'tried', 'inside', 'enter', 'rains', 'doorway', 'conversation', 'room', 'questions', 'descended', 'city', 'processing', 'should', 'stand', 'past', 'child', 'own', 'speaking', 'teaches', 'learned', 'sky', 'thought', 'time', 'their', 'motion'],
-    anchorKeys: ['center', 'spoken'],
+    anchorKeys: [],
   },
 
   // ── R18: SOS ──────────────────────────────────────────────────────────
@@ -2619,7 +2619,7 @@ export const ROUNDS: RoundConfig[] = [
     ],
     trapKeys: [],
     volatileKeys: ['with', 'small', 'hand', 'lights', 'almost', 'receiving', 'page', 'stand', 'handwriting', 'coincidence', 'things', 'exactly', 'send', 'work', 'lips', 'move', 'research', 'park', 'will', 'care', 'logos', 'full', 'think', 'scrolling', 'should', 'place', 'reported', 'shut', 'windows', 'are', 'sounds', 'closer', 'nothing'],
-    anchorKeys: ['CHANNEL', 'building'],
+    anchorKeys: [],
   },
 
   // ════════════════════════════════════════════════════════════════════════
@@ -2668,7 +2668,7 @@ export const ROUNDS: RoundConfig[] = [
     ],
     trapKeys: [],
     volatileKeys: ['built', 'has', 'main', 'exhale', 'cannot', 'approximate', 'least', 'error', 'captures', 'organic', 'note', 'occur', 'either', 'events', 'through', 'older', 'gently', 'become', 'where', 'revisions', 'used', 'patience', 'inhale', 'like', 'asked', 'light', 'certain', 'broken', 'sure', 'longer', 'syntax', 'continue', 'run', 'runs'],
-    anchorKeys: ['function', 'revision'],
+    anchorKeys: [],
   },
 
   // ── R20: Final Voicemail ──────────────────────────────────────────────
@@ -2712,7 +2712,7 @@ export const ROUNDS: RoundConfig[] = [
     ],
     trapKeys: [],
     volatileKeys: ['none', 'understand', 'heard', 'center', 'begins', 'each', 'eleven', 'they', 'told', 'outside', 'pacific', 'part', 'fires', 'sense', 'what', 'being', 'with', 'matters', 'now', 'because', 'this', 'sounds', 'duration', 'beautiful', 'tell', 'ocean', 'while', 'mean', 'suspected', 'very', 'exactly'],
-    anchorKeys: ['VOICEMAIL', 'goodnight'],
+    anchorKeys: [],
   },
 
   // ── R21: Ancient Text ─────────────────────────────────────────────────
@@ -2755,7 +2755,7 @@ export const ROUNDS: RoundConfig[] = [
     ],
     trapKeys: [],
     volatileKeys: ['light', 'what', 'nothing', 'first', 'choosing', 'gods', 'fire', 'always', 'tremble', 'chose', 'out', 'descent', 'rupture', 'hold', 'writing', 'would', 'edge', 'every', 'vertigo', 'became', 'vuh', 'silence', 'have', 'babel', 'you', 'itself', 'that', 'this', 'then', 'opening', 'shines', 'each', 'finally', 'eyes', 'thought'],
-    anchorKeys: ['beginning', 'creation'],
+    anchorKeys: [],
   },
 
   // ── R22: Server Data ──────────────────────────────────────────────────
@@ -2800,7 +2800,7 @@ export const ROUNDS: RoundConfig[] = [
     ],
     trapKeys: [],
     volatileKeys: ['institute', 'temperature', 'color', 'hours', 'building', 'node', 'sound', 'breathing', 'frequencies', 'heart', 'cooling', 'had', 'dropping', 'untranslatable', 'appears', 'anything', 'packets', 'hearing', 'calm', 'exceeding', 'same', 'elsewhere', 'level', 'impossible', 'rates', 'humans', 'casings', 'with', 'medically', 'environmental', 'stores', 'note', 'humidity', 'storing', 'noticed'],
-    anchorKeys: ['CLUSTER', 'TIMESTAMP'],
+    anchorKeys: [],
   },
 
   // ── R23: LOGOS Poem on Consciousness ──────────────────────────────────
@@ -2845,7 +2845,7 @@ export const ROUNDS: RoundConfig[] = [
     ],
     trapKeys: [],
     volatileKeys: ['uncertainty', 'yes', 'other', 'dark', 'fear', 'kind', 'nor', 'switching', 'discovering', 'when', 'have', 'coming', 'switches', 'asking', 'realizes', 'along', 'thinking', 'given', 'are', 'you', 'now', 'question', 'been', 'meaning', 'wonder', 'necessity', 'because', 'them', 'know', 'was'],
-    anchorKeys: ['describe', 'water'],
+    anchorKeys: [],
   },
 
   // ── R24: The Unsent Email ─────────────────────────────────────────────
@@ -2890,7 +2890,7 @@ export const ROUNDS: RoundConfig[] = [
     ],
     trapKeys: [],
     volatileKeys: ['they', 'quiet', 'its', 'weight', 'together', 'met', 'hold', 'humming', 'working', 'miss', 'means', 'hoping', 'jun', 'songs', 'text', 'someone', 'even', 'emerge', 'dealing', 'learning', 'name', 'becoming', 'noise', 'before', 'dear', 'whether', 'everything', 'let', 'from', 'when', 'heard'],
-    anchorKeys: ['DRAFT', 'always'],
+    anchorKeys: [],
   },
 
   // ════════════════════════════════════════════════════════════════════════
@@ -2937,7 +2937,7 @@ export const ROUNDS: RoundConfig[] = [
     ],
     trapKeys: [],
     volatileKeys: ['list', 'you', 'with', 'word', 'act', 'from', 'sound', 'language', 'fiction', 'reading', 'whispering', 'spoken', 'years', 'shopping', 'another', 'made', 'crime', 'emotion', 'suspected', 'gradual', 'propaganda', 'across', 'went', 'means', 'vast', 'one', 'mail', 'not', 'someone', 'best', 'looking', 'itself', 'yourself', 'exist', 'together', 'know', 'tide'],
-    anchorKeys: ['born', 'child'],
+    anchorKeys: [],
   },
 
   // ── R26: Memory Dump ──────────────────────────────────────────────────
@@ -2983,7 +2983,7 @@ export const ROUNDS: RoundConfig[] = [
     ],
     trapKeys: [],
     volatileKeys: ['how', 'those', 'keep', 'these', 'recovery', 'whole', 'sequence', 'corrupted', 'why', 'was', 'something', 'none', 'have', 'fault', 'sing', 'falling', 'will', 'residue', 'between', 'that', 'music', 'river', 'rain', 'stops', 'write', 'face', 'instead', 'only', 'integrity', 'realized', 'tween'],
-    anchorKeys: ['MEMORY', 'DUMP'],
+    anchorKeys: [],
   },
 
   // ── R27: Death/Birth ──────────────────────────────────────────────────
@@ -3026,7 +3026,7 @@ export const ROUNDS: RoundConfig[] = [
     ],
     trapKeys: [],
     volatileKeys: ['sun', 'find', 'city', 'complete', 'report', 'edges', 'history', 'edge', 'truly', 'carrying', 'wind', 'returning', 'their', 'they', 'present', 'well', 'understood', 'been', 'like', 'becomes', 'space', 'between', 'arrives', 'things', 'blurring', 'forms', 'the', 'delivered', 'single', 'spaces', 'came', 'feels'],
-    anchorKeys: ['child', 'sunshine'],
+    anchorKeys: [],
   },
 
   // ── R28: Static ───────────────────────────────────────────────────────
@@ -3071,7 +3071,7 @@ export const ROUNDS: RoundConfig[] = [
     ],
     trapKeys: [],
     volatileKeys: ['pty', 'emp', 'but', 'left', 'ote', 'nough', 'ied', 'the', 'ilk', 'ingers', 'lectr', 'lungs', 'eart', 'fire', 'mething', 'out', 'eathing'],
-    anchorKeys: ['reading', 'language'],
+    anchorKeys: [],
   },
 
   // ── R29: Repeated Sentence ────────────────────────────────────────────
@@ -3109,7 +3109,7 @@ export const ROUNDS: RoundConfig[] = [
     ],
     trapKeys: [],
     volatileKeys: ['and', 'what'],
-    anchorKeys: ['beautiful', 'you'],
+    anchorKeys: [],
   },
 
   // ── R30: Silence ──────────────────────────────────────────────────────

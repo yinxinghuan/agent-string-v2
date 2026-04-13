@@ -104,8 +104,11 @@ export function buildWords(cfg: BuildConfig): { words: Word[]; totalHeight: numb
   const words: Word[] = [];
 
   // Pre-build lowercase sets for fast matching
+  // Volatile: track used to only match FIRST occurrence of each key
   const volatileSet = new Set(cfg.volatileKeys.map(k => k.toLowerCase()));
+  const usedVolatile = new Set<string>();
   const anchorSet = new Set(cfg.anchorKeys.map(k => k.toLowerCase()));
+  const usedAnchor = new Set<string>();
 
   for (let i = 0; i < tokens.length; i++) {
     const text = tokens[i];
@@ -122,12 +125,14 @@ export function buildWords(cfg: BuildConfig): { words: Word[]; totalHeight: numb
     } else if (cfg.trapKeys.some(k => k.toLowerCase() === cleaned) && !usedTrap.has(cleaned)) {
       meta = { text, type: 'trap' };
       usedTrap.add(cleaned);
-    } else if (volatileSet.has(cleaned)) {
-      // Volatile: match EVERY occurrence (no usedVolatile limit)
+    } else if (volatileSet.has(cleaned) && !usedVolatile.has(cleaned)) {
+      // Volatile: match first occurrence only
       meta = { text, type: 'volatile' };
-    } else if (anchorSet.has(cleaned)) {
-      // Anchor: match every occurrence too
+      usedVolatile.add(cleaned);
+    } else if (anchorSet.has(cleaned) && !usedAnchor.has(cleaned)) {
+      // Anchor: match first occurrence only
       meta = { text, type: 'anchor' };
+      usedAnchor.add(cleaned);
     }
 
     words.push({
