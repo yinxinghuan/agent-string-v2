@@ -511,11 +511,16 @@ export default function GameCanvas({
             w.vx += (dx / d) * f;
             w.vy += (dy / d) * f;
 
-            // Chain reaction: nearby target words auto-collect
-            if (!w.collected && (w.meta.type === 'target' || w.meta.type === 'time' || w.meta.type === 'volatile') && d < COLLECT_R * 0.7) {
-              w.revealAlpha = Math.min(1, w.revealAlpha + dt * 12);
+            // Chain reaction: nearby words auto-collect, STAGGERED by distance
+            // Close words trigger in ~0.2s, far ones in ~0.6s → visible cascade
+            if (!w.collected && (w.meta.type === 'target' || w.meta.type === 'time' || w.meta.type === 'volatile') && d < COLLECT_R * 0.8) {
+              const proximity = 1 - (d / (COLLECT_R * 0.8)); // 1.0=touching, 0.0=edge
+              // Alpha rises at 0.8-2.5 per second (takes 0.2-0.6s to reach 0.5)
+              const speed = 0.8 + proximity * 1.7;
+              w.revealAlpha = Math.min(1, w.revealAlpha + dt * speed);
               if (w.revealAlpha > 0.5) {
-                w.revealTimer += dt * 3;
+                // Timer rises at 0.3-1.0 per second (needs 0.08s to trigger)
+                w.revealTimer += dt * (0.3 + proximity * 0.7);
               }
             }
           }
