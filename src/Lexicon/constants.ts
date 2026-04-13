@@ -20,7 +20,7 @@ export const REDLINE_Y = 0.50;       // screen center — visual divider
 export const BASE_SCORE_COMMON = 20;
 export const BASE_SCORE_RARE = 50;
 export const BASE_SCORE_LEGENDARY = 120;
-export const VOLATILE_SCORE_MULT = 1.0;  // full score for chain-collected words
+export const VOLATILE_SCORE_MULT = 0.3;  // low base for volatile, but streak multiplier makes chains huge
 export const ANCHOR_TIME_BONUS = 5;
 export const TRAP_TIME_PENALTY = 5;
 

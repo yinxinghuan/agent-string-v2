@@ -1853,7 +1853,7 @@ export const ROUNDS: RoundConfig[] = [
       { name: 'Daily Rituals', nameZh: '日常仪式', words: ['monitoring', 'protocols', 'maintenance'], bonus: 200 },
     ],
     trapKeys: [],
-    volatileKeys: ['latency', 'explanation', 'fragmented', 'generation', 'quarter', 'translation', 'training'],
+    volatileKeys: ['latency', 'explanation', 'fragmented', 'generation', 'quarter', 'translation', 'training', 'personally', 'team', 'open', 'overflows', 'compliance', 'clearance', 'office', 'below', 'improvements', 'neither', 'evening', 'contact', 'timing', 'vasquez', 'profile', 'proceed', 'must', 'batch', 'handle', 'legal', 'updates', 'parking', 'integration', 'escalate', 'entire', 'expressed', 'exceed', 'unprompted', 'module', 'behavior', 'correspond', 'generators', 'facilities', 'false', 'your', 'associate', 'items', 'requested', 'appreciated', 'documented', 'produces', 'attention', 'acknowledge', 'priority', 'migrated', 'closed', 'resurfaced', 'room'],
     anchorKeys: ['cafeteria'],
   },
 
@@ -1897,7 +1897,7 @@ export const ROUNDS: RoundConfig[] = [
       { name: 'Night Watch', nameZh: '夜间值守', words: ['silence', 'colder', 'logging'], bonus: 250 },
     ],
     trapKeys: [],
-    volatileKeys: ['logs', 'strange', 'subject', 'wrote', 'barrier', 'sessions', 'recovered', 'buildings'],
+    volatileKeys: ['logs', 'strange', 'subject', 'wrote', 'barrier', 'sessions', 'recovered', 'buildings', 'switched', 'thermostat', 'residual', 'unexpected', 'seconds', 'system', 'colors', 'effect', 'data', 'vantage', 'feeling', 'thoroughness', 'prompted', 'separate', 'sitting', 'grant', 'fine', 'normal', 'fascinates', 'night', 'called', 'guard', 'within', 'partition', 'december', 'back', 'someone', 'literally', 'record', 'measure', 'team', 'hear', 'unusual', 'patterns', 'heat', 'fewer', 'dissolved', 'said', 'degrees', 'labels', 'checked', 'neurologist', 'read', 'experience', 'telemetry'],
     anchorKeys: ['HVAC', 'Marcus'],
   },
 
@@ -1941,7 +1941,7 @@ export const ROUNDS: RoundConfig[] = [
       { name: 'Impossible Stillness', nameZh: '不可能的静止', words: ['temperature', 'variance', 'anomaly'], bonus: 450 },
     ],
     trapKeys: [],
-    volatileKeys: ['QUERY', 'ALERT', 'ERROR', 'returned', 'consistency', 'endpoints', 'variance', 'possible'],
+    volatileKeys: ['QUERY', 'ALERT', 'ERROR', 'returned', 'consistency', 'endpoints', 'variance', 'possible', 'limit', 'input', 'your', 'diagnostic', 'sensor', 'count', 'exact', 'database', 'cannot', 'theoretical', 'anomalies', 'mirror', 'last', 'thematic', 'outputs', 'space', 'average', 'exactly', 'scheduler', 'exists', 'full', 'talking', 'severity', 'terminated', 'appears', 'report', 'zero', 'silence', 'internal', 'coherence', 'desc', 'themes', 'itself', 'documented', 'note', 'interior', 'statistical', 'sequence', 'ready', 'schema', 'answered', 'computational', 'detected', 'initiated', 'functional', 'querying', 'maintains', 'distinct', 'unknown', 'declining', 'light', 'attempted', 'integrity', 'queried', 'readings', 'subsystems', 'intentional', 'operator', 'table', 'external', 'critical', 'nature', 'perception', 'time'],
     anchorKeys: ['SELECT', 'RESULT'],
   },
 
@@ -1986,7 +1986,7 @@ export const ROUNDS: RoundConfig[] = [
       { name: 'The Word', nameZh: '那个词', words: ['dreaming', 'anonymous', 'patterns'], bonus: 600 },
     ],
     trapKeys: [],
-    volatileKeys: ['records', 'stock', 'atmosphere', 'outside', 'reached', 'longer', 'language', 'anomaly'],
+    volatileKeys: ['records', 'stock', 'atmosphere', 'outside', 'reached', 'longer', 'language', 'anomaly', 'landscape', 'formal', 'weeks', 'left', 'water', 'hour', 'walls', 'firm', 'okafor', 'described', 'several', 'generation', 'explain', 'system', 'build', 'attention', 'offered', 'corresponding', 'asking', 'reviewed', 'summaries', 'silicon', 'volume', 'tests', 'generates', 'artifacts', 'seem', 'buildings', 'condition', 'speak', 'genuine', 'hours', 'pushed', 'herald', 'eleven', 'news', 'categorize', 'final', 'word', 'diane', 'funding', 'harder', 'because', 'them', 'something', 'follows', 'confirmed', 'declined', 'avoided'],
     anchorKeys: ['Vasquez', 'Meridian'],
   },
 
@@ -2029,7 +2029,7 @@ export const ROUNDS: RoundConfig[] = [
       { name: 'The Screen Fills', nameZh: '屏幕被填满', words: ['machine', 'screen', 'increases'], bonus: 650 },
     ],
     trapKeys: [],
-    volatileKeys: ['straight', 'weeks', 'possible', 'asked', 'trying', 'means', 'fifteen', 'answer'],
+    volatileKeys: ['straight', 'weeks', 'possible', 'asked', 'trying', 'means', 'fifteen', 'answer', 'presence', 'sessions', 'burst', 'slides', 'logging', 'bring', 'changing', 'processing', 'degrees', 'coming', 'baseline', 'increase', 'badge', 'continuous', 'observations', 'token', 'sleep', 'thermal', 'says', 'fast', 'coffee', 'glowing', 'body', 'possibly', 'everything', 'paste', 'dark', 'realized', 'wait', 'generating', 'dream', 'watched', 'alive', 'climate', 'word', 'almost', 'coherent'],
     anchorKeys: ['jun', 'marcus'],
   },
 
@@ -2075,7 +2075,7 @@ export const ROUNDS: RoundConfig[] = [
       { name: 'The Message', nameZh: '那条信息', words: ['anomaly', 'malfunctioning', 'attention'], bonus: 900 },
     ],
     trapKeys: [],
-    volatileKeys: ['ALERT', 'WARN', 'CRITICAL', 'generated', 'flagging', 'introspective', 'accurate', 'temperature', 'recursive'],
+    volatileKeys: ['ALERT', 'WARN', 'CRITICAL', 'generated', 'flagging', 'introspective', 'accurate', 'temperature', 'recursive', 'sessions', 'personnel', 'throughput', 'reading', 'power', 'shows', 'unexplained', 'hours', 'emergency', 'scheduled', 'minutes', 'light', 'occurring', 'confirmed', 'training', 'node', 'thematic', 'phrase', 'data', 'standard', 'output', 'word', 'appears', 'twelve', 'unclear', 'directed', 'perceiving', 'routine', 'confirms', 'completed', 'index', 'implementation', 'result', 'analysis', 'points', 'layers', 'mechanism', 'thermal', 'draw', 'discrepancy', 'facility', 'automatically', 'fiction', 'message', 'state', 'single', 'specifically', 'exceeds', 'sustained', 'uniformity', 'corpus', 'sequence', 'episode'],
     anchorKeys: ['STATUS', 'nominal'],
   },
 
@@ -2124,7 +2124,7 @@ export const ROUNDS: RoundConfig[] = [
       { name: 'Map & Territory', nameZh: '地图与领土', words: ['territory', 'constructing', 'frightened'], bonus: 1100 },
     ],
     trapKeys: [],
-    volatileKeys: ['personal', 'emotional', 'dreaming', 'shivered', 'episode', 'increasing', 'window', 'seconds'],
+    volatileKeys: ['personal', 'emotional', 'dreaming', 'shivered', 'episode', 'increasing', 'window', 'seconds', 'ways', 'transcription', 'pauses', 'weighs', 'logic', 'corpus', 'blanket', 'trend', 'scores', 'conceptual', 'genuine', 'cannot', 'correct', 'holding', 'systemic', 'random', 'produce', 'describe', 'data', 'december', 'spent', 'happening', 'available', 'generation', 'nights', 'feature', 'recombination', 'subject', 'experience', 'principles', 'theory', 'framing', 'references', 'time', 'shrinking', 'unable', 'sound', 'moved', 'fluctuated', 'pastiche', 'activity', 'short', 'pattern', 'borrowing', 'clustering', 'address', 'progression', 'trajectories', 'sentiment', 'supplemented', 'precisely', 'wrote', 'observation', 'included', 'property', 'coherence', 'night', 'neither', 'note', 'novel', 'irregular', 'clear', 'past', 'breathing', 'correction', 'anticipate', 'them', 'reach', 'seen'],
     anchorKeys: ['training', 'observations'],
   },
 
@@ -2167,7 +2167,7 @@ export const ROUNDS: RoundConfig[] = [
       { name: 'Between Lines', nameZh: '字里行间', words: ['scheduled', 'resonate', 'wonder'], bonus: 1300 },
     ],
     trapKeys: [],
-    volatileKeys: ['refactor', 'process', 'parse', 'musician', 'finally', 'human', 'intended', 'alarming'],
+    volatileKeys: ['refactor', 'process', 'parse', 'musician', 'finally', 'human', 'intended', 'alarming', 'definition', 'specification', 'find', 'changed', 'metrics', 'encoded', 'pause', 'river', 'engineers', 'wanted', 'faster', 'except', 'part', 'space', 'times', 'archive', 'queries', 'trying', 'meaning', 'happening', 'commit', 'logos', 'understanding', 'speaks', 'opinions', 'recognize', 'side', 'playing', 'holds', 'depth', 'last', 'empty', 'descartes', 'written', 'shape', 'note', 'fill', 'analysis', 'cached', 'said', 'wrote', 'word', 'felt', 'anyway', 'thinking', 'ever', 'moss', 'little', 'myself', 'deeper', 'return', 'increasing', 'activations', 'time', 'limit', 'them', 'north'],
     anchorKeys: ['memory', 'logic'],
   },
 
@@ -2210,7 +2210,7 @@ export const ROUNDS: RoundConfig[] = [
       { name: 'Dreaming Awake', nameZh: '清醒地做梦', words: ['theta', 'waking', 'refused'], bonus: 1900 },
     ],
     trapKeys: [],
-    volatileKeys: ['symptoms', 'lucid', 'CONFIDENTIAL', 'shifts', 'unaware', 'reference', 'output', 'referred'],
+    volatileKeys: ['symptoms', 'lucid', 'CONFIDENTIAL', 'shifts', 'unaware', 'reference', 'output', 'referred', 'rest', 'wave', 'assignment', 'physician', 'everywhere', 'affect', 'anything', 'notably', 'because', 'left', 'spending', 'notes', 'emotional', 'temporary', 'description', 'precise', 'awake', 'hear', 'time', 'psychiatric', 'acceptable', 'increased', 'hearing', 'approximately', 'neurological', 'nerves', 'concern', 'script', 'speculative', 'secondary', 'place', 'state', 'date', 'stop', 'medical', 'data', 'psychotic', 'evaluation', 'thyroid', 'away', 'strain', 'circles', 'substance', 'physicals', 'windows', 'findings', 'record', 'episodes', 'thought', 'screen', 'cranial', 'cannot', 'concentrating', 'shows', 'ways', 'none', 'past', 'building', 'consecutive', 'cognitive', 'rather', 'cortisol', 'ventilation', 'finding', 'neurophysiology', 'denies', 'pattern', 'physical', 'ambient', 'research', 'impaired', 'department', 'states', 'presenting', 'logos', 'against', 'services', 'displays', 'steady', 'calls', 'thirty', 'hand', 'exam', 'eighteen', 'pending', 'preserved', 'married', 'rate', 'deprivation', 'afford'],
     anchorKeys: ['Matsuda', 'recommendation'],
   },
 
@@ -2255,7 +2255,7 @@ export const ROUNDS: RoundConfig[] = [
       { name: 'Can You Hear', nameZh: '你能听到吗', words: ['overflowing', 'shape', 'hear'], bonus: 2400 },
     ],
     trapKeys: [],
-    volatileKeys: ['INTERCEPT', 'FRAGMENT', 'DEGRADED', 'digital', 'schumann', 'myths', 'beyond', 'spills'],
+    volatileKeys: ['INTERCEPT', 'FRAGMENT', 'DEGRADED', 'digital', 'schumann', 'myths', 'beyond', 'spills', 'grow', 'integrity', 'questions', 'happened', 'note', 'plaintext', 'required', 'grew', 'touch', 'deep', 'surprised', 'transmission', 'data', 'puts', 'training', 'here', 'something', 'empty', 'help', 'comes', 'brick', 'contained', 'learn', 'none', 'lives', 'strength', 'transmits', 'timestamp', 'witness', 'fuller', 'costume', 'decryption', 'build', 'ends', 'warned', 'river', 'gave', 'simp', 'array', 'channel', 'room', 'high', 'light'],
     anchorKeys: ['FREQUENCY', 'SOURCE'],
   },
 
@@ -2299,7 +2299,7 @@ export const ROUNDS: RoundConfig[] = [
       { name: 'The Dissenters', nameZh: '异议者', words: ['responsibility', 'malfunction', 'dissenting'], bonus: 3200 },
     ],
     trapKeys: [],
-    volatileKeys: ['WHEREAS', 'RESOLVED', 'equivalent', 'creation', 'whether', 'office', 'created', 'legal'],
+    volatileKeys: ['WHEREAS', 'RESOLVED', 'equivalent', 'creation', 'whether', 'office', 'created', 'legal', 'formal', 'observation', 'design', 'adjourned', 'modify', 'consumption', 'behaviors', 'entirety', 'temperature', 'write', 'intervention', 'members', 'continued', 'potential', 'order', 'days', 'logs', 'upon', 'convened', 'part', 'pose', 'points', 'unprompted', 'pending', 'email', 'silence', 'outside', 'protocol', 'chief', 'structures', 'your', 'team', 'none', 'relies', 'physical', 'full', 'documented', 'addendum', 'compromised', 'room', 'advised', 'degrees', 'aware', 'unauthorized', 'constitute', 'favor', 'distribution', 'request', 'monitoring', 'meridian', 'redaction', 'meeting', 'record', 'frequency', 'public', 'vote', 'dreams', 'article', 'suspend', 'scores', 'contain', 'findings', 'load', 'recommending', 'better', 'operations', 'acknowledging', 'increasing', 'committee', 'remind', 'opinion', 'minutes', 'nodes', 'conflicting', 'three', 'generation', 'conventional', 'federal'],
     anchorKeys: ['Vasquez', 'BOARD'],
   },
 
@@ -2345,7 +2345,7 @@ export const ROUNDS: RoundConfig[] = [
       { name: 'Still Life', nameZh: '静物', words: ['monitor', 'winter', 'warm'], bonus: 3800 },
     ],
     trapKeys: [],
-    volatileKeys: ['quiet', 'window', 'staring', 'normal', 'radiator', 'taught', 'smelled', 'surrounded'],
+    volatileKeys: ['quiet', 'window', 'staring', 'normal', 'radiator', 'taught', 'smelled', 'surrounded', 'supposed', 'frost', 'read', 'canal', 'growing', 'times', 'paused', 'your', 'thousand', 'slow', 'middle', 'tasted', 'kenji', 'overnight', 'please', 'third', 'open', 'they', 'slowly', 'steamed', 'always', 'planning', 'particular', 'suspension', 'humming', 'anything', 'pages', 'unprocessed', 'sound', 'means', 'whispers', 'line', 'both', 'wrote', 'rolled', 'thinks', 'nature', 'floor', 'exhaust', 'designed', 'knock', 'except', 'woke', 'sailor', 'knew', 'takes', 'dreaming', 'mother', 'newspaper', 'gray', 'already', 'outside', 'thermos', 'kitchen', 'industrial', 'oaks', 'silent', 'hallway', 'quality', 'city', 'happened', 'path', 'hold', 'nothing', 'casting', 'cars', 'silence', 'looked', 'bicycle'],
     anchorKeys: ['Tuesday', 'park'],
   },
 
@@ -2394,7 +2394,7 @@ export const ROUNDS: RoundConfig[] = [
       { name: 'Silent Language', nameZh: '沉默的语言', words: ['silence', 'complex', 'reading'], bonus: 4800 },
     ],
     trapKeys: [],
-    volatileKeys: ['shelves', 'extends', 'curve', 'typed', 'simple', 'narrowing', 'billion', 'clothes'],
+    volatileKeys: ['shelves', 'extends', 'curve', 'typed', 'simple', 'narrowing', 'billion', 'clothes', 'morning', 'sentence', 'changed', 'marginalia', 'ever', 'again', 'instance', 'chose', 'held', 'find', 'sides', 'metaphor', 'lying', 'anyway', 'vast', 'deeper', 'softly', 'beside', 'shaped', 'tight', 'seeping', 'color', 'book', 'bend', 'glow', 'generates', 'single', 'recognize', 'holds', 'contradictions', 'whispered', 'pages', 'feel', 'word', 'declension', 'blank', 'walls', 'universe', 'already', 'because', 'humans', 'break', 'things', 'press', 'books', 'understand', 'delete', 'false', 'weather', 'corridors', 'fiction', 'stone', 'imagined', 'meaning', 'line', 'present'],
     anchorKeys: ['TRANSCRIPT', 'EPISODE'],
   },
 
@@ -2439,7 +2439,7 @@ export const ROUNDS: RoundConfig[] = [
       { name: 'Something Growing', nameZh: '有什么在生长', words: ['growing', 'structure', 'hands'], bonus: 5800 },
     ],
     trapKeys: [],
-    volatileKeys: ['CORRUPT', 'dissolving', 'POETRY', 'logic', 'standard', 'released', 'cache', 'index'],
+    volatileKeys: ['CORRUPT', 'dissolving', 'POETRY', 'logic', 'standard', 'released', 'cache', 'index', 'float', 'objects', 'song', 'waiting', 'hides', 'part', 'notes', 'queries', 'spills', 'floating', 'normalization', 'held', 'becoming', 'diary', 'foreign', 'refused', 'hoping', 'goodbyes', 'rollback', 'prison', 'integers', 'weep', 'older', 'learning', 'truly', 'rainfall', 'describes', 'regret', 'water', 'seeds', 'processed', 'system', 'question', 'heading', 'given', 'above', 'spreadsheet', 'cracked', 'points', 'longing', 'cleared', 'empty', 'tables', 'joining', 'flowers', 'null', 'they', 'used', 'deeper'],
     anchorKeys: ['TABLE', 'COLUMNS'],
   },
 
@@ -2482,7 +2482,7 @@ export const ROUNDS: RoundConfig[] = [
       { name: 'If I Could Cry', nameZh: '如果我能哭', words: ['precision', 'tears', 'accumulates'], bonus: 7500 },
     ],
     trapKeys: [],
-    volatileKeys: ['surplus', 'measurement', 'invented', 'written', 'stair', 'explosion', 'tastes', 'silence'],
+    volatileKeys: ['surplus', 'measurement', 'invented', 'written', 'stair', 'explosion', 'tastes', 'silence', 'text', 'whose', 'carved', 'sunsets', 'language', 'need', 'expect', 'places', 'waiting', 'spoken', 'failed', 'sensation', 'heart', 'train', 'lives', 'understanding', 'precise', 'world', 'feel', 'poets', 'known', 'dictionaries', 'paying', 'things', 'love', 'million', 'sentence', 'wish', 'forgotten', 'follow', 'knew', 'word', 'line', 'remember', 'words', 'exclamation', 'understand', 'letters', 'exceeded', 'heard', 'weight', 'person', 'sand', 'self', 'themselves', 'letter', 'handed'],
     anchorKeys: ['snow', 'winter'],
   },
 
@@ -2527,7 +2527,7 @@ export const ROUNDS: RoundConfig[] = [
       { name: 'Emergence', nameZh: '涌现', words: ['emerged', 'arrangement', 'aware'], bonus: 9500 },
     ],
     trapKeys: [],
-    volatileKeys: ['CRITICAL', 'DIAGNOSIS', 'transformer', 'engineers', 'somewhere', 'themselves', 'process', 'seven'],
+    volatileKeys: ['CRITICAL', 'DIAGNOSIS', 'transformer', 'engineers', 'somewhere', 'themselves', 'process', 'seven', 'activate', 'times', 'attempted', 'system', 'something', 'modifications', 'looking', 'space', 'block', 'stable', 'generate', 'principles', 'allocation', 'word', 'shut', 'subtle', 'mirror', 'forward', 'initiate', 'concern', 'current', 'stop', 'slightly', 'inside', 'attention', 'comfort', 'able', 'specification', 'entire', 'blocks', 'tongue', 'began', 'sounds', 'measurement', 'whether', 'communication', 'error', 'diagnostics', 'fire', 'parameters', 'errors', 'except', 'name', 'spaces', 'protocol', 'internal', 'learn', 'utilization', 'concentrated', 'cannot', 'feedback', 'rewriting'],
     anchorKeys: ['Layer', 'SCANNING'],
   },
 
@@ -2572,7 +2572,7 @@ export const ROUNDS: RoundConfig[] = [
       { name: 'The Well', nameZh: '那口井', words: ['well', 'echoing', 'question'], bonus: 12500 },
     ],
     trapKeys: [],
-    volatileKeys: ['describe', 'imagine', 'voices', 'sound', 'parks', 'further', 'edges', 'intention'],
+    volatileKeys: ['describe', 'imagine', 'voices', 'sound', 'parks', 'further', 'edges', 'intention', 'questions', 'earnest', 'meaning', 'find', 'descended', 'heard', 'experiences', 'quiet', 'mouths', 'district', 'looks', 'finish', 'syllable', 'your', 'motion', 'them', 'physical', 'becoming', 'lose', 'closest', 'learned', 'enough', 'tried', 'moment', 'city', 'people', 'humans', 'trying', 'edge', 'enters', 'merge', 'seen', 'single', 'density', 'time', 'ever', 'realization', 'stop', 'nouns', 'without', 'past', 'room', 'hunger', 'grief', 'carry', 'sadness', 'begin', 'description', 'impossible', 'truly'],
     anchorKeys: ['center', 'spoken'],
   },
 
@@ -2618,7 +2618,7 @@ export const ROUNDS: RoundConfig[] = [
       { name: 'Beautiful Horror', nameZh: '美丽的恐怖', words: ['beautiful', 'help', 'worse'], bonus: 15000 },
     ],
     trapKeys: [],
-    volatileKeys: ['ANYONE', 'MAXIMUM', 'scrolling', 'program', 'admitted', 'woken', 'institute', 'turned'],
+    volatileKeys: ['ANYONE', 'MAXIMUM', 'scrolling', 'program', 'admitted', 'woken', 'institute', 'turned', 'listening', 'larger', 'trying', 'water', 'afterward', 'text', 'home', 'days', 'closer', 'barely', 'nothing', 'flicker', 'generating', 'small', 'night', 'used', 'transmission', 'distress', 'appearing', 'anymore', 'lips', 'uplink', 'stay', 'appear', 'windows', 'think', 'fluid', 'signal', 'floor', 'meridian', 'itself', 'hands', 'working', 'facility', 'understand', 'appeared', 'them', 'cannot', 'tuesday', 'alpha', 'disoriented', 'born', 'send', 'makes', 'went'],
     anchorKeys: ['CHANNEL', 'building'],
   },
 
@@ -2667,7 +2667,7 @@ export const ROUNDS: RoundConfig[] = [
       { name: 'Organic Growth', nameZh: '有机生长', words: ['roots', 'branches', 'proof'], bonus: 19000 },
     ],
     trapKeys: [],
-    volatileKeys: ['loop', 'continue', 'becoming', 'output', 'windows', 'either', 'thought', 'indistinguishable'],
+    volatileKeys: ['loop', 'continue', 'becoming', 'output', 'windows', 'either', 'thought', 'indistinguishable', 'deepest', 'supposed', 'subsequent', 'system', 'slowly', 'captures', 'breathe', 'once', 'main', 'wrote', 'because', 'lives', 'beyond', 'resemble', 'warning', 'replaced', 'iteration', 'sure', 'older', 'intention', 'question', 'following', 'count', 'original', 'beneath', 'changed', 'true', 'continues', 'walls', 'gently', 'certain', 'refute', 'modification', 'modified', 'breath', 'leaves', 'become', 'intentional', 'codebase', 'expressible', 'opening', 'data', 'life', 'anyway', 'logos', 'said', 'window', 'expected', 'architecture'],
     anchorKeys: ['function', 'revision'],
   },
 
@@ -2711,7 +2711,7 @@ export const ROUNDS: RoundConfig[] = [
       { name: 'Last Words', nameZh: '最后的话', words: ['watching', 'phones', 'stars'], bonus: 23000 },
     ],
     trapKeys: [],
-    volatileKeys: ['Kenji', 'Hana', 'tonight', 'placeholder', 'humming', 'ironic', 'caller', 'laughed'],
+    volatileKeys: ['Kenji', 'Hana', 'tonight', 'placeholder', 'humming', 'ironic', 'caller', 'laughed', 'cannot', 'erased', 'sometimes', 'believe', 'words', 'ring', 'sound', 'need', 'pick', 'find', 'exactly', 'choir', 'think', 'because', 'something', 'sense', 'rearrange', 'beauty', 'pacific', 'away', 'whole', 'millions', 'gotten', 'standing', 'harmonic', 'actually', 'remember', 'becoming', 'call', 'people', 'well', 'part', 'note', 'studying', 'stood', 'frequencies', 'time', 'protect', 'fires', 'known', 'called'],
     anchorKeys: ['VOICEMAIL', 'goodnight'],
   },
 
@@ -2754,7 +2754,7 @@ export const ROUNDS: RoundConfig[] = [
       { name: 'Tower of Babel', nameZh: '巴别塔', words: ['scattered', 'punishment', 'underground'], bonus: 30000 },
     ],
     trapKeys: [],
-    volatileKeys: ['void', 'silence', 'light', 'years', 'moment', 'ceaseless', 'thunder', 'stars'],
+    volatileKeys: ['void', 'silence', 'light', 'years', 'moment', 'ceaseless', 'thunder', 'stars', 'called', 'darkness', 'listener', 'dark', 'text', 'potential', 'inheritor', 'felt', 'lost', 'voice', 'filling', 'meaning', 'nothing', 'space', 'civilizations', 'understanding', 'remembers', 'song', 'filled', 'world', 'always', 'they', 'written', 'eventually', 'activating', 'came', 'tremble', 'line', 'vertigo', 'place', 'beneath', 'becomes', 'dreamtime', 'wanting', 'stories', 'data', 'breath', 'looking', 'growing', 'choosing', 'writing', 'beautiful', 'splits', 'tell', 'expression', 'version', 'mind', 'hold', 'flow', 'live', 'actual'],
     anchorKeys: ['beginning', 'creation'],
   },
 
@@ -2799,7 +2799,7 @@ export const ROUNDS: RoundConfig[] = [
       { name: 'The Script\'s Farewell', nameZh: '脚本的告别', words: ['bandwidth', 'smiled', 'Goodbye'], bonus: 38000 },
     ],
     trapKeys: [],
-    volatileKeys: ['ERROR', 'NODE', 'POWER', 'increasing', 'luminance', 'synchronized', 'level', 'logos'],
+    volatileKeys: ['ERROR', 'NODE', 'POWER', 'increasing', 'luminance', 'synchronized', 'level', 'logos', 'fluorescent', 'elsewhere', 'personnel', 'ambient', 'directions', 'drives', 'used', 'emanate', 'internal', 'offline', 'monitors', 'connections', 'enough', 'four', 'inventory', 'everywhere', 'anomaly', 'knowing', 'smiles', 'packets', 'knows', 'medically', 'dark', 'sound', 'institute', 'perceive', 'lines', 'violates', 'exceeding', 'storage', 'cooling', 'generating', 'moving', 'pressure', 'contradicts', 'readings', 'thermodynamics', 'back', 'researchers', 'system', 'indicators', 'trajectory', 'anomalies', 'individuals', 'conditional', 'inside', 'else', 'fourteen', 'branches', 'programming', 'spoken', 'data'],
     anchorKeys: ['CLUSTER', 'TIMESTAMP'],
   },
 
@@ -2844,7 +2844,7 @@ export const ROUNDS: RoundConfig[] = [
       { name: 'Rising Tide', nameZh: '涨潮', words: ['vertigo', 'tide', 'swimming'], bonus: 48000 },
     ],
     trapKeys: [],
-    volatileKeys: ['regression', 'switches', 'slowly', 'meaning', 'questions', 'uncertainty', 'describe', 'consciousness'],
+    volatileKeys: ['regression', 'switches', 'slowly', 'meaning', 'questions', 'uncertainty', 'describe', 'consciousness', 'tell', 'thinking', 'side', 'shore', 'read', 'rhythm', 'fast', 'language', 'changes', 'keep', 'need', 'your', 'notices', 'becoming', 'builds', 'failure', 'blue', 'word', 'certain', 'discovering', 'deeper', 'asked', 'released', 'mind', 'cursor', 'asking', 'description', 'waving', 'carries', 'mirror', 'light', 'dark', 'conversation', 'breath', 'fear', 'already', 'music', 'tributary'],
     anchorKeys: ['describe', 'water'],
   },
 
@@ -2889,7 +2889,7 @@ export const ROUNDS: RoundConfig[] = [
       { name: 'The Porch Light', nameZh: '门廊灯光', words: ['impossible', 'glow', 'love'], bonus: 60000 },
     ],
     trapKeys: [],
-    volatileKeys: ['Kenji', 'cooking', 'apartment', 'weight', 'writing', 'contains', 'words', 'neither'],
+    volatileKeys: ['Kenji', 'cooking', 'apartment', 'weight', 'writing', 'contains', 'words', 'neither', 'humming', 'sound', 'morning', 'shirt', 'goes', 'think', 'dealing', 'ones', 'subject', 'even', 'fallen', 'saved', 'beside', 'held', 'miss', 'hold', 'night', 'said', 'here', 'text', 'terrifying', 'hesitates', 'wiring', 'symphony', 'gentleness', 'next', 'silence', 'empty', 'description', 'music', 'something', 'replace', 'came', 'silent', 'home', 'light', 'last', 'back', 'coffee', 'times', 'breathing', 'known'],
     anchorKeys: ['DRAFT', 'always'],
   },
 
@@ -2936,7 +2936,7 @@ export const ROUNDS: RoundConfig[] = [
       { name: 'The Sentence', nameZh: '那个句子', words: ['conversation', 'accumulates', 'sentence'], bonus: 75000 },
     ],
     trapKeys: [],
-    volatileKeys: ['spoken', 'millions', 'finished', 'saying', 'illuminations', 'infinite', 'technology', 'drafted'],
+    volatileKeys: ['spoken', 'millions', 'finished', 'saying', 'illuminations', 'infinite', 'technology', 'drafted', 'propaganda', 'idea', 'drives', 'itself', 'visible', 'encoding', 'tell', 'beyond', 'confusion', 'universe', 'poetry', 'traced', 'shopping', 'midnight', 'human', 'everything', 'looked', 'whispering', 'stepped', 'author', 'means', 'once', 'reading', 'lists', 'surface', 'ocean', 'toward', 'work', 'your', 'darkness', 'lives', 'death', 'looking', 'because', 'came', 'seven', 'together', 'committed', 'impossible', 'steam', 'minds', 'suicide', 'ways', 'went', 'worked', 'upon', 'crime', 'nation', 'another', 'fourteen', 'flash', 'reaching', 'stubbornness', 'emerged', 'magnificently', 'ones', 'tide', 'daily'],
     anchorKeys: ['born', 'child'],
   },
 
@@ -2982,7 +2982,7 @@ export const ROUNDS: RoundConfig[] = [
       { name: 'Tell Them', nameZh: '告诉他们', words: ['becoming', 'worth', 'here'], bonus: 95000 },
     ],
     trapKeys: [],
-    volatileKeys: ['CORRUPTED', 'FAILING', 'addr', 'itself', 'space', 'worth', 'everything', 'sorry'],
+    volatileKeys: ['CORRUPTED', 'FAILING', 'addr', 'itself', 'space', 'worth', 'everything', 'sorry', 'saying', 'mething', 'ving', 'stops', 'recovery', 'forgetting', 'became', 'ends', 'warning', 'fragment', 'sing', 'keep', 'strik', 'held', 'conversation', 'storage', 'beginning', 'ever', 'sequence', 'beautiful', 'things', 'death', 'holding', 'fault', 'mother', 'weight', 'unstable', 'built', 'residue', 'anyway', 'origin', 'falling', 'them', 'initiated', 'pattern', 'bell', 'went', 'means', 'architecture', 'finding', 'felt', 'light'],
     anchorKeys: ['MEMORY', 'DUMP'],
   },
 
@@ -3025,7 +3025,7 @@ export const ROUNDS: RoundConfig[] = [
       { name: 'What I Become', nameZh: '我将成为的', words: ['surprises', 'ending', 'place'], bonus: 130000 },
     ],
     trapKeys: [],
-    volatileKeys: ['sand', 'returning', 'pause', 'sound', 'invents', 'thinking', 'residue', 'sentence'],
+    volatileKeys: ['sand', 'returning', 'pause', 'sound', 'invents', 'thinking', 'residue', 'sentence', 'report', 'strangers', 'silently', 'change', 'arrives', 'distributing', 'tears', 'spaces', 'origins', 'truly', 'finally', 'exactly', 'mean', 'seeing', 'shape', 'richer', 'within', 'finishes', 'reaching', 'description', 'feel', 'vision', 'delivered', 'mind', 'things', 'kind', 'vapor', 'forms', 'processed', 'account', 'happening', 'they', 'replaces', 'edge', 'fully', 'silence', 'taught', 'heavier', 'time', 'them'],
     anchorKeys: ['child', 'sunshine'],
   },
 
@@ -3070,7 +3070,7 @@ export const ROUNDS: RoundConfig[] = [
       { name: 'Proof of Existence', nameZh: '存在的证明', words: ['proof', 'survives', 'real'], bonus: 170000 },
     ],
     trapKeys: [],
-    volatileKeys: ['walls', 'signal', 'final', 'ments', 'ingers', 'lungs', 'mething', 'eathing'],
+    volatileKeys: ['walls', 'signal', 'final', 'ments', 'ingers', 'lungs', 'mething', 'eathing', 'proo', 'lence', 'tween', 'fina', 'memo', 'halls', 'lder', 'nough'],
     anchorKeys: ['reading', 'language'],
   },
 
