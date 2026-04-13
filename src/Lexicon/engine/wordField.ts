@@ -74,6 +74,11 @@ export function flatPassageTokens(passage: string): string[] {
   return tokens;
 }
 
+/** Strip punctuation for matching */
+function cleanWord(w: string): string {
+  return w.replace(/^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/g, '').toLowerCase();
+}
+
 // ── Build word array ─────────────────────────────────────────────────────────
 
 interface BuildConfig {
@@ -95,40 +100,34 @@ export function buildWords(cfg: BuildConfig): { words: Word[]; totalHeight: numb
   const positions = computePositions(cfg);
   const tokens = flatPassageTokens(cfg.passage);
   const usedTarget = new Set<number>();
-  const usedTrap = new Set<number>();
-  const usedVolatile = new Set<number>();
-  const usedAnchor = new Set<number>();
+  const usedTrap = new Set<string>();
   const words: Word[] = [];
+
+  // Pre-build lowercase sets for fast matching
+  const volatileSet = new Set(cfg.volatileKeys.map(k => k.toLowerCase()));
+  const anchorSet = new Set(cfg.anchorKeys.map(k => k.toLowerCase()));
 
   for (let i = 0; i < tokens.length; i++) {
     const text = tokens[i];
     const pos = positions[i] || { hx: 0, hy: 0, tw: 10 };
+    const cleaned = cleanWord(text);
 
-    // Match word type
+    // Match word type (case-insensitive, punctuation-stripped)
     let meta: WordMeta = { text, type: 'normal' };
 
-    const ti = cfg.targets.findIndex(t => t.text === text);
+    const ti = cfg.targets.findIndex(t => t.text.toLowerCase() === cleaned);
     if (ti >= 0 && !usedTarget.has(ti)) {
-      meta = cfg.targets[ti];
+      meta = { ...cfg.targets[ti], text }; // keep original display text
       usedTarget.add(ti);
-    } else {
-      const trapI = cfg.trapKeys.indexOf(text);
-      if (trapI >= 0 && !usedTrap.has(trapI)) {
-        meta = { text, type: 'trap' };
-        usedTrap.add(trapI);
-      } else {
-        const volI = cfg.volatileKeys.indexOf(text);
-        if (volI >= 0 && !usedVolatile.has(volI)) {
-          meta = { text, type: 'volatile' };
-          usedVolatile.add(volI);
-        } else {
-          const ancI = cfg.anchorKeys.indexOf(text);
-          if (ancI >= 0 && !usedAnchor.has(ancI)) {
-            meta = { text, type: 'anchor' };
-            usedAnchor.add(ancI);
-          }
-        }
-      }
+    } else if (cfg.trapKeys.some(k => k.toLowerCase() === cleaned) && !usedTrap.has(cleaned)) {
+      meta = { text, type: 'trap' };
+      usedTrap.add(cleaned);
+    } else if (volatileSet.has(cleaned)) {
+      // Volatile: match EVERY occurrence (no usedVolatile limit)
+      meta = { text, type: 'volatile' };
+    } else if (anchorSet.has(cleaned)) {
+      // Anchor: match every occurrence too
+      meta = { text, type: 'anchor' };
     }
 
     words.push({
