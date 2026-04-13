@@ -42,8 +42,8 @@ export default function Lexicon() {
   // Pipeline entries are passed to GameCanvas via ref (no queue)
   // Toast removed — score flip cards show collection feedback
   const [shopOffered, setShopOffered] = useState<Glyph[]>([]);
-  // toastIdRef removed
   const pipelineEntryRef = useRef<PipelineEntry | null>(null);
+  const streakTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const roundConfig = getRound(state.round - 1);
 
@@ -64,10 +64,16 @@ export default function Lexicon() {
 
   // ── Word collected ─────────────────────────────────────────────────────────
   const handleWordCollected = useCallback((word: Word) => {
+    // Reset streak decay timer — streak resets after 1.5s of no collections
+    if (streakTimerRef.current) clearTimeout(streakTimerRef.current);
+    streakTimerRef.current = setTimeout(() => {
+      setState(prev => ({ ...prev, streak: 0 }));
+    }, 1500);
+
     setState(prev => {
       if (prev.phase !== 'playing') return prev;
       const newStreak = prev.streak + 1;
-      void locale; // brief display removed (handled by score flip cards)
+      void locale;
 
       // Check phrase completion
       const allCollected = [...prev.wordsCollectedThisRound, word.meta.text];
