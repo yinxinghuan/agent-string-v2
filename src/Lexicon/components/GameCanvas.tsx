@@ -56,7 +56,7 @@ function spawnScoreEntity(entry: PipelineEntry, x: number, y: number, scrollY: n
     multiplier,
     badges,
     age: 0,
-    maxAge: 2.5,
+    maxAge: 0.9,  // quick cycle: appear → show → fade → next in queue
     repelR: 140,
   };
 }
@@ -232,6 +232,7 @@ export default function GameCanvas({
   const floatsRef = useRef<{ x: number; y: number; text: string; color: string; life: number; maxLife: number }[]>([]);
   const shatterPartsRef = useRef<{ x: number; y: number; vx: number; vy: number; char: string; life: number }[]>([]);
   const scoreEntitiesRef = useRef<ScoreEntity[]>([]);
+  const scoreQueueRef = useRef<ScoreEntity[]>([]);
   const geomsRef = useRef<GeomShape[]>([]);
   const screenShakeRef = useRef(0);
   const surgeRef = useRef({ active: false, timer: 0 });
@@ -264,6 +265,7 @@ export default function GameCanvas({
     // Near-zero offset — first words visible within 1 second
     scrollYRef.current = -(canvas.height * 0.05);
     scoreEntitiesRef.current = [];
+    scoreQueueRef.current = [];
     geomsRef.current = [];
     burstsRef.current = [];
     floatsRef.current = [];
@@ -500,9 +502,13 @@ export default function GameCanvas({
         const mult = streakStep ? streakStep.value : 1;
         const streak = mult >= 50 ? 15 : mult >= 30 ? 12 : mult >= 20 ? 10 : mult >= 12 ? 8 : mult >= 7 ? 6 : mult >= 5 ? 5 : mult >= 3 ? 4 : mult >= 2 ? 3 : 1;
         const entity = spawnScoreEntity(entry, cx, cy, scrollYRef.current, streak, mult);
-        // Hard cap — skip if too many already (prevents chain explosion lag)
-        if (scoreEntitiesRef.current.length < 8) {
+        // Only one score entity at a time — queue style, one appears then disappears
+        if (scoreEntitiesRef.current.length === 0) {
           scoreEntitiesRef.current.push(entity);
+        } else {
+          // Queue: store pending and swap in when current one expires
+          if (!scoreQueueRef.current) scoreQueueRef.current = [];
+          scoreQueueRef.current.push(entity);
         }
         // Burst scales with multiplier — bigger chains = bigger explosions!
         const burstSize = 40 + Math.min(mult * 8, 80);
@@ -513,8 +519,13 @@ export default function GameCanvas({
         if (entry.steps.length > 0) stepSoundForType(entry.steps[0]);
       }
 
-      // Update score entities — push words and trigger chains (capped)
-      const canChain = scoreEntitiesRef.current.length < 6; // stop chaining if too many
+      // Advance queue: when current entity expires, pop next one in
+      scoreEntitiesRef.current = scoreEntitiesRef.current.filter(se => se.age < se.maxAge);
+      if (scoreEntitiesRef.current.length === 0 && scoreQueueRef.current.length > 0) {
+        scoreEntitiesRef.current.push(scoreQueueRef.current.shift()!);
+      }
+
+      // Update score entities — push words and trigger chains
       for (const se of scoreEntitiesRef.current) {
         se.age += dt;
         const seScreenY = se.y - scrollYRef.current;
@@ -530,8 +541,8 @@ export default function GameCanvas({
             w.vx += (dx / d) * f;
             w.vy += (dy / d) * f;
 
-            // Chain reaction: only if not already overloaded
-            if (canChain && !w.collected && (w.meta.type === 'target' || w.meta.type === 'time' || w.meta.type === 'volatile') && d < COLLECT_R * 0.9) {
+            // Chain reaction: staggered by distance + random delay
+            if (!w.collected && (w.meta.type === 'target' || w.meta.type === 'time' || w.meta.type === 'volatile') && d < COLLECT_R * 0.9) {
               const proximity = 1 - (d / (COLLECT_R * 0.9));
               // Random factor per word (seeded by position) — adds luck/surprise
               const randomFactor = 0.4 + ((w.id * 7919) % 100) / 100 * 0.6; // 0.4-1.0
@@ -546,7 +557,7 @@ export default function GameCanvas({
           }
         }
       }
-      scoreEntitiesRef.current = scoreEntitiesRef.current.filter(se => se.age < se.maxAge);
+      // (filtering done above in queue advance)
 
       // Surge timer
       if (surgeRef.current.active) {
