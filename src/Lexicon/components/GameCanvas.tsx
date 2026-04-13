@@ -502,12 +502,14 @@ export default function GameCanvas({
         const mult = streakStep ? streakStep.value : 1;
         const streak = mult >= 50 ? 15 : mult >= 30 ? 12 : mult >= 20 ? 10 : mult >= 12 ? 8 : mult >= 7 ? 6 : mult >= 5 ? 5 : mult >= 3 ? 4 : mult >= 2 ? 3 : 1;
         const entity = spawnScoreEntity(entry, cx, cy, scrollYRef.current, streak, mult);
-        // Only one score entity at a time — queue style, one appears then disappears
+        // One at a time — queue with max length
         if (scoreEntitiesRef.current.length === 0) {
           scoreEntitiesRef.current.push(entity);
         } else {
-          // Queue: store pending and swap in when current one expires
-          if (!scoreQueueRef.current) scoreQueueRef.current = [];
+          // Keep queue short — drop oldest if too many
+          if (scoreQueueRef.current.length >= 10) {
+            scoreQueueRef.current.shift();
+          }
           scoreQueueRef.current.push(entity);
         }
         // Burst scales with multiplier — bigger chains = bigger explosions!
@@ -813,26 +815,18 @@ export default function GameCanvas({
           bx += BADGE_R * 2 + 6;
         }
 
-        // Score number — size and color escalate with multiplier
-        const baseSize = se.multiplier >= 10 ? 96 : se.multiplier >= 5 ? 84 : se.multiplier >= 2 ? 76 : 56;
-        const sizeBoost = Math.min(se.score / 80, 1) * 20;
-        const scoreFontSize = Math.round(baseSize + sizeBoost);
+        // Score + multiplier as a single line: "+9 ×3"
+        const baseSize = se.multiplier >= 10 ? 72 : se.multiplier >= 5 ? 64 : se.multiplier >= 2 ? 58 : 48;
+        const scoreFontSize = baseSize;
+        const tc = vis?.textColor ?? INK;
+
+        // Draw score
         ctx.font = `700 ${scoreFontSize}px ${SCORE_FONT}`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-
-        // Score text color matches level text color
-        const tc = vis?.textColor ?? INK;
         ctx.fillStyle = `rgba(${tc[0]},${tc[1]},${tc[2]},${0.9 * alpha})`;
-        ctx.fillText(`+${se.score}`, 0, 8);
-
-        // Show multiplier below the score when streak >= 2
-        if (se.multiplier >= 2) {
-          ctx.font = `600 ${Math.round(scoreFontSize * 0.35)}px ${FONT_FAMILY}`;
-          const multColor = `${tc[0]},${tc[1]},${tc[2]}`;
-          ctx.fillStyle = `rgba(${multColor},${0.8 * alpha})`;
-          ctx.fillText(`×${se.multiplier}`, 0, 8 + scoreFontSize * 0.4);
-        }
+        const scoreText = se.multiplier >= 2 ? `+${se.score}  ×${se.multiplier}` : `+${se.score}`;
+        ctx.fillText(scoreText, 0, 0);
 
         ctx.restore();
       }
