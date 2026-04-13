@@ -259,6 +259,12 @@ export default function GameCanvas({
     // Start scroll negative so text begins well below the Redline, scrolling upward into play
     // Near-zero offset — first words visible within 1 second
     scrollYRef.current = -(canvas.height * 0.05);
+    scoreEntitiesRef.current = [];
+    geomsRef.current = [];
+    burstsRef.current = [];
+    floatsRef.current = [];
+    shatterPartsRef.current = [];
+    screenShakeRef.current = 0;
     initedRef.current = true;
   }, [roundConfig]);
 
@@ -338,17 +344,17 @@ export default function GameCanvas({
       const speed = roundConfig.scrollSpeed * (surgeRef.current.active ? SURGE_SPEED_MULT : 1);
       scrollYRef.current += speed * dt;
 
-      // Recycle words that scroll off the top (like v1)
+      // Recycle words that scroll off the top
       const totalH = totalHRef.current;
       for (const w of wordsRef.current) {
         const sy = w.y - scrollYRef.current;
         if (sy < -80) {
-          // Word scrolled off top — recycle to bottom
-          if (w.collected || w.trapTriggered) continue; // don't recycle done words
-          if (w.shattered) {
-            // Reset shattered words so they get another chance
-            w.shattered = false;
-          }
+          // Target words (non-volatile) stay collected permanently
+          if (w.collected && w.meta.type === 'target') continue;
+          if (w.trapTriggered) continue;
+          // Volatile/anchor/time words: reset and recycle for re-collection!
+          w.collected = false;
+          w.shattered = false;
           w.hy += totalH;
           w.y = w.hy;
           w.x = w.hx;
