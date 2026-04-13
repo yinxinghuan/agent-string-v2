@@ -618,56 +618,43 @@ export default function GameCanvas({
         const fontSize = roundConfig.fontSize;
         ctx.font = `${fontSize}px ${FONT_FAMILY}`;
 
+        const tc = vis?.textColor ?? INK;
         let alpha = vis?.textAlpha ?? 0.68;
-        let color: [number, number, number] = vis?.textColor ?? INK;
+        let color: [number, number, number] = tc;
 
         if (w.collected) {
-          // Target words: stay faded. Volatile: briefly flash then normal
-          if (w.meta.type === 'target') {
-            alpha = 0.2;
-          } else {
-            // Volatile/anchor/time: quick fade then back to normal on recycle
-            alpha = 0.35;
-          }
+          // Collected words: skip rendering entirely (clean look)
+          continue;
         } else if (w.shattered) {
-          continue; // don't render
+          continue;
         } else if (w.trapTriggered) {
-          color = TRAP_RGB;
-          alpha = 0.6;
+          continue;
+        } else if (w.meta.type === 'normal') {
+          // Non-interactive words: dim background text
+          alpha = (vis?.textAlpha ?? 0.68) * 0.45;
         } else if (w.meta.type === 'target' || w.meta.type === 'time') {
-          // Gradually reveal color as proximity increases
+          // Target/time: bright, colored on proximity
           const groupColor = w.meta.group !== undefined ? GROUP_COLORS[w.meta.group % 3] : [100, 160, 80] as [number, number, number];
           const reveal = w.revealAlpha;
           color = [
-            Math.round(INK[0] + (groupColor[0] - INK[0]) * reveal),
-            Math.round(INK[1] + (groupColor[1] - INK[1]) * reveal),
-            Math.round(INK[2] + (groupColor[2] - INK[2]) * reveal),
+            Math.round(tc[0] + (groupColor[0] - tc[0]) * reveal),
+            Math.round(tc[1] + (groupColor[1] - tc[1]) * reveal),
+            Math.round(tc[2] + (groupColor[2] - tc[2]) * reveal),
           ] as [number, number, number];
-          alpha = 0.55 + reveal * 0.40;
-        } else if (w.meta.type === 'trap') {
-          const reveal = w.revealAlpha;
-          if (reveal > 0.2) {
-            color = [
-              Math.round(INK[0] + (TRAP_RGB[0] - INK[0]) * reveal),
-              Math.round(INK[1] + (TRAP_RGB[1] - INK[1]) * reveal),
-              Math.round(INK[2] + (TRAP_RGB[2] - INK[2]) * reveal),
-            ] as [number, number, number];
-          }
-          alpha = 0.55 + reveal * 0.3;
+          alpha = 0.75 + reveal * 0.25;
         } else if (w.meta.type === 'volatile') {
+          // Volatile: normal brightness, golden tint on proximity
           const reveal = w.revealAlpha;
           const vc: [number, number, number] = [200, 160, 40];
-          if (reveal > 0.1) {
-            color = [
-              Math.round(INK[0] + (vc[0] - INK[0]) * reveal * 0.5),
-              Math.round(INK[1] + (vc[1] - INK[1]) * reveal * 0.5),
-              Math.round(INK[2] + (vc[2] - INK[2]) * reveal * 0.5),
-            ] as [number, number, number];
-          }
-          alpha = 0.55;
+          color = [
+            Math.round(tc[0] + (vc[0] - tc[0]) * reveal * 0.5),
+            Math.round(tc[1] + (vc[1] - tc[1]) * reveal * 0.5),
+            Math.round(tc[2] + (vc[2] - tc[2]) * reveal * 0.5),
+          ] as [number, number, number];
+          alpha = 0.72 + reveal * 0.28;
         } else if (w.meta.type === 'anchor') {
           const reveal = w.revealAlpha;
-          alpha = 0.55 + reveal * 0.4;
+          alpha = 0.72 + reveal * 0.28;
           ctx.font = `500 ${fontSize}px ${FONT_FAMILY}`;
         }
 
