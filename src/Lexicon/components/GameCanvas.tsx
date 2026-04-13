@@ -500,11 +500,10 @@ export default function GameCanvas({
         const mult = streakStep ? streakStep.value : 1;
         const streak = mult >= 50 ? 15 : mult >= 30 ? 12 : mult >= 20 ? 10 : mult >= 12 ? 8 : mult >= 7 ? 6 : mult >= 5 ? 5 : mult >= 3 ? 4 : mult >= 2 ? 3 : 1;
         const entity = spawnScoreEntity(entry, cx, cy, scrollYRef.current, streak, mult);
-        // Limit max score entities to prevent performance death
-        if (scoreEntitiesRef.current.length >= 12) {
-          scoreEntitiesRef.current.shift(); // remove oldest
+        // Hard cap — skip if too many already (prevents chain explosion lag)
+        if (scoreEntitiesRef.current.length < 8) {
+          scoreEntitiesRef.current.push(entity);
         }
-        scoreEntitiesRef.current.push(entity);
         // Burst scales with multiplier — bigger chains = bigger explosions!
         const burstSize = 40 + Math.min(mult * 8, 80);
         const burstColor: [number, number, number] = mult >= 10 ? [255, 220, 160] : mult >= 5 ? [220, 180, 60] : mult >= 2 ? [100, 200, 120] : [60, 140, 80];
@@ -514,7 +513,8 @@ export default function GameCanvas({
         if (entry.steps.length > 0) stepSoundForType(entry.steps[0]);
       }
 
-      // Update score entities — they push words and trigger chain collections
+      // Update score entities — push words and trigger chains (capped)
+      const canChain = scoreEntitiesRef.current.length < 6; // stop chaining if too many
       for (const se of scoreEntitiesRef.current) {
         se.age += dt;
         const seScreenY = se.y - scrollYRef.current;
@@ -530,8 +530,8 @@ export default function GameCanvas({
             w.vx += (dx / d) * f;
             w.vy += (dy / d) * f;
 
-            // Chain reaction: staggered by distance + random delay for unpredictability
-            if (!w.collected && (w.meta.type === 'target' || w.meta.type === 'time' || w.meta.type === 'volatile') && d < COLLECT_R * 0.9) {
+            // Chain reaction: only if not already overloaded
+            if (canChain && !w.collected && (w.meta.type === 'target' || w.meta.type === 'time' || w.meta.type === 'volatile') && d < COLLECT_R * 0.9) {
               const proximity = 1 - (d / (COLLECT_R * 0.9));
               // Random factor per word (seeded by position) — adds luck/surprise
               const randomFactor = 0.4 + ((w.id * 7919) % 100) / 100 * 0.6; // 0.4-1.0
