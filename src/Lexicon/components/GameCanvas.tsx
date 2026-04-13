@@ -233,6 +233,7 @@ export default function GameCanvas({
   const shatterPartsRef = useRef<{ x: number; y: number; vx: number; vy: number; char: string; life: number }[]>([]);
   const scoreEntitiesRef = useRef<ScoreEntity[]>([]);
   const scoreQueueRef = useRef<ScoreEntity[]>([]);
+  const chainCountRef = useRef(0); // counts chain collections for rising pitch
   const geomsRef = useRef<GeomShape[]>([]);
   const screenShakeRef = useRef(0);
   const surgeRef = useRef({ active: false, timer: 0 });
@@ -266,6 +267,7 @@ export default function GameCanvas({
     scrollYRef.current = -(canvas.height * 0.05);
     scoreEntitiesRef.current = [];
     scoreQueueRef.current = [];
+    chainCountRef.current = 0;
     geomsRef.current = [];
     burstsRef.current = [];
     floatsRef.current = [];
@@ -423,8 +425,9 @@ export default function GameCanvas({
           addBurst(w.x, screenY, [255, 255, 255], 35);
           addFloat(w.x, screenY, w.meta.text, `rgb(${color[0]},${color[1]},${color[2]})`);
         } else if (w.meta.type === 'volatile') {
-          // Volatile: chain sound (pitch rises with streak in parent)
-          sfxChain(result.collected.indexOf(w) + 1);
+          // Volatile: rising pitch sound — each collection goes higher
+          chainCountRef.current++;
+          sfxChain(chainCountRef.current);
           onWordCollected(w);
           addBurst(w.x, screenY, [180, 160, 60], 45);
           addFloat(w.x, screenY, w.meta.text, 'rgba(160,140,50,0.8)');
@@ -529,12 +532,7 @@ export default function GameCanvas({
         addBurst(cx, cy, burstColor, burstSize);
         if (mult >= 3) addBurst(cx, cy, burstColor, burstSize * 0.6);
         if (mult >= 7) { addBurst(cx, cy, [255, 255, 255], burstSize * 0.4); screenShakeRef.current = Math.min(0.5, mult * 0.04); }
-        // Chain sound — pitch rises with streak
-        if (streak >= 2) {
-          sfxChain(streak);
-        } else if (entry.steps.length > 0) {
-          stepSoundForType(entry.steps[0]);
-        }
+        // Sound played by collection handler (sfxChain for volatile, sfxCollect for targets)
       }
 
       // Advance queue: when current entity expires, pop next one in
@@ -573,6 +571,11 @@ export default function GameCanvas({
             }
           }
         }
+      }
+
+      // Decay chain count (resets pitch after ~2s of no volatile collections)
+      if (chainCountRef.current > 0 && scoreEntitiesRef.current.length === 0 && scoreQueueRef.current.length === 0) {
+        chainCountRef.current = Math.max(0, chainCountRef.current - dt * 8);
       }
 
       // Surge timer
