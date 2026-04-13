@@ -422,8 +422,14 @@ export default function GameCanvas({
           addBurst(w.x, screenY, color, 65);
           addBurst(w.x, screenY, [255, 255, 255], 35);
           addFloat(w.x, screenY, w.meta.text, `rgb(${color[0]},${color[1]},${color[2]})`);
+        } else if (w.meta.type === 'volatile') {
+          // Volatile: chain sound (pitch rises with streak in parent)
+          sfxChain(result.collected.indexOf(w) + 1);
+          onWordCollected(w);
+          addBurst(w.x, screenY, [180, 160, 60], 45);
+          addFloat(w.x, screenY, w.meta.text, 'rgba(160,140,50,0.8)');
         } else {
-          // Common: single burst
+          // Common target: bell sound
           sfxCollect(w.meta.group ?? 0);
           onWordCollected(w);
           addBurst(w.x, screenY, color);
