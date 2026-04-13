@@ -1,5 +1,5 @@
 import { useRef, useEffect, useCallback, type MutableRefObject } from 'react';
-import type { Word, RoundConfig, Burst, PipelineEntry, PipelineStep } from '../types';
+import type { Word, RoundConfig, Burst, PipelineEntry } from '../types';
 import { buildWords, physicsStep } from '../engine/wordField';
 import {
   INK, TRAP_RGB, GROUP_COLORS, FONT_FAMILY, BG_COLOR,
@@ -7,7 +7,7 @@ import {
   PRESSURE_PER_COLLECT, PRESSURE_PER_SHATTER, PRESSURE_MAX,
   SURGE_SPEED_MULT, ANCHOR_TIME_BONUS, TRAP_TIME_PENALTY,
 } from '../constants';
-import { sfxCollect, sfxTrap, sfxShatter, sfxTime, sfxVolatile, sfxSurgeStart, sfxChain, sfxPipelineBase, sfxPipelineStreak, sfxPipelineGlyph, sfxPipelinePhrase, sfxPipelineFinal, resumeAudio } from '../utils/sounds';
+import { sfxCollect, sfxTrap, sfxShatter, sfxTime, sfxVolatile, sfxSurgeStart, sfxChain, resumeAudio } from '../utils/sounds';
 
 const GLITCH_CHARS = '!@#$%^&*~<>[]{}?|01_';
 function glitchText(text: string, seed: number): string {
@@ -61,15 +61,7 @@ function spawnScoreEntity(entry: PipelineEntry, screenX: number, screenY: number
   };
 }
 
-function stepSoundForType(step: PipelineStep): void {
-  switch (step.type) {
-    case 'base': sfxPipelineBase(); break;
-    case 'streak': sfxPipelineStreak(); break;
-    case 'glyph': sfxPipelineGlyph(); break;
-    case 'phrase': sfxPipelinePhrase(); break;
-    case 'final': sfxPipelineFinal(); break;
-  }
-}
+// stepSoundForType removed — sound handled by collection handlers
 
 // ── Visual Effects Renderers ──────────────────────────────────────────────────
 import type { LevelVisuals } from '../types';
