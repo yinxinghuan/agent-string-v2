@@ -24,8 +24,15 @@ export default function EndScreen({ state, roundConfig, phraseSets, isRunEnd, on
         ? (locale === 'zh' ? '通关' : 'CLEARED')
         : (locale === 'zh' ? '信号丢失' : 'SIGNAL LOST');
 
+  const vis = roundConfig.visuals;
+  const isDark = vis && (vis.bgColor.startsWith('#0') || vis.bgColor.startsWith('#1') || vis.bgColor === '#000000');
+  const endStyle: React.CSSProperties = {
+    background: vis?.bgColor || '#f5f0e6',
+    color: isDark ? 'rgba(248,250,252,0.85)' : undefined,
+  };
+
   return (
-    <div className="lex-screen lex-end" style={{ background: roundConfig.visuals?.bgColor || '#f5f0e6' }}>
+    <div className={`lex-screen lex-end ${isDark ? 'lex-end--dark' : ''}`} style={endStyle}>
       <div className="lex-end__inner">
         <div className="lex-end__label">// R{state.round} · {locale === 'zh' ? roundConfig.actNameZh : roundConfig.actName}</div>
         <div className="lex-end__rule" />

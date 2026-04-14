@@ -655,21 +655,20 @@ export default function GameCanvas({
         ctx.font = `${fontSize}px ${FONT_FAMILY}`;
 
         const tc = vis?.textColor ?? INK;
-        let alpha = vis?.textAlpha ?? 0.68;
+        let alpha = vis?.textAlpha ?? 0.85;
         let color: [number, number, number] = tc;
+        let strikethrough = false;
 
         if (w.collected) {
-          // Collected words: skip rendering entirely (clean look)
-          continue;
-        } else if (w.shattered) {
-          continue;
-        } else if (w.trapTriggered) {
+          // Collected: show with strikethrough, dimmed
+          alpha = (vis?.textAlpha ?? 0.85) * 0.3;
+          strikethrough = true;
+        } else if (w.shattered || w.trapTriggered) {
           continue;
         } else if (w.meta.type === 'normal') {
-          // Non-interactive words: dim background text
-          alpha = (vis?.textAlpha ?? 0.68) * 0.45;
+          // Non-interactive: slightly dimmer than interactive
+          alpha = (vis?.textAlpha ?? 0.85) * 0.6;
         } else if (w.meta.type === 'target' || w.meta.type === 'time') {
-          // Target/time: bright, colored on proximity
           const groupColor = w.meta.group !== undefined ? GROUP_COLORS[w.meta.group % 3] : [100, 160, 80] as [number, number, number];
           const reveal = w.revealAlpha;
           color = [
@@ -677,9 +676,8 @@ export default function GameCanvas({
             Math.round(tc[1] + (groupColor[1] - tc[1]) * reveal),
             Math.round(tc[2] + (groupColor[2] - tc[2]) * reveal),
           ] as [number, number, number];
-          alpha = 0.75 + reveal * 0.25;
+          alpha = 0.85 + reveal * 0.15;
         } else if (w.meta.type === 'volatile') {
-          // Volatile: normal brightness, golden tint on proximity
           const reveal = w.revealAlpha;
           const vc: [number, number, number] = [200, 160, 40];
           color = [
@@ -701,6 +699,17 @@ export default function GameCanvas({
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(text, w.x, sy);
+
+        // Strikethrough for collected words
+        if (strikethrough) {
+          const tw = ctx.measureText(text).width;
+          ctx.strokeStyle = ctx.fillStyle;
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.moveTo(w.x - tw / 2, sy);
+          ctx.lineTo(w.x + tw / 2, sy);
+          ctx.stroke();
+        }
 
         // Reveal circle for targets approaching collection
         if ((w.meta.type === 'target' || w.meta.type === 'time') && w.revealAlpha > 0.3 && !w.collected) {
