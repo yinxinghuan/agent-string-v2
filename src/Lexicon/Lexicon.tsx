@@ -11,6 +11,7 @@ import GameCanvas from './components/GameCanvas';
 import HUD from './components/HUD';
 // ScoreFlip removed — scoring now rendered on canvas as physics entities
 import StartScreen from './components/StartScreen';
+import LevelIntro from './components/LevelIntro';
 import EndScreen from './components/EndScreen';
 import GlyphShop from './components/GlyphShop';
 import './Lexicon.less';
@@ -53,11 +54,15 @@ export default function Lexicon() {
     const rc = getRound(0);
     setState({
       ...initialState(),
-      phase: 'playing',
+      phase: 'levelIntro',
       timeLeft: rc.timeLimit,
     });
     pipelineEntryRef.current = null;
-    // toast cleared
+  }, []);
+
+  // ── Level intro → start playing ──────────────────────────────────────────
+  const handleLevelStart = useCallback(() => {
+    setState(prev => ({ ...prev, phase: 'playing' }));
   }, []);
 
   // Toast removed — feedback via score flip cards
@@ -245,8 +250,9 @@ export default function Lexicon() {
 
       return {
         ...prev,
-        phase: 'playing',
+        phase: 'levelIntro',
         round: nextRound,
+        score: 0,
         timeLeft: rc.timeLimit,
         streak: 0,
         pressure: 0,
@@ -273,6 +279,14 @@ export default function Lexicon() {
     <div className="lex-root">
       {state.phase === 'menu' && (
         <StartScreen onStart={handleStart} />
+      )}
+
+      {state.phase === 'levelIntro' && (
+        <LevelIntro
+          round={state.round}
+          roundConfig={roundConfig}
+          onStart={handleLevelStart}
+        />
       )}
 
       {state.phase === 'playing' && (

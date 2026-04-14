@@ -52,6 +52,54 @@
   width: 100%; height: 1px; background: @ink-light; margin: 18px 0;
 }
 
+// ── Level Intro ──────────────────────────────────────────────────────────────
+.lex-intro__inner {
+  display: flex; flex-direction: column; align-items: center;
+  width: min(320px, 88vw); animation: lex-intro-fade 0.6s ease-out;
+}
+@keyframes lex-intro-fade {
+  0% { opacity: 0; transform: translateY(10px); } 100% { opacity: 1; transform: none; }
+}
+.lex-intro__act-label {
+  font-size: 10px; letter-spacing: 6px; color: @ink-dim; font-family: @font;
+  text-transform: uppercase;
+}
+.lex-intro__act-name {
+  font-size: clamp(24px, 6vw, 36px); letter-spacing: 10px; font-family: @font;
+  color: @ink; margin: 8px 0 12px; text-align: center;
+}
+.lex-intro__act-desc {
+  font-size: 13px; line-height: 1.8; color: @ink-mid; text-align: center;
+  font-family: -apple-system, 'Helvetica Neue', sans-serif;
+  margin-bottom: 8px;
+}
+.lex-intro__rule {
+  width: 100%; height: 1px; background: @ink-light; margin: 16px 0;
+}
+.lex-intro__round {
+  font-size: 11px; letter-spacing: 5px; color: @ink-dim; font-family: @font;
+}
+.lex-intro__title {
+  font-size: clamp(18px, 4.5vw, 26px); letter-spacing: 6px; color: @ink;
+  font-family: @font; text-align: center; margin: 6px 0;
+}
+.lex-intro__meta {
+  display: flex; gap: 8px; font-family: @font; font-size: 11px;
+  letter-spacing: 2px; color: @ink-dim;
+}
+
+// Dark mode intro
+.lex-intro--dark {
+  .lex-intro__act-label { color: rgba(248,250,252,0.35); }
+  .lex-intro__act-name { color: rgba(248,250,252,0.85); }
+  .lex-intro__act-desc { color: rgba(248,250,252,0.5); }
+  .lex-intro__rule { background: rgba(248,250,252,0.1); }
+  .lex-intro__round { color: rgba(248,250,252,0.35); }
+  .lex-intro__title { color: rgba(248,250,252,0.8); }
+  .lex-intro__meta { color: rgba(248,250,252,0.35); }
+  .lex-btn { color: rgba(248,250,252,0.7); border-color: rgba(248,250,252,0.2); }
+}
+
 // ── HUD ──────────────────────────────────────────────────────────────────────
 .lex-hud {
   position: fixed; top: 0; left: 0; right: 0; z-index: 15;

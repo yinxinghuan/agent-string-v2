@@ -134,7 +134,7 @@ export interface RoundConfig {
 }
 
 // ── Game state ───────────────────────────────────────────────────────────────
-export type Phase = 'menu' | 'playing' | 'shop' | 'roundEnd' | 'runEnd';
+export type Phase = 'menu' | 'levelIntro' | 'playing' | 'shop' | 'roundEnd' | 'runEnd';
 
 export interface GameState {
   phase: Phase;
