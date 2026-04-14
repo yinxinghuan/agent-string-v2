@@ -88,15 +88,75 @@
   letter-spacing: 2px; color: @ink-dim;
 }
 
+// Target words preview
+.lex-intro__section-label {
+  font-size: 9px; letter-spacing: 4px; color: @ink-dim; font-family: @font;
+  text-transform: uppercase; margin-bottom: 8px;
+}
+.lex-intro__targets {
+  display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-bottom: 14px;
+}
+.lex-intro__target {
+  font-family: @font; font-size: 13px; letter-spacing: 2px;
+  padding: 4px 10px; border: 1px solid @ink-light; color: @ink-mid;
+}
+.lex-intro__target--rare {
+  border-color: rgba(50, 100, 170, 0.4); color: rgb(50, 100, 170);
+}
+.lex-intro__target--legendary {
+  border-color: rgba(190, 130, 30, 0.5); color: rgb(180, 120, 20);
+  font-weight: 600;
+}
+.lex-intro__target-more {
+  font-family: @font; font-size: 11px; color: @ink-dim; padding: 4px 6px;
+}
+
+// Phrase combos
+.lex-intro__phrases {
+  display: flex; flex-direction: column; gap: 6px; width: 100%; margin-bottom: 14px;
+}
+.lex-intro__phrase {
+  display: flex; align-items: center; gap: 8px;
+  font-family: @font; font-size: 11px; letter-spacing: 1px;
+}
+.lex-intro__phrase-name {
+  color: @ink-mid; flex-shrink: 0;
+}
+.lex-intro__phrase-words {
+  color: @ink-dim; font-size: 10px; flex: 1; text-align: center;
+}
+.lex-intro__phrase-bonus {
+  color: rgb(50, 140, 70); font-weight: 600; flex-shrink: 0;
+}
+
+// Pass condition
+.lex-intro__pass {
+  display: flex; align-items: baseline; gap: 8px; margin-bottom: 16px;
+  font-family: @font;
+}
+.lex-intro__pass-label {
+  font-size: 10px; letter-spacing: 3px; color: @ink-dim;
+}
+.lex-intro__pass-score {
+  font-size: 28px; font-weight: 600; color: @ink; letter-spacing: 2px;
+}
+.lex-intro__pass-hint {
+  font-size: 11px; color: @ink-dim; letter-spacing: 1px;
+}
+
 // Dark mode intro
 .lex-intro--dark {
-  .lex-intro__act-label { color: rgba(248,250,252,0.35); }
-  .lex-intro__act-name { color: rgba(248,250,252,0.85); }
-  .lex-intro__act-desc { color: rgba(248,250,252,0.5); }
+  .lex-intro__act-label, .lex-intro__round, .lex-intro__section-label,
+  .lex-intro__pass-label, .lex-intro__pass-hint, .lex-intro__target-more { color: rgba(248,250,252,0.35); }
+  .lex-intro__act-name, .lex-intro__title { color: rgba(248,250,252,0.85); }
+  .lex-intro__act-desc, .lex-intro__phrase-name { color: rgba(248,250,252,0.5); }
   .lex-intro__rule { background: rgba(248,250,252,0.1); }
-  .lex-intro__round { color: rgba(248,250,252,0.35); }
-  .lex-intro__title { color: rgba(248,250,252,0.8); }
-  .lex-intro__meta { color: rgba(248,250,252,0.35); }
+  .lex-intro__target { color: rgba(248,250,252,0.6); border-color: rgba(248,250,252,0.15); }
+  .lex-intro__target--rare { color: rgba(120,170,240,0.9); border-color: rgba(120,170,240,0.3); }
+  .lex-intro__target--legendary { color: rgba(240,200,80,0.9); border-color: rgba(240,200,80,0.4); }
+  .lex-intro__phrase-words { color: rgba(248,250,252,0.35); }
+  .lex-intro__phrase-bonus { color: rgba(100,210,130,0.9); }
+  .lex-intro__pass-score { color: rgba(248,250,252,0.9); }
   .lex-btn { color: rgba(248,250,252,0.7); border-color: rgba(248,250,252,0.2); }
 }
 

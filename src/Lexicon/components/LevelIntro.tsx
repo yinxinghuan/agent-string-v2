@@ -67,13 +67,52 @@ export default function LevelIntro({ round, roundConfig, onStart }: LevelIntroPr
         <div className="lex-intro__title">
           {locale === 'zh' ? roundConfig.levelTitleZh : roundConfig.levelTitle}
         </div>
-        <div className="lex-intro__meta">
-          <span>{roundConfig.timeLimit}s</span>
-          <span>·</span>
-          <span>{locale === 'zh' ? `通关: ${roundConfig.passScore}` : `Pass: ${roundConfig.passScore}`}</span>
-        </div>
 
         <div className="lex-intro__rule" />
+
+        {/* Target words preview */}
+        <div className="lex-intro__section-label">
+          {locale === 'zh' ? '寻找这些词' : 'FIND THESE WORDS'}
+        </div>
+        <div className="lex-intro__targets">
+          {roundConfig.targets.slice(0, 6).map((t, i) => (
+            <span key={i} className={`lex-intro__target ${t.rarity === 'rare' ? 'lex-intro__target--rare' : ''} ${t.rarity === 'legendary' ? 'lex-intro__target--legendary' : ''}`}>
+              {t.text}
+            </span>
+          ))}
+          {roundConfig.targets.length > 6 && (
+            <span className="lex-intro__target-more">+{roundConfig.targets.length - 6}</span>
+          )}
+        </div>
+
+        {/* Phrase sets */}
+        {roundConfig.phraseSets.length > 0 && (
+          <>
+            <div className="lex-intro__section-label">
+              {locale === 'zh' ? '词组连锁 · 额外奖励' : 'PHRASE COMBOS · BONUS'}
+            </div>
+            <div className="lex-intro__phrases">
+              {roundConfig.phraseSets.map((ps, i) => (
+                <div key={i} className="lex-intro__phrase">
+                  <span className="lex-intro__phrase-name">{locale === 'zh' ? ps.nameZh : ps.name}</span>
+                  <span className="lex-intro__phrase-words">{ps.words.join(' + ')}</span>
+                  <span className="lex-intro__phrase-bonus">+{ps.bonus}</span>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+
+        <div className="lex-intro__rule" />
+
+        {/* Pass condition */}
+        <div className="lex-intro__pass">
+          <span className="lex-intro__pass-label">{locale === 'zh' ? '通关条件' : 'PASS'}</span>
+          <span className="lex-intro__pass-score">{roundConfig.passScore}</span>
+          <span className="lex-intro__pass-hint">
+            {locale === 'zh' ? `${roundConfig.timeLimit}秒内` : `in ${roundConfig.timeLimit}s`}
+          </span>
+        </div>
 
         <button className="lex-btn" onPointerDown={onStart}>
           {locale === 'zh' ? '开 始 解 读' : 'B E G I N'}
