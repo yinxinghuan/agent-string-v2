@@ -25,7 +25,9 @@ const TOP = 90;
 export function computePositions(cfg: LayoutConfig): WordPosition[] {
   const { passage, layoutMode, fontSize, lineSpace, margin, canvasWidth, fontFamily, ctx } = cfg;
   ctx.font = `${fontSize}px ${fontFamily}`;
-  const spW = ctx.measureText(' ').width;
+  // Detect Chinese text — use tighter spacing for CJK
+  const hasCJK = /[\u4e00-\u9fff]/.test(passage);
+  const spW = hasCJK ? fontSize * 0.3 : ctx.measureText(' ').width;
   const positions: WordPosition[] = [];
   const rawLines = passage.split('\n');
   let lineN = 0;
