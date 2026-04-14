@@ -7,7 +7,7 @@ export const ALL_GLYPHS: Glyph[] = [
     nameZh: '重力',
     description: '+5 base score to all words',
     descriptionZh: '所有词基础分 +5',
-    icon: '⚖',
+    icon: '[W]',
     evaluate: () => ({ operation: '+', value: 5, label: 'Weight +5' }),
   },
   {
@@ -83,7 +83,7 @@ export const ALL_GLYPHS: Glyph[] = [
     nameZh: '过载',
     description: 'If 3+ Glyphs trigger: all multipliers doubled',
     descriptionZh: '3+符文触发时倍率翻倍',
-    icon: '⚡',
+    icon: '[!]',
     evaluate: (ctx) => {
       return ctx.glyphTriggersThisWord >= 3
         ? { operation: 'x', value: 2, label: 'Overcharge x2' }
@@ -96,7 +96,7 @@ export const ALL_GLYPHS: Glyph[] = [
     nameZh: '收割',
     description: 'Completed phrase sets grant extra +50',
     descriptionZh: '完成词组额外 +50',
-    icon: '✦',
+    icon: '[*]',
     evaluate: (ctx) => {
       return ctx.phraseSetsCompleted.size > 0
         ? { operation: '+', value: ctx.phraseSetsCompleted.size * 50, label: `Harvest +${ctx.phraseSetsCompleted.size * 50}` }
