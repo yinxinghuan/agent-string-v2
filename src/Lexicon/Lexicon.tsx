@@ -318,7 +318,7 @@ export default function Lexicon() {
             pressure={state.pressure}
             surgeActive={state.surgeActive}
             glyphs={state.equippedGlyphs}
-            collected={state.wordsCollectedThisRound.length}
+            collected={state.wordsCollectedThisRound.filter(w => roundConfig.targets.some(t => t.text === w)).length}
             totalTargets={roundConfig.targets.filter(t => t.type === 'target').length}
             passScore={roundConfig.passScore}
             minTargets={roundConfig.minTargets}
