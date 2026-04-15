@@ -1,5 +1,5 @@
 import { t, locale } from '../i18n';
-import type { Glyph, LevelVisuals } from '../types';
+import type { Glyph, LevelVisuals, WordMeta } from '../types';
 
 interface HUDProps {
   round: number;
@@ -9,22 +9,22 @@ interface HUDProps {
   pressure: number;
   surgeActive: boolean;
   glyphs: Glyph[];
-  collected: number;
-  totalTargets: number;
+  targets: WordMeta[];
+  collectedWords: string[];
   passScore: number;
   minTargets: number;
   visuals?: LevelVisuals;
   onEndRound?: () => void;
 }
 
-export default function HUD({ round, score, timeLeft, streak, pressure, surgeActive, glyphs, collected, totalTargets, passScore, minTargets, visuals, onEndRound }: HUDProps) {
+export default function HUD({ round, score, timeLeft, streak, pressure, surgeActive, glyphs, targets, collectedWords, passScore, minTargets, visuals, onEndRound }: HUDProps) {
   const mins = Math.floor(Math.max(0, timeLeft) / 60);
   const secs = Math.floor(Math.max(0, timeLeft) % 60);
   const timeStr = `${mins}:${secs.toString().padStart(2, '0')}`;
   const isLow = timeLeft <= 15;
-  const passed = passScore > 0 && score >= passScore && collected >= minTargets;
+  const targetsCollected = collectedWords.filter(w => targets.some(t => t.text === w)).length;
+  const passed = passScore > 0 && score >= passScore && targetsCollected >= minTargets;
 
-  // Derive HUD colors from level visuals
   const isDark = visuals ? visuals.bgColor.startsWith('#0') || visuals.bgColor.startsWith('#1') || visuals.bgColor === '#000000' : false;
   const textStyle = isDark ? { color: 'rgba(248,250,252,0.7)' } : {};
   const scoreStyle = passed
@@ -53,7 +53,7 @@ export default function HUD({ round, score, timeLeft, streak, pressure, surgeAct
       <div className="lex-hud__progress-wrap" style={barBg ? { background: barBg } : undefined}>
         <div
           className="lex-hud__progress-fill"
-          style={{ width: `${totalTargets > 0 ? (collected / totalTargets) * 100 : 0}%` }}
+          style={{ width: `${targets.length > 0 ? (targetsCollected / targets.length) * 100 : 0}%` }}
         />
         {pressure > 0 && (
           <div
@@ -64,11 +64,21 @@ export default function HUD({ round, score, timeLeft, streak, pressure, surgeAct
         {surgeActive && <span className="lex-hud__surge-label">{t('surge')}</span>}
       </div>
 
-      <div className="lex-hud__found" style={dimStyle}>
-        <span style={collected >= minTargets ? { color: 'rgb(50,200,80)' } : undefined}>
-          {collected}/{minTargets > 0 ? minTargets : totalTargets}
-        </span>
+      {/* Target word tags */}
+      <div className="lex-hud__targets">
+        {targets.map(tgt => {
+          const found = collectedWords.includes(tgt.text);
+          return (
+            <span
+              key={tgt.text}
+              className={`lex-hud__target-tag ${found ? 'lex-hud__target-tag--found' : ''}`}
+            >
+              {tgt.text}
+            </span>
+          );
+        })}
       </div>
+
       {glyphs.length > 0 && (
         <div className="lex-hud__glyphs">
           {glyphs.map(g => (
