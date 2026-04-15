@@ -65,14 +65,14 @@ export default function HUD({ round, score, timeLeft, streak, pressure, surgeAct
 
       <div className="lex-hud__found" style={dimStyle}>
         <span>{collected}/{totalTargets}</span>
-        {glyphs.length > 0 && (
-          <span className="lex-hud__glyphs">
-            {glyphs.map(g => (
-              <span key={g.id} className="lex-hud__glyph" title={g.name}>{g.icon}</span>
-            ))}
-          </span>
-        )}
       </div>
+      {glyphs.length > 0 && (
+        <div className="lex-hud__glyphs">
+          {glyphs.map(g => (
+            <span key={g.id} className="lex-hud__glyph" title={g.name}>{g.icon}</span>
+          ))}
+        </div>
+      )}
 
       {passed && onEndRound && (
         <button className="lex-hud__end-btn" onPointerDown={onEndRound}>
