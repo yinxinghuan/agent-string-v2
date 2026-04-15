@@ -179,11 +179,6 @@ export default function LevelIntro({ round, roundConfig, activeGlyphs, maxGlyphs
           ))}
         </div>
         <div className="lex-intro__nav">
-          {page > 0 && (
-            <button className="lex-btn lex-btn--ghost" onPointerDown={() => setPage(page - 1)}>
-              ←
-            </button>
-          )}
           {!isLastPage ? (
             <button className="lex-btn lex-btn--solid" onPointerDown={() => setPage(page + 1)}>
               {locale === 'zh' ? '下一页' : 'NEXT'}

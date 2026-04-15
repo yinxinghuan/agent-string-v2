@@ -23,6 +23,7 @@
   color: @ink; border: 1px solid @ink-dim; background: transparent;
   padding: 14px 36px; cursor: pointer; touch-action: none; outline: none;
   -webkit-tap-highlight-color: transparent; width: 100%;
+  text-align: center; text-indent: 5px; // compensate letter-spacing on last char
   &:active { background: @ink-light; }
 }
 .lex-btn--solid {
@@ -203,7 +204,7 @@
 
 // Nav buttons
 .lex-intro__nav {
-  display: flex; gap: 8px; width: min(340px, 90vw);
+  display: flex; justify-content: center; width: min(340px, 90vw);
 }
 
 // Dark mode intro
