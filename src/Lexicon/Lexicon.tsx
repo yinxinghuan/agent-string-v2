@@ -230,6 +230,21 @@ export default function Lexicon() {
 
   // Pipeline score is now added immediately in handleWordCollected
 
+  // ── Early end: player chose to end round after passing ─────────────────────
+  const handleEarlyEnd = useCallback(() => {
+    setState(prev => {
+      if (prev.phase !== 'playing') return prev;
+      const prevTotal = prev.roundScores.reduce((a, b) => a + b, 0);
+      const thisRoundScore = prev.score - prevTotal;
+      sfxComplete();
+      return {
+        ...prev,
+        phase: 'roundEnd',
+        roundScores: [...prev.roundScores, thisRoundScore],
+      };
+    });
+  }, []);
+
   // ── Next level: shop if passed, skip if failed ─────────────────────────────
   const handleRoundEnd = useCallback(() => {
     const passed = state.score >= roundConfig.passScore;
@@ -347,6 +362,7 @@ export default function Lexicon() {
             totalTargets={roundConfig.targets.filter(t => t.type === 'target').length}
             passScore={roundConfig.passScore}
             visuals={roundConfig.visuals}
+            onEndRound={handleEarlyEnd}
           />
           {/* Scoring rendered on canvas */}
         </>

@@ -1,4 +1,4 @@
-import { t } from '../i18n';
+import { t, locale } from '../i18n';
 import type { Glyph, LevelVisuals } from '../types';
 
 interface HUDProps {
@@ -13,14 +13,15 @@ interface HUDProps {
   totalTargets: number;
   passScore: number;
   visuals?: LevelVisuals;
+  onEndRound?: () => void;
 }
 
-export default function HUD({ round, score, timeLeft, streak, pressure, surgeActive, glyphs, collected, totalTargets, passScore, visuals }: HUDProps) {
+export default function HUD({ round, score, timeLeft, streak, pressure, surgeActive, glyphs, collected, totalTargets, passScore, visuals, onEndRound }: HUDProps) {
   const mins = Math.floor(Math.max(0, timeLeft) / 60);
   const secs = Math.floor(Math.max(0, timeLeft) % 60);
   const timeStr = `${mins}:${secs.toString().padStart(2, '0')}`;
   const isLow = timeLeft <= 15;
-  const passed = score >= passScore;
+  const passed = passScore > 0 && score >= passScore;
 
   // Derive HUD colors from level visuals
   const isDark = visuals ? visuals.bgColor.startsWith('#0') || visuals.bgColor.startsWith('#1') || visuals.bgColor === '#000000' : false;
@@ -28,7 +29,7 @@ export default function HUD({ round, score, timeLeft, streak, pressure, surgeAct
   const scoreStyle = passed
     ? { color: 'rgb(50,200,80)' }
     : isDark ? { color: 'rgba(248,250,252,0.9)' } : {};
-  const dimStyle = isDark ? { color: 'rgba(248,250,252,0.35)' } : {};
+  const dimStyle = isDark ? { color: 'rgba(248,250,252,0.45)' } : {};
   const bgStyle = isDark
     ? { background: `linear-gradient(to bottom, ${visuals!.bgColor} 52%, transparent)` }
     : {};
@@ -72,6 +73,12 @@ export default function HUD({ round, score, timeLeft, streak, pressure, surgeAct
           </span>
         )}
       </div>
+
+      {passed && onEndRound && (
+        <button className="lex-hud__end-btn" onPointerDown={onEndRound}>
+          {locale === 'zh' ? '通关 · 结束本关' : 'PASSED · END ROUND'}
+        </button>
+      )}
     </div>
   );
 }
