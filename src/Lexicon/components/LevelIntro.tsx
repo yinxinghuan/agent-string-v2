@@ -6,8 +6,10 @@ import ScrambleText from './ScrambleText';
 interface LevelIntroProps {
   round: number;
   roundConfig: RoundConfig;
-  activeGlyphs: Glyph[];
-  maxGlyphs: number;
+  glyphPool: Glyph[];
+  equippedGlyphs: Glyph[];
+  maxEquipped: number;
+  onToggleEquip: (glyph: Glyph) => void;
   onStart: () => void;
 }
 
@@ -35,7 +37,7 @@ const ACT_INTROS: Record<number, [string, string]> = {
   ],
 };
 
-export default function LevelIntro({ round, roundConfig, activeGlyphs, maxGlyphs, onStart }: LevelIntroProps) {
+export default function LevelIntro({ round, roundConfig, glyphPool, equippedGlyphs, maxEquipped, onToggleEquip, onStart }: LevelIntroProps) {
   const [page, setPage] = useState(0);
   const actIntro = ACT_INTROS[roundConfig.act] || ACT_INTROS[1];
   const isFirstOfAct = round === 1 || [7, 13, 19, 25].includes(round);
@@ -136,31 +138,42 @@ export default function LevelIntro({ round, roundConfig, activeGlyphs, maxGlyphs
     </div>
   );
 
-  // Page 3: Equipped glyphs (always show, even if empty)
+  // Page 3: Equip glyphs from pool
   pages.push(
     <div key="glyphs" className="lex-intro__page">
       <ScrambleText className="lex-intro__page-header" as="div" speed={25} delay={100}>
-        {locale === 'zh' ? '已装配符文' : 'EQUIPPED GLYPHS'}
+        {locale === 'zh' ? '装配符文' : 'EQUIP GLYPHS'}
       </ScrambleText>
       <ScrambleText className="lex-intro__glyph-count" as="div" speed={20} delay={250}>
-        {`${activeGlyphs.length} / ${maxGlyphs}`}
+        {`${equippedGlyphs.length} / ${maxEquipped}`}
       </ScrambleText>
       <div className="lex-intro__rule" />
-      {activeGlyphs.length > 0 ? (
+      {glyphPool.length > 0 ? (
         <div className="lex-intro__glyphs">
-          {activeGlyphs.map((g, i) => (
-            <div key={g.id} className="lex-intro__glyph-item">
-              <span className="lex-intro__glyph-icon">{g.icon}</span>
-              <div className="lex-intro__glyph-info">
-                <ScrambleText className="lex-intro__glyph-name" speed={25} delay={300 + i * 200}>
-                  {locale === 'zh' ? g.nameZh : g.name}
-                </ScrambleText>
-                <ScrambleText className="lex-intro__glyph-desc" speed={15} delay={500 + i * 200} scrambleTicks={2}>
-                  {locale === 'zh' ? g.descriptionZh : g.description}
-                </ScrambleText>
+          {glyphPool.map((g, i) => {
+            const isEquipped = equippedGlyphs.some(e => e.id === g.id);
+            const canEquip = equippedGlyphs.length < maxEquipped;
+            return (
+              <div
+                key={g.id}
+                className={`lex-intro__glyph-item ${isEquipped ? 'lex-intro__glyph-item--equipped' : ''} ${!isEquipped && !canEquip ? 'lex-intro__glyph-item--disabled' : ''}`}
+                onPointerDown={() => (isEquipped || canEquip) ? onToggleEquip(g) : undefined}
+              >
+                <span className="lex-intro__glyph-icon">{g.icon}</span>
+                <div className="lex-intro__glyph-info">
+                  <ScrambleText className="lex-intro__glyph-name" speed={25} delay={300 + i * 150}>
+                    {locale === 'zh' ? g.nameZh : g.name}
+                  </ScrambleText>
+                  <span className="lex-intro__glyph-desc">
+                    {locale === 'zh' ? g.descriptionZh : g.description}
+                  </span>
+                </div>
+                <span className="lex-intro__glyph-toggle">
+                  {isEquipped ? '✓' : ''}
+                </span>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       ) : (
         <ScrambleText className="lex-intro__glyphs-empty" as="div" speed={20} delay={400}>

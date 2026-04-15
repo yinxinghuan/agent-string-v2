@@ -165,6 +165,19 @@
 }
 .lex-intro__glyph-item {
   display: flex; align-items: center; gap: 12px;
+  padding: 8px 10px; cursor: pointer; touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+  border: 1px solid transparent; transition: border-color 0.2s;
+}
+.lex-intro__glyph-item--equipped {
+  border-color: rgba(80, 100, 180, 0.5); background: rgba(80, 100, 180, 0.06);
+}
+.lex-intro__glyph-item--disabled {
+  opacity: 0.35; cursor: default;
+}
+.lex-intro__glyph-toggle {
+  font-family: @font; font-size: 14px; color: rgba(80, 100, 180, 0.9);
+  margin-left: auto; flex-shrink: 0; width: 20px; text-align: center;
 }
 .lex-intro__glyph-icon {
   font-size: 14px; flex-shrink: 0; width: 28px; height: 28px;

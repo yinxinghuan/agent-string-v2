@@ -1,6 +1,5 @@
 import { useState, useCallback, useRef } from 'react';
 import type { Word, GameState, PipelineEntry, Glyph } from './types';
-// Toast removed
 import { getRound } from './engine/passages';
 import { resolvePipeline } from './engine/pipeline';
 import { pickRandomGlyphs } from './engine/glyphs';
@@ -9,14 +8,13 @@ import { SURGE_DURATION } from './constants';
 import { sfxStreak, sfxComplete, resumeAudio } from './utils/sounds';
 import GameCanvas from './components/GameCanvas';
 import HUD from './components/HUD';
-// ScoreFlip removed — scoring now rendered on canvas as physics entities
 import StartScreen from './components/StartScreen';
 import LevelIntro from './components/LevelIntro';
 import EndScreen from './components/EndScreen';
 import GlyphShop from './components/GlyphShop';
 import './Lexicon.less';
 
-const MAX_GLYPHS = 5;
+const MAX_EQUIPPED = 5;
 
 function initialState(): GameState {
   return {
@@ -31,7 +29,8 @@ function initialState(): GameState {
     surgeTimer: 0,
     wordsCollectedThisRound: [],
     phraseSetsCompleted: new Set(),
-    activeGlyphs: [],
+    glyphPool: [],
+    equippedGlyphs: [],
     roundScores: [],
     trapHits: 0,
     wordsShattered: 0,
@@ -40,8 +39,6 @@ function initialState(): GameState {
 
 export default function Lexicon() {
   const [state, setState] = useState<GameState>(initialState);
-  // Pipeline entries are passed to GameCanvas via ref (no queue)
-  // Toast removed — score flip cards show collection feedback
   const [shopOffered, setShopOffered] = useState<Glyph[]>([]);
   const pipelineEntryRef = useRef<PipelineEntry | null>(null);
   const streakTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -65,11 +62,21 @@ export default function Lexicon() {
     setState(prev => ({ ...prev, phase: 'playing' }));
   }, []);
 
-  // Toast removed — feedback via score flip cards
+  // ── Equip/unequip glyphs from pool (on LevelIntro glyph page) ────────────
+  const handleToggleEquip = useCallback((glyph: Glyph) => {
+    setState(prev => {
+      const isEquipped = prev.equippedGlyphs.some(g => g.id === glyph.id);
+      if (isEquipped) {
+        return { ...prev, equippedGlyphs: prev.equippedGlyphs.filter(g => g.id !== glyph.id) };
+      } else if (prev.equippedGlyphs.length < MAX_EQUIPPED) {
+        return { ...prev, equippedGlyphs: [...prev.equippedGlyphs, glyph] };
+      }
+      return prev; // already at max
+    });
+  }, []);
 
   // ── Word collected ─────────────────────────────────────────────────────────
   const handleWordCollected = useCallback((word: Word) => {
-    // Reset streak decay timer — streak resets after 1.5s of no collections
     if (streakTimerRef.current) clearTimeout(streakTimerRef.current);
     streakTimerRef.current = setTimeout(() => {
       setState(prev => ({ ...prev, streak: 0 }));
@@ -80,7 +87,6 @@ export default function Lexicon() {
       const newStreak = prev.streak + 1;
       void locale;
 
-      // Check phrase completion
       const allCollected = [...prev.wordsCollectedThisRound, word.meta.text];
       const newCompleted = new Set(prev.phraseSetsCompleted);
       for (const ps of roundConfig.phraseSets) {
@@ -89,21 +95,17 @@ export default function Lexicon() {
         }
       }
 
-      // Resolve pipeline
       const entry = resolvePipeline({
         word: word.meta,
         wordId: word.id,
         streak: newStreak,
         surgeActive: prev.surgeActive,
-        glyphs: prev.activeGlyphs,
+        glyphs: prev.equippedGlyphs,
         wordsCollectedThisRound: prev.wordsCollectedThisRound,
         phraseSetsCompleted: prev.phraseSetsCompleted,
         phraseSets: roundConfig.phraseSets,
       });
 
-      // Score is added immediately (no queue)
-
-      // Pass entry to GameCanvas for flip card display
       pipelineEntryRef.current = entry;
 
       if (newStreak === 3 || newStreak === 5 || newStreak === 7) {
@@ -127,13 +129,13 @@ export default function Lexicon() {
       let totalVolatileScore = 0;
       let newStreak = prev.streak;
       for (const w of words) {
-        newStreak++; // chain-collected words build streak!
+        newStreak++;
         const entry = resolvePipeline({
           word: w.meta,
           wordId: w.id,
           streak: newStreak,
           surgeActive: prev.surgeActive,
-          glyphs: prev.activeGlyphs,
+          glyphs: prev.equippedGlyphs,
           wordsCollectedThisRound: prev.wordsCollectedThisRound,
           phraseSetsCompleted: prev.phraseSetsCompleted,
           phraseSets: roundConfig.phraseSets,
@@ -153,28 +155,17 @@ export default function Lexicon() {
 
   // ── Trap hit ───────────────────────────────────────────────────────────────
   const handleTrapHit = useCallback((_word: Word) => {
-    setState(prev => ({
-      ...prev,
-      streak: 0,
-      trapHits: prev.trapHits + 1,
-    }));
+    setState(prev => ({ ...prev, streak: 0, trapHits: prev.trapHits + 1 }));
   }, []);
 
   // ── Shatter ────────────────────────────────────────────────────────────────
   const handleShatter = useCallback((_word: Word) => {
-    setState(prev => ({
-      ...prev,
-      streak: 0,
-      wordsShattered: prev.wordsShattered + 1,
-    }));
+    setState(prev => ({ ...prev, streak: 0, wordsShattered: prev.wordsShattered + 1 }));
   }, []);
 
   // ── Time bonus ─────────────────────────────────────────────────────────────
   const handleTimeBonus = useCallback((seconds: number) => {
-    setState(prev => ({
-      ...prev,
-      timeLeft: prev.timeLeft + seconds,
-    }));
+    setState(prev => ({ ...prev, timeLeft: prev.timeLeft + seconds }));
   }, []);
 
   // ── Pressure ───────────────────────────────────────────────────────────────
@@ -183,20 +174,11 @@ export default function Lexicon() {
   }, []);
 
   const handleSurgeStart = useCallback(() => {
-    setState(prev => ({
-      ...prev,
-      surgeActive: true,
-      surgeTimer: SURGE_DURATION,
-      pressure: 0,
-    }));
+    setState(prev => ({ ...prev, surgeActive: true, surgeTimer: SURGE_DURATION, pressure: 0 }));
   }, []);
 
   const handleSurgeEnd = useCallback(() => {
-    setState(prev => ({
-      ...prev,
-      surgeActive: false,
-      surgeTimer: 0,
-    }));
+    setState(prev => ({ ...prev, surgeActive: false, surgeTimer: 0 }));
   }, []);
 
   // ── Time update ────────────────────────────────────────────────────────────
@@ -211,37 +193,27 @@ export default function Lexicon() {
         const thisRoundScore = prev.score - prevTotal;
         sfxComplete();
         return {
-          ...prev,
-          timeLeft: 0,
-          surgeTimer: newSurgeTimer,
+          ...prev, timeLeft: 0, surgeTimer: newSurgeTimer,
           phase: 'roundEnd',
           roundScores: [...prev.roundScores, thisRoundScore],
         };
       }
 
       return {
-        ...prev,
-        timeLeft: newTime,
-        surgeTimer: newSurgeTimer,
+        ...prev, timeLeft: newTime, surgeTimer: newSurgeTimer,
         surgeActive: prev.surgeActive && newSurgeTimer > 0,
       };
     });
   }, []);
 
-  // Pipeline score is now added immediately in handleWordCollected
-
-  // ── Early end: player chose to end round after passing ─────────────────────
+  // ── Early end ──────────────────────────────────────────────────────────────
   const handleEarlyEnd = useCallback(() => {
     setState(prev => {
       if (prev.phase !== 'playing') return prev;
       const prevTotal = prev.roundScores.reduce((a, b) => a + b, 0);
       const thisRoundScore = prev.score - prevTotal;
       sfxComplete();
-      return {
-        ...prev,
-        phase: 'roundEnd',
-        roundScores: [...prev.roundScores, thisRoundScore],
-      };
+      return { ...prev, phase: 'roundEnd', roundScores: [...prev.roundScores, thisRoundScore] };
     });
   }, []);
 
@@ -249,71 +221,48 @@ export default function Lexicon() {
   const handleRoundEnd = useCallback(() => {
     const passed = state.score >= roundConfig.passScore;
     if (passed) {
-      // Reward: choose a glyph
-      const excludeIds = state.activeGlyphs.map(g => g.id);
+      const excludeIds = state.glyphPool.map(g => g.id);
       const offered = pickRandomGlyphs(3, excludeIds);
       setShopOffered(offered);
       setState(prev => ({ ...prev, phase: 'shop' }));
     } else {
-      // Failed: go directly to next level intro (no glyph reward)
       setState(prev => {
         const nextRound = prev.round + 1;
         const rc = getRound(nextRound - 1);
         return {
-          ...prev,
-          phase: 'levelIntro',
-          round: nextRound,
-          score: 0,
-          timeLeft: rc.timeLimit,
-          streak: 0,
-          pressure: 0,
-          surgeActive: false,
-          surgeTimer: 0,
-          wordsCollectedThisRound: [],
-          phraseSetsCompleted: new Set(),
-          trapHits: 0,
-          wordsShattered: 0,
+          ...prev, phase: 'levelIntro', round: nextRound, score: 0,
+          timeLeft: rc.timeLimit, streak: 0, pressure: 0,
+          surgeActive: false, surgeTimer: 0,
+          wordsCollectedThisRound: [], phraseSetsCompleted: new Set(),
+          trapHits: 0, wordsShattered: 0,
         };
       });
       pipelineEntryRef.current = null;
     }
-  }, [state.activeGlyphs, state.score, roundConfig.passScore]);
+  }, [state.glyphPool, state.score, roundConfig.passScore]);
 
-  // ── Shop: pick glyph + start next round ────────────────────────────────────
-  const handlePickGlyph = useCallback((glyph: Glyph, replaceIndex?: number) => {
+  // ── Shop: pick glyph → add to pool + auto-equip if room ───────────────────
+  const handlePickGlyph = useCallback((glyph: Glyph) => {
     setState(prev => {
-      let newGlyphs: Glyph[];
-      if (prev.activeGlyphs.length < MAX_GLYPHS) {
-        newGlyphs = [...prev.activeGlyphs, glyph];
-      } else if (replaceIndex !== undefined) {
-        newGlyphs = [...prev.activeGlyphs];
-        newGlyphs[replaceIndex] = glyph;
-      } else {
-        newGlyphs = [...prev.activeGlyphs.slice(1), glyph]; // fallback: replace oldest
-      }
+      const newPool = [...prev.glyphPool, glyph];
+      // Auto-equip if there's room
+      const newEquipped = prev.equippedGlyphs.length < MAX_EQUIPPED
+        ? [...prev.equippedGlyphs, glyph]
+        : prev.equippedGlyphs;
 
       const nextRound = prev.round + 1;
       const rc = getRound(nextRound - 1);
 
       return {
-        ...prev,
-        phase: 'levelIntro',
-        round: nextRound,
-        score: 0,
-        timeLeft: rc.timeLimit,
-        streak: 0,
-        pressure: 0,
-        surgeActive: false,
-        surgeTimer: 0,
-        wordsCollectedThisRound: [],
-        phraseSetsCompleted: new Set(),
-        activeGlyphs: newGlyphs,
-        trapHits: 0,
-        wordsShattered: 0,
+        ...prev, phase: 'levelIntro', round: nextRound, score: 0,
+        timeLeft: rc.timeLimit, streak: 0, pressure: 0,
+        surgeActive: false, surgeTimer: 0,
+        wordsCollectedThisRound: [], phraseSetsCompleted: new Set(),
+        glyphPool: newPool, equippedGlyphs: newEquipped,
+        trapHits: 0, wordsShattered: 0,
       };
     });
     pipelineEntryRef.current = null;
-    // toast cleared
   }, []);
 
   // ── Retry ──────────────────────────────────────────────────────────────────
@@ -332,8 +281,10 @@ export default function Lexicon() {
         <LevelIntro
           round={state.round}
           roundConfig={roundConfig}
-          activeGlyphs={state.activeGlyphs}
-          maxGlyphs={MAX_GLYPHS}
+          glyphPool={state.glyphPool}
+          equippedGlyphs={state.equippedGlyphs}
+          maxEquipped={MAX_EQUIPPED}
+          onToggleEquip={handleToggleEquip}
           onStart={handleLevelStart}
         />
       )}
@@ -363,14 +314,13 @@ export default function Lexicon() {
             streak={state.streak}
             pressure={state.pressure}
             surgeActive={state.surgeActive}
-            glyphs={state.activeGlyphs}
+            glyphs={state.equippedGlyphs}
             collected={state.wordsCollectedThisRound.length}
             totalTargets={roundConfig.targets.filter(t => t.type === 'target').length}
             passScore={roundConfig.passScore}
             visuals={roundConfig.visuals}
             onEndRound={handleEarlyEnd}
           />
-          {/* Scoring rendered on canvas */}
         </>
       )}
 
@@ -390,8 +340,7 @@ export default function Lexicon() {
           round={state.round}
           score={state.score}
           offered={shopOffered}
-          active={state.activeGlyphs}
-          maxGlyphs={MAX_GLYPHS}
+          pool={state.glyphPool}
           onPick={handlePickGlyph}
         />
       )}

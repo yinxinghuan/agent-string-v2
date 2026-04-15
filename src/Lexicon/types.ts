@@ -148,7 +148,8 @@ export interface GameState {
   surgeTimer: number;
   wordsCollectedThisRound: string[];
   phraseSetsCompleted: Set<string>;
-  activeGlyphs: Glyph[];
+  glyphPool: Glyph[];      // all collected glyphs (no limit)
+  equippedGlyphs: Glyph[]; // currently equipped for this round (max 5)
   roundScores: number[];
   trapHits: number;
   wordsShattered: number;

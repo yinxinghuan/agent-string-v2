@@ -99,11 +99,11 @@ export default function EndScreen({ state, roundConfig, phraseSets, isRunEnd, on
           </>
         )}
 
-        {state.activeGlyphs.length > 0 && (
+        {state.equippedGlyphs.length > 0 && (
           <>
             <div className="lex-end__rule" />
             <div className="lex-end__glyphs">
-              {state.activeGlyphs.map((g, i) => (
+              {state.equippedGlyphs.map((g, i) => (
                 <ScrambleText key={g.id} className="lex-end__glyph" speed={20} delay={1800 + i * 100}>
                   {`${g.icon} ${locale === 'zh' ? g.nameZh : g.name}`}
                 </ScrambleText>
