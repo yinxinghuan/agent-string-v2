@@ -280,11 +280,17 @@ export default function Lexicon() {
   }, [state.activeGlyphs, state.score, roundConfig.passScore]);
 
   // ── Shop: pick glyph + start next round ────────────────────────────────────
-  const handlePickGlyph = useCallback((glyph: Glyph) => {
+  const handlePickGlyph = useCallback((glyph: Glyph, replaceIndex?: number) => {
     setState(prev => {
-      const newGlyphs = prev.activeGlyphs.length < MAX_GLYPHS
-        ? [...prev.activeGlyphs, glyph]
-        : [...prev.activeGlyphs.slice(1), glyph]; // replace oldest if full
+      let newGlyphs: Glyph[];
+      if (prev.activeGlyphs.length < MAX_GLYPHS) {
+        newGlyphs = [...prev.activeGlyphs, glyph];
+      } else if (replaceIndex !== undefined) {
+        newGlyphs = [...prev.activeGlyphs];
+        newGlyphs[replaceIndex] = glyph;
+      } else {
+        newGlyphs = [...prev.activeGlyphs.slice(1), glyph]; // fallback: replace oldest
+      }
 
       const nextRound = prev.round + 1;
       const rc = getRound(nextRound - 1);

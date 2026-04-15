@@ -697,6 +697,40 @@
   font-size: 20px; opacity: 0.6;
   transition: opacity 0.2s;
 }
-.lex-shop__active-glyph--replace {
-  opacity: 0.3; text-decoration: line-through;
+
+// Replace flow
+.lex-shop__replace-new {
+  display: flex; align-items: center; gap: 10px; justify-content: center;
+  margin: 12px 0;
+}
+.lex-shop__replace-new-icon {
+  font-size: 14px; width: 32px; height: 32px;
+  background: rgba(80, 100, 180, 0.8); color: rgba(255,255,255,0.95);
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.lex-shop__replace-new-name {
+  font-family: @font; font-size: 16px; letter-spacing: 3px; color: @ink; font-weight: 500;
+}
+.lex-shop__replace-grid {
+  display: flex; flex-direction: column; gap: 8px; width: 100%; margin-bottom: 16px;
+}
+.lex-shop__replace-slot {
+  display: flex; align-items: center; gap: 10px;
+  border: 1px solid @ink-dim; background: transparent;
+  padding: 12px 14px; cursor: pointer; touch-action: none; outline: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s;
+  &:active { background: rgba(180, 60, 60, 0.1); }
+}
+.lex-shop__replace-slot-icon {
+  font-size: 12px; width: 28px; height: 28px; flex-shrink: 0;
+  background: rgba(80, 100, 180, 0.8); color: rgba(255,255,255,0.95);
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.lex-shop__replace-slot-name {
+  font-family: @font; font-size: 13px; letter-spacing: 2px; color: @ink; font-weight: 500;
+}
+.lex-shop__replace-slot-desc {
+  font-family: @font; font-size: 11px; letter-spacing: 1px; color: @ink-mid;
+  margin-left: auto; flex-shrink: 0;
 }
