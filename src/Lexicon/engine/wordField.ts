@@ -25,9 +25,7 @@ const TOP = 90;
 export function computePositions(cfg: LayoutConfig): WordPosition[] {
   const { passage, layoutMode, fontSize, lineSpace, margin, canvasWidth, fontFamily, ctx } = cfg;
   ctx.font = `${fontSize}px ${fontFamily}`;
-  // Detect Chinese text — use tighter spacing for CJK
-  const hasCJK = /[\u4e00-\u9fff]/.test(passage);
-  const spW = hasCJK ? fontSize * 0.3 : ctx.measureText(' ').width;
+  const spW = ctx.measureText(' ').width;
   const positions: WordPosition[] = [];
   const rawLines = passage.split('\n');
   let lineN = 0;
@@ -42,7 +40,7 @@ export function computePositions(cfg: LayoutConfig): WordPosition[] {
         lineN += 0.55;
         continue;
       }
-      for (const text of raw.trim().split(/\s+/).filter(Boolean)) {
+      for (const text of tokenizeLine(raw)) {
         const tw = ctx.measureText(text).width;
         if (lx + tw > maxColW && lx > 0) { lineN++; lx = 0; }
         positions.push({ hx: colOffset + lx + tw / 2, hy: TOP + lineN * lineSpace, tw });
@@ -52,7 +50,7 @@ export function computePositions(cfg: LayoutConfig): WordPosition[] {
   } else if (layoutMode === 'verse') {
     for (const raw of rawLines) {
       if (raw.trim() === '') { lineN += 0.8; continue; }
-      const tokens = raw.trim().split(/\s+/).filter(Boolean);
+      const tokens = tokenizeLine(raw);
       const totalW = tokens.reduce((s, t) => s + ctx.measureText(t).width + spW, -spW);
       let lx = Math.max(margin, (canvasWidth - totalW) / 2);
       for (const text of tokens) {
@@ -67,22 +65,30 @@ export function computePositions(cfg: LayoutConfig): WordPosition[] {
   return positions;
 }
 
+const CJK_PUNCT = /[，。；：！？、""''（）【】《》…—]+/;
+const CJK_PUNCT_ONLY = /^[，。；：！？、""''（）【】《》…—]+$/;
+
+/** Tokenize a single line: split on whitespace, then split off Chinese punctuation */
+function tokenizeLine(raw: string): string[] {
+  const tokens: string[] = [];
+  for (const chunk of raw.trim().split(/\s+/)) {
+    if (!chunk) continue;
+    const parts = chunk.split(new RegExp(`(${CJK_PUNCT.source})`));
+    for (const p of parts) {
+      const trimmed = p.trim();
+      if (trimmed && !CJK_PUNCT_ONLY.test(trimmed)) {
+        tokens.push(trimmed);
+      }
+    }
+  }
+  return tokens;
+}
+
 export function flatPassageTokens(passage: string): string[] {
   const tokens: string[] = [];
   for (const raw of passage.split('\n')) {
     if (raw.trim() === '') continue;
-    // Split on whitespace, then further split on Chinese punctuation boundaries
-    for (const chunk of raw.trim().split(/\s+/)) {
-      if (!chunk) continue;
-      // Split tokens that have Chinese punctuation in the middle: "爆发，与" → ["爆发", "与"]
-      const parts = chunk.split(/([，。；：！？、""''（）【】《》…—]+)/);
-      for (const p of parts) {
-        const trimmed = p.trim();
-        if (trimmed && !/^[，。；：！？、""''（）【】《》…—]+$/.test(trimmed)) {
-          tokens.push(trimmed);
-        }
-      }
-    }
+    tokens.push(...tokenizeLine(raw));
   }
   return tokens;
 }
