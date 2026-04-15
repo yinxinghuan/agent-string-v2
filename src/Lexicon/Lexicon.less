@@ -52,111 +52,165 @@
   width: 100%; height: 1px; background: @ink-light; margin: 18px 0;
 }
 
-// ── Level Intro ──────────────────────────────────────────────────────────────
+// ── Level Intro (multi-page) ────────────────────────────────────────────────
 .lex-intro__inner {
   display: flex; flex-direction: column; align-items: center;
-  width: min(320px, 88vw); animation: lex-intro-fade 0.6s ease-out;
+  width: min(340px, 90vw); height: 100%; justify-content: center;
+}
+.lex-intro__page-wrap {
+  width: 100%; flex: 1; display: flex; align-items: center;
+  animation: lex-intro-fade 0.35s ease-out;
 }
 @keyframes lex-intro-fade {
-  0% { opacity: 0; transform: translateY(10px); } 100% { opacity: 1; transform: none; }
+  0% { opacity: 0; transform: translateY(12px); } 100% { opacity: 1; transform: none; }
+}
+.lex-intro__page {
+  width: 100%; display: flex; flex-direction: column; align-items: center;
 }
 .lex-intro__act-label {
-  font-size: 10px; letter-spacing: 6px; color: @ink-dim; font-family: @font;
+  font-size: 11px; letter-spacing: 6px; color: @ink-dim; font-family: @font;
   text-transform: uppercase;
 }
 .lex-intro__act-name {
-  font-size: clamp(24px, 6vw, 36px); letter-spacing: 10px; font-family: @font;
-  color: @ink; margin: 8px 0 12px; text-align: center;
-}
-.lex-intro__act-desc {
-  font-size: 13px; line-height: 1.8; color: @ink-mid; text-align: center;
-  font-family: -apple-system, 'Helvetica Neue', sans-serif;
-  margin-bottom: 8px;
+  font-size: clamp(26px, 7vw, 40px); letter-spacing: 10px; font-family: @font;
+  color: @ink; margin: 8px 0 16px; text-align: center;
 }
 .lex-intro__rule {
-  width: 100%; height: 1px; background: @ink-light; margin: 16px 0;
+  width: 100%; height: 1px; background: @ink-light; margin: 14px 0;
 }
 .lex-intro__round {
-  font-size: 11px; letter-spacing: 5px; color: @ink-dim; font-family: @font;
+  font-size: 12px; letter-spacing: 5px; color: @ink-dim; font-family: @font;
 }
 .lex-intro__title {
-  font-size: clamp(18px, 4.5vw, 26px); letter-spacing: 6px; color: @ink;
+  font-size: clamp(22px, 5.5vw, 32px); letter-spacing: 6px; color: @ink;
   font-family: @font; text-align: center; margin: 6px 0;
 }
-.lex-intro__meta {
-  display: flex; gap: 8px; font-family: @font; font-size: 11px;
-  letter-spacing: 2px; color: @ink-dim;
+.lex-intro__scene-text {
+  font-size: 16px; line-height: 1.9; color: @ink-mid; text-align: center;
+  font-family: -apple-system, 'Helvetica Neue', sans-serif;
 }
 
-// Target words preview
-.lex-intro__section-label {
-  font-size: 9px; letter-spacing: 4px; color: @ink-dim; font-family: @font;
-  text-transform: uppercase; margin-bottom: 8px;
+// Page header
+.lex-intro__page-header {
+  font-size: 13px; letter-spacing: 5px; color: @ink-dim; font-family: @font;
+  text-transform: uppercase; margin-bottom: 4px;
 }
-.lex-intro__targets {
-  display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-bottom: 14px;
+
+// Targets page — bigger tags
+.lex-intro__targets-big {
+  display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
 }
-.lex-intro__target {
-  font-family: @font; font-size: 13px; letter-spacing: 2px;
-  padding: 4px 10px; border: 1px solid @ink-light; color: @ink-mid;
+.lex-intro__target-big {
+  font-family: @font; font-size: 16px; letter-spacing: 3px;
+  padding: 8px 14px; border: 1px solid @ink-light; color: @ink-mid;
 }
-.lex-intro__target--rare {
+.lex-intro__target-big--rare {
   border-color: rgba(50, 100, 170, 0.4); color: rgb(50, 100, 170);
 }
-.lex-intro__target--legendary {
+.lex-intro__target-big--legendary {
   border-color: rgba(190, 130, 30, 0.5); color: rgb(180, 120, 20);
   font-weight: 600;
 }
-.lex-intro__target-more {
-  font-family: @font; font-size: 11px; color: @ink-dim; padding: 4px 6px;
+
+// Pass condition page — big score
+.lex-intro__pass-big {
+  display: flex; align-items: baseline; gap: 8px; justify-content: center;
+  margin: 8px 0 4px;
+}
+.lex-intro__pass-big-score {
+  font-size: clamp(48px, 12vw, 72px); font-weight: 600; color: @ink;
+  font-family: @font; letter-spacing: 4px; line-height: 1;
+}
+.lex-intro__pass-big-label {
+  font-size: 14px; letter-spacing: 3px; color: @ink-dim; font-family: @font;
+}
+.lex-intro__pass-big-time {
+  font-size: 15px; color: @ink-dim; letter-spacing: 2px; font-family: @font;
+  margin-bottom: 8px;
 }
 
-// Phrase combos
-.lex-intro__phrases {
-  display: flex; flex-direction: column; gap: 6px; width: 100%; margin-bottom: 14px;
+// Combos on conditions page
+.lex-intro__combos-label {
+  font-size: 11px; letter-spacing: 4px; color: @ink-dim; font-family: @font;
+  text-transform: uppercase; margin-bottom: 10px;
 }
-.lex-intro__phrase {
+.lex-intro__combos {
+  display: flex; flex-direction: column; gap: 8px; width: 100%;
+}
+.lex-intro__combo {
   display: flex; align-items: center; gap: 8px;
-  font-family: @font; font-size: 11px; letter-spacing: 1px;
+  font-family: @font; font-size: 13px; letter-spacing: 1px;
 }
-.lex-intro__phrase-name {
-  color: @ink-mid; flex-shrink: 0;
+.lex-intro__combo-name { color: @ink-mid; flex-shrink: 0; }
+.lex-intro__combo-words { color: @ink-dim; font-size: 12px; flex: 1; text-align: center; }
+.lex-intro__combo-bonus { color: rgb(50, 140, 70); font-weight: 600; flex-shrink: 0; }
+
+// Glyphs page
+.lex-intro__glyph-count {
+  font-family: @font; font-size: 14px; letter-spacing: 3px; color: @ink-dim;
+  margin: 4px 0;
 }
-.lex-intro__phrase-words {
-  color: @ink-dim; font-size: 10px; flex: 1; text-align: center;
+.lex-intro__glyphs {
+  display: flex; flex-direction: column; gap: 12px; width: 100%;
 }
-.lex-intro__phrase-bonus {
-  color: rgb(50, 140, 70); font-weight: 600; flex-shrink: 0;
+.lex-intro__glyph-item {
+  display: flex; align-items: center; gap: 12px;
+}
+.lex-intro__glyph-icon {
+  font-size: 24px; flex-shrink: 0; width: 36px; text-align: center;
+}
+.lex-intro__glyph-info {
+  display: flex; flex-direction: column;
+}
+.lex-intro__glyph-name {
+  font-family: @font; font-size: 14px; letter-spacing: 2px; color: @ink; font-weight: 500;
+}
+.lex-intro__glyph-desc {
+  font-family: @font; font-size: 12px; letter-spacing: 1px; color: @ink-mid; margin-top: 2px;
+}
+.lex-intro__glyphs-empty {
+  font-family: @font; font-size: 14px; color: @ink-dim; letter-spacing: 2px;
+  text-align: center; padding: 24px 0;
 }
 
-// Pass condition
-.lex-intro__pass {
-  display: flex; align-items: baseline; gap: 8px; margin-bottom: 16px;
-  font-family: @font;
+// Dots navigation
+.lex-intro__dots {
+  display: flex; gap: 8px; margin: 20px 0 16px;
 }
-.lex-intro__pass-label {
-  font-size: 10px; letter-spacing: 3px; color: @ink-dim;
+.lex-intro__dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: @ink-light; cursor: pointer; touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.2s;
 }
-.lex-intro__pass-score {
-  font-size: 28px; font-weight: 600; color: @ink; letter-spacing: 2px;
-}
-.lex-intro__pass-hint {
-  font-size: 11px; color: @ink-dim; letter-spacing: 1px;
+.lex-intro__dot--active { background: @ink-mid; }
+
+// Nav buttons
+.lex-intro__nav {
+  display: flex; gap: 8px; width: 100%;
+  .lex-btn { flex: 1; }
+  .lex-btn--ghost { flex: 0; padding: 14px 20px; }
 }
 
 // Dark mode intro
 .lex-intro--dark {
-  .lex-intro__act-label, .lex-intro__round, .lex-intro__section-label,
-  .lex-intro__pass-label, .lex-intro__pass-hint, .lex-intro__target-more { color: rgba(248,250,252,0.35); }
+  .lex-intro__act-label, .lex-intro__round, .lex-intro__page-header,
+  .lex-intro__combos-label, .lex-intro__glyph-count { color: rgba(248,250,252,0.35); }
   .lex-intro__act-name, .lex-intro__title { color: rgba(248,250,252,0.85); }
-  .lex-intro__act-desc, .lex-intro__phrase-name { color: rgba(248,250,252,0.5); }
+  .lex-intro__scene-text, .lex-intro__combo-name { color: rgba(248,250,252,0.5); }
   .lex-intro__rule { background: rgba(248,250,252,0.1); }
-  .lex-intro__target { color: rgba(248,250,252,0.6); border-color: rgba(248,250,252,0.15); }
-  .lex-intro__target--rare { color: rgba(120,170,240,0.9); border-color: rgba(120,170,240,0.3); }
-  .lex-intro__target--legendary { color: rgba(240,200,80,0.9); border-color: rgba(240,200,80,0.4); }
-  .lex-intro__phrase-words { color: rgba(248,250,252,0.35); }
-  .lex-intro__phrase-bonus { color: rgba(100,210,130,0.9); }
-  .lex-intro__pass-score { color: rgba(248,250,252,0.9); }
+  .lex-intro__dot { background: rgba(248,250,252,0.15); }
+  .lex-intro__dot--active { background: rgba(248,250,252,0.5); }
+  .lex-intro__target-big { color: rgba(248,250,252,0.6); border-color: rgba(248,250,252,0.15); }
+  .lex-intro__target-big--rare { color: rgba(120,170,240,0.9); border-color: rgba(120,170,240,0.3); }
+  .lex-intro__target-big--legendary { color: rgba(240,200,80,0.9); border-color: rgba(240,200,80,0.4); }
+  .lex-intro__combo-words { color: rgba(248,250,252,0.35); }
+  .lex-intro__combo-bonus { color: rgba(100,210,130,0.9); }
+  .lex-intro__pass-big-score { color: rgba(248,250,252,0.9); }
+  .lex-intro__pass-big-label, .lex-intro__pass-big-time { color: rgba(248,250,252,0.4); }
+  .lex-intro__glyph-name { color: rgba(248,250,252,0.8); }
+  .lex-intro__glyph-desc { color: rgba(248,250,252,0.45); }
+  .lex-intro__glyphs-empty { color: rgba(248,250,252,0.3); }
   .lex-btn { color: rgba(248,250,252,0.7); border-color: rgba(248,250,252,0.2); }
 }
 
@@ -489,23 +543,23 @@
 // ── End screen ───────────────────────────────────────────────────────────────
 .lex-end__inner, .lex-shop__inner {
   display: flex; flex-direction: column; align-items: center;
-  width: min(320px, 88vw);
+  width: min(340px, 90vw);
 }
 .lex-end__label, .lex-shop__label {
-  font-size: 10px; letter-spacing: 6px; color: @ink-dim; font-family: @font;
+  font-size: 12px; letter-spacing: 6px; color: @ink-dim; font-family: @font;
 }
 .lex-end__level-title {
-  font-size: 11px; letter-spacing: 3px; color: @ink-dim; font-family: @font;
+  font-size: 14px; letter-spacing: 4px; color: @ink-dim; font-family: @font;
   text-align: center; margin-bottom: 4px;
 }
 .lex-end__title {
-  font-size: clamp(18px, 4.5vw, 26px); letter-spacing: 10px;
+  font-size: clamp(22px, 5.5vw, 32px); letter-spacing: 10px;
   font-family: @font; text-align: center;
 }
 .lex-end__title--pass { color: rgb(50, 140, 70); }
 .lex-end__title--fail { color: rgb(180, 60, 60); }
 .lex-end__pass-target {
-  font-size: 14px; letter-spacing: 3px; color: @ink-dim; text-align: center;
+  font-size: 16px; letter-spacing: 3px; color: @ink-dim; text-align: center;
   font-family: @font; margin-top: 2px;
 }
 .lex-end__pass-target--pass { color: rgb(50, 140, 70); }
@@ -513,33 +567,32 @@
   font-size: clamp(54px, 14vw, 80px); letter-spacing: 6px; color: @ink;
   font-family: @font; line-height: 1; text-align: center; margin: 4px 0 0;
 }
-.lex-end__pts {
-  font-size: 10px; letter-spacing: 4px; color: @ink-dim; text-align: center;
-  font-family: @font; margin: 2px 0 0;
-}
 .lex-end__stats {
-  display: flex; flex-wrap: wrap; justify-content: center; gap: 5px 12px;
-  font-family: @font; font-size: 12px; letter-spacing: 1px; color: @ink-mid;
+  display: flex; justify-content: center; gap: 24px;
+  font-family: @font;
+}
+.lex-end__stat {
+  display: flex; flex-direction: column; align-items: center;
+}
+.lex-end__stat-val {
+  font-size: 24px; font-weight: 600; color: @ink; letter-spacing: 2px;
+}
+.lex-end__stat-label {
+  font-size: 10px; letter-spacing: 3px; color: @ink-dim; margin-top: 2px;
+  text-transform: uppercase;
 }
 .lex-end__phrases {
   display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
 }
 .lex-end__phrase {
-  font-family: @font; font-size: 11px; letter-spacing: 2px; color: rgb(60, 140, 80);
-  border: 1px solid rgba(60, 140, 80, 0.3); padding: 4px 10px; border-radius: 4px;
+  font-family: @font; font-size: 14px; letter-spacing: 2px; color: rgb(60, 140, 80);
+  border: 1px solid rgba(60, 140, 80, 0.3); padding: 6px 14px; border-radius: 4px;
 }
 .lex-end__glyphs {
-  display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
+  display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
 }
 .lex-end__glyph {
-  font-family: @font; font-size: 11px; letter-spacing: 2px; color: @ink-mid;
-}
-.lex-end__breakdown {
-  width: 100%;
-}
-.lex-end__round-row {
-  display: flex; justify-content: space-between; padding: 3px 0;
-  font-family: @font; font-size: 12px; letter-spacing: 2px; color: @ink-mid;
+  font-family: @font; font-size: 14px; letter-spacing: 2px; color: @ink-mid;
 }
 .lex-end__btns { width: 100%; display: flex; flex-direction: column; align-items: center; }
 
@@ -548,22 +601,26 @@
   .lex-end__label, .lex-end__level-title { color: rgba(248, 250, 252, 0.4); }
   .lex-end__rule { background: rgba(248, 250, 252, 0.12); }
   .lex-end__score { color: rgba(248, 250, 252, 0.9); }
-  .lex-end__pts, .lex-end__pass-target { color: rgba(248, 250, 252, 0.35); }
-  .lex-end__stats span { color: rgba(248, 250, 252, 0.5); }
+  .lex-end__pass-target { color: rgba(248, 250, 252, 0.35); }
+  .lex-end__stat-val { color: rgba(248, 250, 252, 0.85); }
+  .lex-end__stat-label { color: rgba(248, 250, 252, 0.4); }
   .lex-end__phrase { color: rgba(100, 210, 130, 0.9); border-color: rgba(100, 210, 130, 0.3); }
   .lex-end__glyph { color: rgba(248, 250, 252, 0.5); }
-  .lex-end__round-row { color: rgba(248, 250, 252, 0.5); }
   .lex-btn { color: rgba(248, 250, 252, 0.7); border-color: rgba(248, 250, 252, 0.2); }
   .lex-btn--ghost { color: rgba(248, 250, 252, 0.35); }
 }
 
 // ── Glyph Shop ───────────────────────────────────────────────────────────────
 .lex-shop__score {
-  font-size: 14px; letter-spacing: 4px; color: @ink-mid; font-family: @font;
+  font-size: 16px; letter-spacing: 4px; color: @ink-mid; font-family: @font;
 }
 .lex-shop__title {
-  font-size: 14px; letter-spacing: 5px; color: @ink; font-family: @font;
-  margin-bottom: 16px;
+  font-size: 15px; letter-spacing: 5px; color: @ink; font-family: @font;
+  margin-bottom: 8px;
+}
+.lex-shop__replace-hint {
+  font-family: @font; font-size: 11px; letter-spacing: 1px;
+  color: rgba(180, 100, 40, 0.8); margin-bottom: 14px;
 }
 .lex-shop__cards {
   display: flex; flex-direction: column; gap: 10px; width: 100%;
@@ -576,21 +633,26 @@
   transition: background 0.15s;
   &:active { background: @ink-light; }
 }
-.lex-shop__card-icon { font-size: 24px; margin-bottom: 6px; }
+.lex-shop__card-icon { font-size: 28px; margin-bottom: 6px; }
 .lex-shop__card-name {
-  font-family: @font; font-size: 13px; letter-spacing: 3px; color: @ink;
+  font-family: @font; font-size: 14px; letter-spacing: 3px; color: @ink;
   font-weight: 500; margin-bottom: 4px;
 }
 .lex-shop__card-desc {
-  font-family: @font; font-size: 11px; letter-spacing: 1px; color: @ink-mid;
+  font-family: @font; font-size: 12px; letter-spacing: 1px; color: @ink-mid;
+  text-align: center; line-height: 1.6;
 }
 .lex-shop__active-label {
-  font-family: @font; font-size: 10px; letter-spacing: 4px; color: @ink-dim;
+  font-family: @font; font-size: 12px; letter-spacing: 4px; color: @ink-dim;
   margin-bottom: 8px;
 }
 .lex-shop__active {
   display: flex; gap: 10px; justify-content: center;
 }
 .lex-shop__active-glyph {
-  font-size: 20px; opacity: 0.6;
+  font-size: 22px; opacity: 0.6;
+  transition: opacity 0.2s;
+}
+.lex-shop__active-glyph--replace {
+  opacity: 0.3; text-decoration: line-through;
 }

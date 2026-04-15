@@ -47,8 +47,18 @@ export default function EndScreen({ state, roundConfig, phraseSets, isRunEnd, on
         <div className="lex-end__rule" />
 
         <div className="lex-end__stats">
-          <span>{t('collected')}: {collected}</span>
-          <span>{t('bestStreak')}: {state.bestStreak}</span>
+          <div className="lex-end__stat">
+            <span className="lex-end__stat-val">{collected}</span>
+            <span className="lex-end__stat-label">{t('collected')}</span>
+          </div>
+          <div className="lex-end__stat">
+            <span className="lex-end__stat-val">{state.bestStreak}</span>
+            <span className="lex-end__stat-label">{t('bestStreak')}</span>
+          </div>
+          <div className="lex-end__stat">
+            <span className="lex-end__stat-val">{state.trapHits}</span>
+            <span className="lex-end__stat-label">{t('traps')}</span>
+          </div>
         </div>
 
         {completedPhrases.length > 0 && (

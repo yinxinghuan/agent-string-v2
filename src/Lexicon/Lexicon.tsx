@@ -311,6 +311,8 @@ export default function Lexicon() {
         <LevelIntro
           round={state.round}
           roundConfig={roundConfig}
+          activeGlyphs={state.activeGlyphs}
+          maxGlyphs={MAX_GLYPHS}
           onStart={handleLevelStart}
         />
       )}
@@ -367,6 +369,7 @@ export default function Lexicon() {
           score={state.score}
           offered={shopOffered}
           active={state.activeGlyphs}
+          maxGlyphs={MAX_GLYPHS}
           onPick={handlePickGlyph}
         />
       )}
