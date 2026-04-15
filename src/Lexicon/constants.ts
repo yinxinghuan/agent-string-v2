@@ -6,9 +6,9 @@ export const REPEL_R = 90;
 export const REPEL_F = 5.5;
 
 // ── Collection ───────────────────────────────────────────────────────────────
-export const COLLECT_R = 120;         // tighter proximity — requires more precision
-export const COLLECT_ALPHA_THRESH = 0.4;   // moderate threshold
-export const COLLECT_TIME = 0.2;      // requires brief hover to collect
+export const COLLECT_R = 140;         // generous proximity — fast-paced feel
+export const COLLECT_ALPHA_THRESH = 0.35;  // responsive threshold
+export const COLLECT_TIME = 0.1;      // quick collection — satisfying rhythm
 export const TRAP_R = 110;
 export const TRAP_ALPHA_THRESH = 0.45;
 export const TRAP_TIME = 0.25;
@@ -24,18 +24,18 @@ export const VOLATILE_SCORE_MULT = 0.15; // tiny base (3pts), but streak x20 = 6
 export const ANCHOR_TIME_BONUS = 5;
 export const TRAP_TIME_PENALTY = 5;
 
-// ── Streak multipliers — moderate curve ──────────────────────────────────────
-// Rewarding but not game-breaking; volatiles build streak but shouldn't trivialize levels
+// ── Streak multipliers — exciting escalation ────────────────────────────────
+// High enough to feel rewarding, capped to prevent instant level-skip
 export function streakMultiplier(streak: number): number {
-  if (streak >= 15) return 8;
-  if (streak >= 12) return 6;
-  if (streak >= 10) return 5;
-  if (streak >= 8) return 4;
-  if (streak >= 6) return 3;
-  if (streak >= 5) return 2.5;
-  if (streak >= 4) return 2;
-  if (streak >= 3) return 1.6;
-  if (streak >= 2) return 1.3;
+  if (streak >= 15) return 20;
+  if (streak >= 12) return 15;
+  if (streak >= 10) return 10;
+  if (streak >= 8) return 7;
+  if (streak >= 6) return 5;
+  if (streak >= 5) return 3.5;
+  if (streak >= 4) return 2.5;
+  if (streak >= 3) return 2;
+  if (streak >= 2) return 1.5;
   return 1;
 }
 
