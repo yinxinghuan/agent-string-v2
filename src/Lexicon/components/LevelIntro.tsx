@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { locale } from '../i18n';
 import type { Glyph, RoundConfig } from '../types';
+import ScrambleText from './ScrambleText';
 
 interface LevelIntroProps {
   round: number;
@@ -52,37 +53,44 @@ export default function LevelIntro({ round, roundConfig, activeGlyphs, maxGlyphs
     <div key="scene" className="lex-intro__page">
       {isFirstOfAct && (
         <>
-          <div className="lex-intro__act-label">
+          <ScrambleText className="lex-intro__act-label" as="div" speed={25} delay={100}>
             {locale === 'zh' ? `第${roundConfig.act}幕` : `ACT ${roundConfig.act}`}
-          </div>
-          <div className="lex-intro__act-name">
+          </ScrambleText>
+          <ScrambleText className="lex-intro__act-name" as="div" speed={40} delay={300}>
             {locale === 'zh' ? roundConfig.actNameZh : roundConfig.actName}
-          </div>
+          </ScrambleText>
         </>
       )}
-      <div className="lex-intro__round">R{round}</div>
-      <div className="lex-intro__title">
+      <ScrambleText className="lex-intro__round" as="div" speed={20} delay={isFirstOfAct ? 600 : 100}>
+        {`R${round}`}
+      </ScrambleText>
+      <ScrambleText className="lex-intro__title" as="div" speed={35} delay={isFirstOfAct ? 800 : 200}>
         {locale === 'zh' ? roundConfig.levelTitleZh : roundConfig.levelTitle}
-      </div>
+      </ScrambleText>
       <div className="lex-intro__rule" />
-      <div className="lex-intro__scene-text">
+      <ScrambleText className="lex-intro__scene-text" as="div" speed={15} delay={isFirstOfAct ? 1200 : 500} scrambleTicks={2}>
         {locale === 'zh' ? actIntro[1] : actIntro[0]}
-      </div>
+      </ScrambleText>
     </div>
   );
 
   // Page 1: Target words
   pages.push(
     <div key="targets" className="lex-intro__page">
-      <div className="lex-intro__page-header">
+      <ScrambleText className="lex-intro__page-header" as="div" speed={25} delay={100}>
         {locale === 'zh' ? '寻找这些词' : 'FIND THESE WORDS'}
-      </div>
+      </ScrambleText>
       <div className="lex-intro__rule" />
       <div className="lex-intro__targets-big">
         {roundConfig.targets.map((t, i) => (
-          <span key={i} className={`lex-intro__target-big ${t.rarity === 'rare' ? 'lex-intro__target-big--rare' : ''} ${t.rarity === 'legendary' ? 'lex-intro__target-big--legendary' : ''}`}>
+          <ScrambleText
+            key={i}
+            className={`lex-intro__target-big ${t.rarity === 'rare' ? 'lex-intro__target-big--rare' : ''} ${t.rarity === 'legendary' ? 'lex-intro__target-big--legendary' : ''}`}
+            speed={30}
+            delay={200 + i * 120}
+          >
             {t.text}
-          </span>
+          </ScrambleText>
         ))}
       </div>
     </div>
@@ -91,29 +99,33 @@ export default function LevelIntro({ round, roundConfig, activeGlyphs, maxGlyphs
   // Page 2: Score conditions + phrase combos
   pages.push(
     <div key="conditions" className="lex-intro__page">
-      <div className="lex-intro__page-header">
+      <ScrambleText className="lex-intro__page-header" as="div" speed={25} delay={100}>
         {locale === 'zh' ? '通关条件' : 'PASS CONDITION'}
-      </div>
+      </ScrambleText>
       <div className="lex-intro__rule" />
       <div className="lex-intro__pass-big">
-        <span className="lex-intro__pass-big-score">{roundConfig.passScore}</span>
+        <ScrambleText className="lex-intro__pass-big-score" speed={40} delay={300}>
+          {String(roundConfig.passScore)}
+        </ScrambleText>
         <span className="lex-intro__pass-big-label">
           {locale === 'zh' ? '分' : 'PTS'}
         </span>
       </div>
-      <div className="lex-intro__pass-big-time">
+      <ScrambleText className="lex-intro__pass-big-time" as="div" speed={25} delay={500}>
         {locale === 'zh' ? `${roundConfig.timeLimit} 秒内` : `within ${roundConfig.timeLimit}s`}
-      </div>
+      </ScrambleText>
       {roundConfig.phraseSets.length > 0 && (
         <>
           <div className="lex-intro__rule" />
-          <div className="lex-intro__combos-label">
+          <ScrambleText className="lex-intro__combos-label" as="div" speed={20} delay={700}>
             {locale === 'zh' ? '词组连锁 · 额外奖励' : 'PHRASE COMBOS · BONUS'}
-          </div>
+          </ScrambleText>
           <div className="lex-intro__combos">
             {roundConfig.phraseSets.map((ps, i) => (
               <div key={i} className="lex-intro__combo">
-                <span className="lex-intro__combo-name">{locale === 'zh' ? ps.nameZh : ps.name}</span>
+                <ScrambleText className="lex-intro__combo-name" speed={25} delay={900 + i * 150}>
+                  {locale === 'zh' ? ps.nameZh : ps.name}
+                </ScrambleText>
                 <span className="lex-intro__combo-words">{ps.words.join(' + ')}</span>
                 <span className="lex-intro__combo-bonus">+{ps.bonus}</span>
               </div>
@@ -127,27 +139,33 @@ export default function LevelIntro({ round, roundConfig, activeGlyphs, maxGlyphs
   // Page 3: Equipped glyphs (always show, even if empty)
   pages.push(
     <div key="glyphs" className="lex-intro__page">
-      <div className="lex-intro__page-header">
+      <ScrambleText className="lex-intro__page-header" as="div" speed={25} delay={100}>
         {locale === 'zh' ? '已装配符文' : 'EQUIPPED GLYPHS'}
-      </div>
-      <div className="lex-intro__glyph-count">{activeGlyphs.length} / {maxGlyphs}</div>
+      </ScrambleText>
+      <ScrambleText className="lex-intro__glyph-count" as="div" speed={20} delay={250}>
+        {`${activeGlyphs.length} / ${maxGlyphs}`}
+      </ScrambleText>
       <div className="lex-intro__rule" />
       {activeGlyphs.length > 0 ? (
         <div className="lex-intro__glyphs">
-          {activeGlyphs.map(g => (
+          {activeGlyphs.map((g, i) => (
             <div key={g.id} className="lex-intro__glyph-item">
               <span className="lex-intro__glyph-icon">{g.icon}</span>
               <div className="lex-intro__glyph-info">
-                <span className="lex-intro__glyph-name">{locale === 'zh' ? g.nameZh : g.name}</span>
-                <span className="lex-intro__glyph-desc">{locale === 'zh' ? g.descriptionZh : g.description}</span>
+                <ScrambleText className="lex-intro__glyph-name" speed={25} delay={300 + i * 200}>
+                  {locale === 'zh' ? g.nameZh : g.name}
+                </ScrambleText>
+                <ScrambleText className="lex-intro__glyph-desc" speed={15} delay={500 + i * 200} scrambleTicks={2}>
+                  {locale === 'zh' ? g.descriptionZh : g.description}
+                </ScrambleText>
               </div>
             </div>
           ))}
         </div>
       ) : (
-        <div className="lex-intro__glyphs-empty">
+        <ScrambleText className="lex-intro__glyphs-empty" as="div" speed={20} delay={400}>
           {locale === 'zh' ? '通关后可获得符文' : 'Clear levels to earn glyphs'}
-        </div>
+        </ScrambleText>
       )}
     </div>
   );
@@ -161,7 +179,7 @@ export default function LevelIntro({ round, roundConfig, activeGlyphs, maxGlyphs
       style={{ background: roundConfig.visuals?.bgColor || '#f5f0e6' }}
     >
       <div className="lex-intro__inner">
-        {/* Page content */}
+        {/* Page content — key forces remount so ScrambleText replays */}
         <div className="lex-intro__page-wrap" key={page}>
           {pages[page]}
         </div>
