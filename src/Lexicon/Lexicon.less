@@ -187,7 +187,7 @@
 .lex-intro__bottom {
   position: fixed; bottom: 0; left: 0; right: 0;
   display: flex; flex-direction: column; align-items: center;
-  padding: 0 0 env(safe-area-inset-bottom, 24px);
+  padding: 0 0 calc(env(safe-area-inset-bottom, 12px) + 32px);
   pointer-events: none;
   > * { pointer-events: auto; }
 }
