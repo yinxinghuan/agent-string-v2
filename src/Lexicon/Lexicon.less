@@ -167,7 +167,9 @@
   display: flex; align-items: center; gap: 12px;
 }
 .lex-intro__glyph-icon {
-  font-size: 24px; flex-shrink: 0; width: 36px; text-align: center;
+  font-size: 16px; flex-shrink: 0; width: 32px; height: 32px; border-radius: 6px;
+  background: rgba(140, 60, 60, 0.85); color: rgba(255,255,255,0.95);
+  display: inline-flex; align-items: center; justify-content: center;
 }
 .lex-intro__glyph-info {
   display: flex; flex-direction: column;
@@ -292,7 +294,10 @@
   display: flex; gap: 6px;
 }
 .lex-hud__glyph {
-  font-size: 16px; opacity: 0.8;
+  font-size: 12px; line-height: 1;
+  background: rgba(140, 60, 60, 0.85); color: rgba(255,255,255,0.95);
+  width: 24px; height: 24px; border-radius: 5px;
+  display: inline-flex; align-items: center; justify-content: center;
 }
 // "End round" button when pass score reached
 .lex-hud__end-btn {
@@ -687,9 +692,11 @@
   display: flex; gap: 10px; justify-content: center;
 }
 .lex-shop__active-glyph {
-  font-size: 22px; opacity: 0.6;
+  font-size: 14px; width: 28px; height: 28px; border-radius: 6px;
+  background: rgba(140, 60, 60, 0.85); color: rgba(255,255,255,0.95);
+  display: inline-flex; align-items: center; justify-content: center;
   transition: opacity 0.2s;
 }
 .lex-shop__active-glyph--replace {
-  opacity: 0.3; text-decoration: line-through;
+  opacity: 0.35;
 }
