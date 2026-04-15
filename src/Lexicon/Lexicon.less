@@ -34,11 +34,6 @@
 .lex-btn--ghost {
   border: none; color: @ink-dim; padding: 12px 36px; margin-top: 4px;
 }
-.lex-btn--retry {
-  border: none; background: transparent; color: @ink-dim;
-  font-size: 11px; padding: 10px 36px; margin-top: 24px;
-  text-decoration: underline; text-underline-offset: 3px;
-}
 
 // ── Start screen ─────────────────────────────────────────────────────────────
 .lex-start__inner {
@@ -308,18 +303,19 @@
   width: 100%; display: flex; justify-content: center; align-items: center;
   margin-top: 4px; font-family: @font; font-size: 13px; letter-spacing: 2px; color: @ink-mid;
 }
-// Target word tags
+// Collected target word tags
 .lex-hud__targets {
-  width: 100%; display: flex; flex-wrap: wrap; gap: 4px; justify-content: center;
+  width: 100%; display: flex; flex-wrap: wrap; gap: 4px; align-items: center; justify-content: center;
   margin-top: 6px;
+}
+.lex-hud__targets-count {
+  font-family: @font; font-size: 11px; letter-spacing: 2px;
+  color: rgb(50, 140, 70); margin-right: 2px;
 }
 .lex-hud__target-tag {
   font-family: @font; font-size: 10px; letter-spacing: 1px;
-  padding: 2px 6px; color: @ink-dim; border: 1px solid @ink-light;
-}
-.lex-hud__target-tag--found {
-  color: rgb(50, 140, 70); border-color: rgba(50, 140, 70, 0.4);
-  text-decoration: line-through;
+  padding: 3px 8px; color: rgba(255,255,255,0.95);
+  background: rgba(50, 140, 70, 0.75);
 }
 
 .lex-hud__glyphs {
@@ -670,7 +666,7 @@
 .lex-end__glyph {
   font-family: @font; font-size: 14px; letter-spacing: 2px; color: @ink-mid;
 }
-.lex-end__btns { width: 100%; display: flex; flex-direction: column; align-items: center; }
+.lex-end__btns { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 12px; }
 
 // Dark mode end screen
 .lex-end--dark {
@@ -684,7 +680,6 @@
   .lex-end__glyph { color: rgba(248, 250, 252, 0.5); }
   .lex-btn { color: rgba(248, 250, 252, 0.7); border-color: rgba(248, 250, 252, 0.2); }
   .lex-btn--ghost { color: rgba(248, 250, 252, 0.35); }
-  .lex-btn--retry { color: rgba(248, 250, 252, 0.3); }
 }
 
 // ── Glyph Shop ───────────────────────────────────────────────────────────────

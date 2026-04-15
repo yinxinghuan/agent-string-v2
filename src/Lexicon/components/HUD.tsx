@@ -64,20 +64,18 @@ export default function HUD({ round, score, timeLeft, streak, pressure, surgeAct
         {surgeActive && <span className="lex-hud__surge-label">{t('surge')}</span>}
       </div>
 
-      {/* Target word tags */}
-      <div className="lex-hud__targets">
-        {targets.map(tgt => {
-          const found = collectedWords.includes(tgt.text);
-          return (
-            <span
-              key={tgt.text}
-              className={`lex-hud__target-tag ${found ? 'lex-hud__target-tag--found' : ''}`}
-            >
-              {tgt.text}
-            </span>
-          );
-        })}
-      </div>
+      {/* Collected target words — only show when found */}
+      {(() => {
+        const found = targets.filter(tgt => collectedWords.includes(tgt.text));
+        return found.length > 0 ? (
+          <div className="lex-hud__targets">
+            <span className="lex-hud__targets-count">{found.length}/{minTargets}</span>
+            {found.map(tgt => (
+              <span key={tgt.text} className="lex-hud__target-tag">{tgt.text}</span>
+            ))}
+          </div>
+        ) : null;
+      })()}
 
       {glyphs.length > 0 && (
         <div className="lex-hud__glyphs">

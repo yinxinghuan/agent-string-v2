@@ -120,9 +120,9 @@ export default function EndScreen({ state, roundConfig, phraseSets, isRunEnd, on
         <div className="lex-end__rule" />
         <div className="lex-end__btns">
           {passed && !isRunEnd && !isLastLevel && (
-            <button className="lex-btn lex-btn--solid" onPointerDown={onNext}>{t('next')}</button>
+            <button className="lex-btn" onPointerDown={onNext}>{t('next')}</button>
           )}
-          <button className="lex-btn lex-btn--retry" onPointerDown={onRetry}>{t('retry')}</button>
+          <button className="lex-btn lex-btn--ghost" onPointerDown={onRetry}>{t('retry')}</button>
         </div>
       </div>
     </div>
