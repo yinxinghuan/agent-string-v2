@@ -116,6 +116,13 @@ export default function LevelIntro({ round, roundConfig, glyphPool, equippedGlyp
       <ScrambleText className="lex-intro__pass-big-time" as="div" speed={25} delay={500}>
         {locale === 'zh' ? `${roundConfig.timeLimit} 秒内` : `within ${roundConfig.timeLimit}s`}
       </ScrambleText>
+      {roundConfig.minTargets > 0 && (
+        <ScrambleText className="lex-intro__pass-big-time" as="div" speed={25} delay={650}>
+          {locale === 'zh'
+            ? `收集至少 ${roundConfig.minTargets} 个目标词`
+            : `collect ${roundConfig.minTargets}+ target words`}
+        </ScrambleText>
+      )}
       {roundConfig.phraseSets.length > 0 && (
         <>
           <div className="lex-intro__rule" />

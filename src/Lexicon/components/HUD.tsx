@@ -12,16 +12,17 @@ interface HUDProps {
   collected: number;
   totalTargets: number;
   passScore: number;
+  minTargets: number;
   visuals?: LevelVisuals;
   onEndRound?: () => void;
 }
 
-export default function HUD({ round, score, timeLeft, streak, pressure, surgeActive, glyphs, collected, totalTargets, passScore, visuals, onEndRound }: HUDProps) {
+export default function HUD({ round, score, timeLeft, streak, pressure, surgeActive, glyphs, collected, totalTargets, passScore, minTargets, visuals, onEndRound }: HUDProps) {
   const mins = Math.floor(Math.max(0, timeLeft) / 60);
   const secs = Math.floor(Math.max(0, timeLeft) % 60);
   const timeStr = `${mins}:${secs.toString().padStart(2, '0')}`;
   const isLow = timeLeft <= 15;
-  const passed = passScore > 0 && score >= passScore;
+  const passed = passScore > 0 && score >= passScore && collected >= minTargets;
 
   // Derive HUD colors from level visuals
   const isDark = visuals ? visuals.bgColor.startsWith('#0') || visuals.bgColor.startsWith('#1') || visuals.bgColor === '#000000' : false;
@@ -64,7 +65,9 @@ export default function HUD({ round, score, timeLeft, streak, pressure, surgeAct
       </div>
 
       <div className="lex-hud__found" style={dimStyle}>
-        <span>{collected}/{totalTargets}</span>
+        <span style={collected >= minTargets ? { color: 'rgb(50,200,80)' } : undefined}>
+          {collected}/{minTargets > 0 ? minTargets : totalTargets}
+        </span>
       </div>
       {glyphs.length > 0 && (
         <div className="lex-hud__glyphs">

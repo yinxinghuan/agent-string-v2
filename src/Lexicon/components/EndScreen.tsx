@@ -13,8 +13,13 @@ interface EndScreenProps {
 
 export default function EndScreen({ state, roundConfig, phraseSets, isRunEnd, onNext, onRetry }: EndScreenProps) {
   const collected = state.wordsCollectedThisRound.length;
+  const targetsCollected = state.wordsCollectedThisRound.filter(w =>
+    roundConfig.targets.some(t => t.text === w)
+  ).length;
   const completedPhrases = Array.from(state.phraseSetsCompleted);
-  const passed = roundConfig.passScore > 0 && state.score >= roundConfig.passScore;
+  const scorePassed = roundConfig.passScore > 0 && state.score >= roundConfig.passScore;
+  const targetsPassed = targetsCollected >= roundConfig.minTargets;
+  const passed = scorePassed && targetsPassed;
   const isLastLevel = roundConfig.passScore === 0; // R30
 
   const title = isLastLevel

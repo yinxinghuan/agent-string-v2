@@ -120,6 +120,7 @@ export interface RoundConfig {
   timeLimit: number;
   scrollSpeed: number;
   passScore: number;
+  minTargets: number;     // minimum target words that must be collected to pass
   act: number;            // 1-5
   actName: string;        // e.g. "THE SURFACE"
   actNameZh: string;

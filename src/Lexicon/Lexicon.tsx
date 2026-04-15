@@ -219,7 +219,10 @@ export default function Lexicon() {
 
   // ── Next level: shop if passed, skip if failed ─────────────────────────────
   const handleRoundEnd = useCallback(() => {
-    const passed = state.score >= roundConfig.passScore;
+    const targetsCollected = state.wordsCollectedThisRound.filter(w =>
+      roundConfig.targets.some(t => t.text === w)
+    ).length;
+    const passed = state.score >= roundConfig.passScore && targetsCollected >= roundConfig.minTargets;
     if (passed) {
       const excludeIds = state.glyphPool.map(g => g.id);
       const offered = pickRandomGlyphs(3, excludeIds);
@@ -239,7 +242,7 @@ export default function Lexicon() {
       });
       pipelineEntryRef.current = null;
     }
-  }, [state.glyphPool, state.score, roundConfig.passScore]);
+  }, [state.glyphPool, state.score, state.wordsCollectedThisRound, roundConfig]);
 
   // ── Shop: pick glyph → add to pool + auto-equip if room ───────────────────
   const handlePickGlyph = useCallback((glyph: Glyph) => {
@@ -318,6 +321,7 @@ export default function Lexicon() {
             collected={state.wordsCollectedThisRound.length}
             totalTargets={roundConfig.targets.filter(t => t.type === 'target').length}
             passScore={roundConfig.passScore}
+            minTargets={roundConfig.minTargets}
             visuals={roundConfig.visuals}
             onEndRound={handleEarlyEnd}
           />
