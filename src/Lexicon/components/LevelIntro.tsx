@@ -165,8 +165,10 @@ export default function LevelIntro({ round, roundConfig, activeGlyphs, maxGlyphs
         <div className="lex-intro__page-wrap" key={page}>
           {pages[page]}
         </div>
+      </div>
 
-        {/* Dots */}
+      {/* Fixed bottom: dots + nav */}
+      <div className="lex-intro__bottom">
         <div className="lex-intro__dots">
           {pages.map((_, i) => (
             <span
@@ -176,8 +178,6 @@ export default function LevelIntro({ round, roundConfig, activeGlyphs, maxGlyphs
             />
           ))}
         </div>
-
-        {/* Navigation */}
         <div className="lex-intro__nav">
           {page > 0 && (
             <button className="lex-btn lex-btn--ghost" onPointerDown={() => setPage(page - 1)}>
@@ -185,11 +185,11 @@ export default function LevelIntro({ round, roundConfig, activeGlyphs, maxGlyphs
             </button>
           )}
           {!isLastPage ? (
-            <button className="lex-btn" onPointerDown={() => setPage(page + 1)}>
+            <button className="lex-btn lex-btn--solid" onPointerDown={() => setPage(page + 1)}>
               {locale === 'zh' ? '下一页' : 'NEXT'}
             </button>
           ) : (
-            <button className="lex-btn" onPointerDown={onStart}>
+            <button className="lex-btn lex-btn--solid" onPointerDown={onStart}>
               {locale === 'zh' ? '开 始 解 读' : 'B E G I N'}
             </button>
           )}
