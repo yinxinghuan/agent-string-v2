@@ -5,7 +5,7 @@ import {
   INK, TRAP_RGB, GROUP_COLORS, FONT_FAMILY, BG_COLOR,
   COLLECT_R, REPEL_F,
   PRESSURE_PER_COLLECT, PRESSURE_PER_SHATTER, PRESSURE_MAX,
-  SURGE_SPEED_MULT, ANCHOR_TIME_BONUS, TRAP_TIME_PENALTY,
+  SURGE_SPEED_MULT, ANCHOR_TIME_BONUS,
 } from '../constants';
 import { sfxCollect, sfxTrap, sfxShatter, sfxTime, sfxVolatile, sfxSurgeStart, sfxChain, resumeAudio } from '../utils/sounds';
 
@@ -457,27 +457,40 @@ export default function GameCanvas({
         onVolatile(result.volatileTriggered);
       }
 
-      // Handle traps
+      // Handle traps — destroy nearby target/volatile words (no score penalty)
       for (const w of result.trapped) {
         sfxTrap();
-        screenShakeRef.current = 0.5;
+        screenShakeRef.current = 0.6;
         const sy = w.y - scrollYRef.current;
-        addBurst(w.x, sy, TRAP_RGB, 50);
-        addFloat(w.x, sy, `-${TRAP_TIME_PENALTY}s`, 'rgba(180,40,40,0.8)');
+        addBurst(w.x, sy, TRAP_RGB, 60);
         onTrapHit(w);
-        onTimeBonus(-TRAP_TIME_PENALTY);
 
-        // Scramble nearby words
+        // Shatter nearby interactive words (targets, volatiles, time, anchors)
+        let destroyed = 0;
         for (const ow of wordsRef.current) {
           if (ow.collected || ow.shattered || ow.trapTriggered) continue;
+          if (ow.meta.type === 'normal' || ow.meta.type === 'trap') continue;
           const dx = ow.x - w.x;
           const dy = ow.y - w.y;
           const d = Math.sqrt(dx * dx + dy * dy);
-          if (d < 140 && d > 0) {
-            ow.scrambleTimer = 2.5;
-            ow.vx += (dx / d) * 8;
-            ow.vy += (dy / d) * 8;
+          if (d < 180 && d > 0) {
+            // Shatter the word
+            ow.shattered = true;
+            destroyed++;
+            const osy = ow.y - scrollYRef.current;
+            addShatter(ow.x, osy, ow.text);
+            addBurst(ow.x, osy, TRAP_RGB, 30);
+            ow.vx += (dx / d) * 10;
+            ow.vy += (dy / d) * 10;
+          } else if (d < 250 && d > 0) {
+            // Scramble nearby words that weren't destroyed
+            ow.scrambleTimer = 2.0;
+            ow.vx += (dx / d) * 6;
+            ow.vy += (dy / d) * 6;
           }
+        }
+        if (destroyed > 0) {
+          addFloat(w.x, sy, `−${destroyed}`, 'rgba(180,40,40,0.9)');
         }
       }
 
