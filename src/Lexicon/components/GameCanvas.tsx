@@ -194,6 +194,7 @@ function drawEffects(ctx: CanvasRenderingContext2D, v: LevelVisuals, W: number, 
 
 interface GameCanvasProps {
   roundConfig: RoundConfig;
+  equippedGlyphIds: string[];
   surgeActive: boolean;
   surgeTimer: number;
   pressure: number;
@@ -206,18 +207,20 @@ interface GameCanvasProps {
   onPressureChange: (pressure: number) => void;
   onSurgeStart: () => void;
   onSurgeEnd: () => void;
-  onTimeUpdate: (dt: number) => void;
+  onLapUpdate: (lap: number, progress: number) => void;
 }
 
 export default function GameCanvas({
-  roundConfig, surgeActive, surgeTimer, pressure, pipelineEntryRef,
+  roundConfig, equippedGlyphIds, surgeActive, surgeTimer, pressure, pipelineEntryRef,
   onWordCollected, onTrapHit, onShatter, onVolatile, onTimeBonus,
-  onPressureChange, onSurgeStart, onSurgeEnd, onTimeUpdate,
+  onPressureChange, onSurgeStart, onSurgeEnd, onLapUpdate,
 }: GameCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const wordsRef = useRef<Word[]>([]);
   const scrollYRef = useRef(0);
   const totalHRef = useRef(500);
+  const lapScrollRef = useRef(0); // total scroll distance for lap counting
+  const prevLapRef = useRef(0);  // track lap transitions for revival
   const pointerRef = useRef({ x: 0, y: 0, active: false });
   const pulseTRef = useRef(0);
   const burstsRef = useRef<Burst[]>([]);
@@ -257,6 +260,8 @@ export default function GameCanvas({
     // Start scroll negative so text begins well below the Redline, scrolling upward into play
     // Near-zero offset — first words visible within 1 second
     scrollYRef.current = -(canvas.height * 0.05);
+    lapScrollRef.current = 0;
+    prevLapRef.current = 0;
     scoreEntitiesRef.current = [];
     scoreQueueRef.current = [];
     chainCountRef.current = 0;
@@ -347,10 +352,40 @@ export default function GameCanvas({
 
       // Auto-scroll — no clamping, text loops like v1
       const speed = roundConfig.scrollSpeed * (surgeRef.current.active ? SURGE_SPEED_MULT : 1);
-      scrollYRef.current += speed * dt;
+      const scrollDelta = speed * dt;
+      scrollYRef.current += scrollDelta;
+      lapScrollRef.current += scrollDelta;
+
+      // Report lap progress + revival at lap boundary
+      const totalH = totalHRef.current;
+      if (totalH > 0) {
+        const currentLap = Math.floor(lapScrollRef.current / totalH);
+        const lapProgress = (lapScrollRef.current % totalH) / totalH;
+        onLapUpdate(currentLap, lapProgress);
+
+        // Revival glyph: at new lap, revive 3 collected targets
+        if (currentLap > prevLapRef.current && equippedGlyphIds.includes('revival')) {
+          const collectedTargets = wordsRef.current.filter(
+            w => w.collected && (w.meta.type === 'target' || w.meta.type === 'time')
+          );
+          // Pick up to 3 random collected targets to revive
+          const shuffled = [...collectedTargets].sort(() => Math.random() - 0.5);
+          for (const w of shuffled.slice(0, 3)) {
+            w.collected = false;
+            w.revealAlpha = 0;
+            w.revealTimer = 0;
+            // Visual: burst to signal revival
+            const sy = w.y - scrollYRef.current;
+            if (sy > -200 && sy < H + 200) {
+              addBurst(w.x, sy, [80, 180, 100], 40);
+              addFloat(w.x, sy, '↺', 'rgba(80,180,100,0.9)');
+            }
+          }
+        }
+        prevLapRef.current = currentLap;
+      }
 
       // Recycle words that scroll off the top
-      const totalH = totalHRef.current;
       for (const w of wordsRef.current) {
         const sy = w.y - scrollYRef.current;
         if (sy < -80) {
@@ -590,8 +625,7 @@ export default function GameCanvas({
         }
       }
 
-      // Always let timer run — player uses full time to chain and score
-      onTimeUpdate(dt);
+      // Lap update is handled in scroll section above
 
       // Screen shake decay
       screenShakeRef.current *= 0.9;

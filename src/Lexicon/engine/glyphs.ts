@@ -118,8 +118,33 @@ export const ALL_GLYPHS: Glyph[] = [
   },
 ];
 
+// ── Passive glyphs (affect round mechanics, not per-word scoring) ─────────
+// These have evaluate: () => null — they never add to the scoring pipeline.
+// Their effects are checked directly in GameCanvas (revival) and Lexicon (extra lap).
+
+export const PASSIVE_GLYPHS: Glyph[] = [
+  {
+    id: 'revival',
+    name: 'Revival',
+    nameZh: '复活',
+    description: 'At each new lap, revive 3 collected target words',
+    descriptionZh: '每轮开始时复活 3 个已收集的目标词',
+    icon: '↺',
+    evaluate: () => null,
+  },
+  {
+    id: 'extra_lap',
+    name: 'Extra Lap',
+    nameZh: '加轮',
+    description: '+1 maximum lap per round',
+    descriptionZh: '每关最大轮次 +1',
+    icon: '+1',
+    evaluate: () => null,
+  },
+];
+
 export function pickRandomGlyphs(count: number, exclude: string[]): Glyph[] {
-  const pool = ALL_GLYPHS.filter(g => !exclude.includes(g.id));
+  const pool = [...ALL_GLYPHS, ...PASSIVE_GLYPHS].filter(g => !exclude.includes(g.id));
   const shuffled = [...pool].sort(() => Math.random() - 0.5);
   return shuffled.slice(0, count);
 }

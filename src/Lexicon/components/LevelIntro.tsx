@@ -114,7 +114,7 @@ export default function LevelIntro({ round, roundConfig, glyphPool, equippedGlyp
         </span>
       </div>
       <ScrambleText className="lex-intro__pass-big-time" as="div" speed={25} delay={500}>
-        {locale === 'zh' ? `${roundConfig.timeLimit} 秒内` : `within ${roundConfig.timeLimit}s`}
+        {locale === 'zh' ? `${roundConfig.maxLaps} 轮内` : `within ${roundConfig.maxLaps} laps`}
       </ScrambleText>
       {roundConfig.minTargets > 0 && (
         <ScrambleText className="lex-intro__pass-big-time" as="div" speed={25} delay={650}>

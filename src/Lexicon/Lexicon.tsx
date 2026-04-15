@@ -21,7 +21,8 @@ function initialState(): GameState {
     phase: 'menu',
     round: 1,
     score: 0,
-    timeLeft: 80,
+    lap: 0,
+    lapProgress: 0,
     streak: 0,
     bestStreak: 0,
     pressure: 0,
@@ -48,11 +49,9 @@ export default function Lexicon() {
   // ── Start game ─────────────────────────────────────────────────────────────
   const handleStart = useCallback(() => {
     resumeAudio();
-    const rc = getRound(0);
     setState({
       ...initialState(),
       phase: 'levelIntro',
-      timeLeft: rc.timeLimit,
     });
     pipelineEntryRef.current = null;
   }, []);
@@ -164,8 +163,9 @@ export default function Lexicon() {
   }, []);
 
   // ── Time bonus ─────────────────────────────────────────────────────────────
-  const handleTimeBonus = useCallback((seconds: number) => {
-    setState(prev => ({ ...prev, timeLeft: prev.timeLeft + seconds }));
+  // Time bonus no longer adds time (lap-based system); kept for compatibility
+  const handleTimeBonus = useCallback((_seconds: number) => {
+    // no-op in lap mode
   }, []);
 
   // ── Pressure ───────────────────────────────────────────────────────────────
@@ -181,30 +181,30 @@ export default function Lexicon() {
     setState(prev => ({ ...prev, surgeActive: false, surgeTimer: 0 }));
   }, []);
 
-  // ── Time update ────────────────────────────────────────────────────────────
-  const handleTimeUpdate = useCallback((dt: number) => {
+  // ── Lap update (replaces time-based ending) ─────────────────────────────────
+  const handleLapUpdate = useCallback((lap: number, progress: number) => {
     setState(prev => {
       if (prev.phase !== 'playing') return prev;
-      const newTime = prev.timeLeft - dt;
-      const newSurgeTimer = prev.surgeActive ? prev.surgeTimer - dt : 0;
 
-      if (newTime <= 0) {
+      // Extra Lap glyph adds +1 to maxLaps
+      const extraLaps = prev.equippedGlyphs.some(g => g.id === 'extra_lap') ? 1 : 0;
+      const effectiveMaxLaps = roundConfig.maxLaps + extraLaps;
+
+      // Round ends when laps exceed effective maxLaps
+      if (lap >= effectiveMaxLaps) {
         const prevTotal = prev.roundScores.reduce((a, b) => a + b, 0);
         const thisRoundScore = prev.score - prevTotal;
         sfxComplete();
         return {
-          ...prev, timeLeft: 0, surgeTimer: newSurgeTimer,
+          ...prev, lap, lapProgress: 1,
           phase: 'roundEnd',
           roundScores: [...prev.roundScores, thisRoundScore],
         };
       }
 
-      return {
-        ...prev, timeLeft: newTime, surgeTimer: newSurgeTimer,
-        surgeActive: prev.surgeActive && newSurgeTimer > 0,
-      };
+      return { ...prev, lap, lapProgress: progress };
     });
-  }, []);
+  }, [roundConfig.maxLaps]);
 
   // ── Early end ──────────────────────────────────────────────────────────────
   const handleEarlyEnd = useCallback(() => {
@@ -231,10 +231,9 @@ export default function Lexicon() {
     } else {
       setState(prev => {
         const nextRound = prev.round + 1;
-        const rc = getRound(nextRound - 1);
         return {
           ...prev, phase: 'levelIntro', round: nextRound, score: 0,
-          timeLeft: rc.timeLimit, streak: 0, pressure: 0,
+          lap: 0, lapProgress: 0, streak: 0, pressure: 0,
           surgeActive: false, surgeTimer: 0,
           wordsCollectedThisRound: [], phraseSetsCompleted: new Set(),
           trapHits: 0, wordsShattered: 0,
@@ -254,11 +253,10 @@ export default function Lexicon() {
         : prev.equippedGlyphs;
 
       const nextRound = prev.round + 1;
-      const rc = getRound(nextRound - 1);
 
       return {
         ...prev, phase: 'levelIntro', round: nextRound, score: 0,
-        timeLeft: rc.timeLimit, streak: 0, pressure: 0,
+        lap: 0, lapProgress: 0, streak: 0, pressure: 0,
         surgeActive: false, surgeTimer: 0,
         wordsCollectedThisRound: [], phraseSetsCompleted: new Set(),
         glyphPool: newPool, equippedGlyphs: newEquipped,
@@ -296,6 +294,7 @@ export default function Lexicon() {
         <>
           <GameCanvas
             roundConfig={roundConfig}
+            equippedGlyphIds={state.equippedGlyphs.map(g => g.id)}
             surgeActive={state.surgeActive}
             surgeTimer={state.surgeTimer}
             pressure={state.pressure}
@@ -308,12 +307,14 @@ export default function Lexicon() {
             onPressureChange={handlePressureChange}
             onSurgeStart={handleSurgeStart}
             onSurgeEnd={handleSurgeEnd}
-            onTimeUpdate={handleTimeUpdate}
+            onLapUpdate={handleLapUpdate}
           />
           <HUD
             round={state.round}
             score={state.score}
-            timeLeft={state.timeLeft}
+            lap={state.lap}
+            lapProgress={state.lapProgress}
+            maxLaps={roundConfig.maxLaps + (state.equippedGlyphs.some(g => g.id === 'extra_lap') ? 1 : 0)}
             streak={state.streak}
             pressure={state.pressure}
             surgeActive={state.surgeActive}

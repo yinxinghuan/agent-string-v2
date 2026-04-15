@@ -4,7 +4,9 @@ import type { Glyph, LevelVisuals, WordMeta } from '../types';
 interface HUDProps {
   round: number;
   score: number;
-  timeLeft: number;
+  lap: number;
+  lapProgress: number;
+  maxLaps: number;
   streak: number;
   pressure: number;
   surgeActive: boolean;
@@ -17,16 +19,11 @@ interface HUDProps {
   onEndRound?: () => void;
 }
 
-export default function HUD({ round, score, timeLeft, streak, pressure, surgeActive, glyphs, targets, collectedWords, passScore, minTargets, visuals, onEndRound }: HUDProps) {
-  const mins = Math.floor(Math.max(0, timeLeft) / 60);
-  const secs = Math.floor(Math.max(0, timeLeft) % 60);
-  const timeStr = `${mins}:${secs.toString().padStart(2, '0')}`;
-  const isLow = timeLeft <= 15;
+export default function HUD({ round, score, lap, lapProgress, maxLaps, streak, pressure, surgeActive, glyphs, targets, collectedWords, passScore, minTargets, visuals, onEndRound }: HUDProps) {
   const targetsCollected = collectedWords.filter(w => targets.some(t => t.text === w)).length;
   const passed = passScore > 0 && score >= passScore && targetsCollected >= minTargets;
 
   const isDark = visuals ? visuals.bgColor.startsWith('#0') || visuals.bgColor.startsWith('#1') || visuals.bgColor === '#000000' : false;
-  const textStyle = isDark ? { color: 'rgba(248,250,252,0.7)' } : {};
   const scoreStyle = passed
     ? { color: 'rgb(50,200,80)' }
     : isDark ? { color: 'rgba(248,250,252,0.9)' } : {};
@@ -36,6 +33,10 @@ export default function HUD({ round, score, timeLeft, streak, pressure, surgeAct
     : {};
   const barBg = isDark ? 'rgba(248,250,252,0.1)' : undefined;
 
+  // Overall progress: combine lap and lapProgress
+  const totalProgress = maxLaps > 0 ? (lap + lapProgress) / maxLaps : 0;
+  const isLastLap = lap === maxLaps - 1;
+
   return (
     <div className="lex-hud" style={bgStyle}>
       <div className="lex-hud__left">
@@ -43,7 +44,9 @@ export default function HUD({ round, score, timeLeft, streak, pressure, surgeAct
         {streak >= 2 && <span className="lex-hud__streak">x{streak}</span>}
       </div>
       <div className="lex-hud__center">
-        <span className={`lex-hud__time ${isLow ? 'lex-hud__time--low' : ''}`} style={textStyle}>{timeStr}</span>
+        <span className={`lex-hud__lap ${isLastLap ? 'lex-hud__lap--last' : ''}`} style={isDark ? { color: 'rgba(248,250,252,0.7)' } : undefined}>
+          {locale === 'zh' ? `第${lap + 1}轮` : `LAP ${lap + 1}`}/{maxLaps}
+        </span>
       </div>
       <div className="lex-hud__right">
         <span className="lex-hud__score" style={scoreStyle}>{score}</span>
@@ -52,8 +55,8 @@ export default function HUD({ round, score, timeLeft, streak, pressure, surgeAct
 
       <div className="lex-hud__progress-wrap" style={barBg ? { background: barBg } : undefined}>
         <div
-          className="lex-hud__progress-fill"
-          style={{ width: `${targets.length > 0 ? (targetsCollected / targets.length) * 100 : 0}%` }}
+          className={`lex-hud__progress-fill ${isLastLap ? 'lex-hud__progress-fill--last' : ''}`}
+          style={{ width: `${Math.min(100, totalProgress * 100)}%` }}
         />
         {pressure > 0 && (
           <div
@@ -64,7 +67,7 @@ export default function HUD({ round, score, timeLeft, streak, pressure, surgeAct
         {surgeActive && <span className="lex-hud__surge-label">{t('surge')}</span>}
       </div>
 
-      {/* Collected target words — only show when found */}
+      {/* Collected target words */}
       {(() => {
         const found = targets.filter(tgt => collectedWords.includes(tgt.text));
         return found.length > 0 ? (

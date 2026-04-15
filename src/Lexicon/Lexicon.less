@@ -267,10 +267,13 @@
   0% { transform: scale(1.4); } 100% { transform: scale(1); }
 }
 .lex-hud__center { text-align: center; }
-.lex-hud__time { color: @ink-mid; font-size: 16px; }
-.lex-hud__time--low { color: @red; animation: lex-time-pulse 0.8s infinite; }
-@keyframes lex-time-pulse {
-  0%, 100% { opacity: 1; } 50% { opacity: 0.4; }
+.lex-hud__lap { color: @ink-mid; font-size: 14px; }
+.lex-hud__lap--last { color: @red; animation: lex-lap-pulse 1.2s infinite; }
+@keyframes lex-lap-pulse {
+  0%, 100% { opacity: 1; } 50% { opacity: 0.5; }
+}
+.lex-hud__progress-fill--last {
+  background: rgba(200, 120, 40, 0.6);
 }
 .lex-hud__right { flex: 1; text-align: right; }
 .lex-hud__score { color: @ink; font-weight: 600; font-size: 16px; }

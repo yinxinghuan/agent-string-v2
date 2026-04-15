@@ -121,6 +121,7 @@ export interface RoundConfig {
   scrollSpeed: number;
   passScore: number;
   minTargets: number;     // minimum target words that must be collected to pass
+  maxLaps: number;        // how many times the passage scrolls through before round ends
   act: number;            // 1-5
   actName: string;        // e.g. "THE SURFACE"
   actNameZh: string;
@@ -141,7 +142,8 @@ export interface GameState {
   phase: Phase;
   round: number;          // 1-5 within a run
   score: number;
-  timeLeft: number;
+  lap: number;            // current lap (0-based)
+  lapProgress: number;    // 0-1 progress within current lap
   streak: number;
   bestStreak: number;
   pressure: number;       // 0-100
