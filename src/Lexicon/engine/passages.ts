@@ -5011,7 +5011,7 @@ const ROUNDS_EN: RoundConfig[] = [
       textColor: [160, 170, 240],
       textAlpha: 0.9,
       accentColor: [120, 140, 255],
-      geometry: 4,
+      geometry: 5,
       vignette: 0.7,
     },
     targets: [
@@ -6408,7 +6408,7 @@ const ROUNDS_ZH: RoundConfig[] = [
       textColor: [160, 170, 240],
       textAlpha: 0.9,
       accentColor: [120, 140, 255],
-      geometry: 4,
+      geometry: 5,
       vignette: 0.7,
     },
     targets: [
