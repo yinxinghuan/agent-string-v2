@@ -47,6 +47,16 @@ export const SURGE_DURATION = 8;
 export const SURGE_SCORE_MULT = 3;     // x3 during surge (was x2)
 export const SURGE_SPEED_MULT = 2;
 
+// ── Dark background detection ────────────────────────────────────────────────
+export function isBgDark(hex: string): boolean {
+  const c = hex.replace('#', '');
+  const r = parseInt(c.substring(0, 2), 16);
+  const g = parseInt(c.substring(2, 4), 16);
+  const b = parseInt(c.substring(4, 6), 16);
+  // Relative luminance — threshold at ~30% brightness
+  return (r * 0.299 + g * 0.587 + b * 0.114) < 80;
+}
+
 // ── Visual ───────────────────────────────────────────────────────────────────
 export const INK: [number, number, number] = [20, 12, 5];
 export const TRAP_RGB: [number, number, number] = [180, 40, 40];

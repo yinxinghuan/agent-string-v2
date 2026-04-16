@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { locale } from '../i18n';
+import { isBgDark } from '../constants';
 import type { Glyph, RoundConfig } from '../types';
 import ScrambleText from './ScrambleText';
 import GlyphEquip from './GlyphEquip';
@@ -88,11 +89,7 @@ export default function LevelIntro({ round, roundConfig, glyphPool, equippedGlyp
   const introIdx = Math.min(round - 1, ROUND_INTROS.length - 1);
   const roundIntro = ROUND_INTROS[introIdx];
   const isFirstOfAct = round === 1 || [7, 13, 19, 25].includes(round);
-  const isDark = roundConfig.visuals && (
-    roundConfig.visuals.bgColor.startsWith('#0') ||
-    roundConfig.visuals.bgColor.startsWith('#1') ||
-    roundConfig.visuals.bgColor === '#000000'
-  );
+  const isDark = roundConfig.visuals ? isBgDark(roundConfig.visuals.bgColor) : false;
 
   // Build pages dynamically
   const pages: JSX.Element[] = [];

@@ -1,4 +1,5 @@
 import { t, locale } from '../i18n';
+import { isBgDark } from '../constants';
 import type { Glyph, LevelVisuals, WordMeta } from '../types';
 
 interface HUDProps {
@@ -24,7 +25,7 @@ export default function HUD({ round, score, lap, lapProgress, maxLaps, streak, p
   const targetsCollected = collectedWords.filter(w => targets.some(t => t.text === w)).length;
   const passed = passScore > 0 && score >= passScore && targetsCollected >= minTargets;
 
-  const isDark = visuals ? visuals.bgColor.startsWith('#0') || visuals.bgColor.startsWith('#1') || visuals.bgColor === '#000000' : false;
+  const isDark = visuals ? isBgDark(visuals.bgColor) : false;
   const scorePassed = passScore > 0 && score >= passScore;
   const targetsPassed = targetsCollected >= minTargets;
   const scoreStyle = scorePassed

@@ -1,4 +1,5 @@
 import { t, locale } from '../i18n';
+import { isBgDark } from '../constants';
 import type { GameState, PhraseSet, RoundConfig } from '../types';
 import ScrambleText from './ScrambleText';
 
@@ -31,7 +32,7 @@ export default function EndScreen({ state, roundConfig, phraseSets, isRunEnd, on
         : (locale === 'zh' ? '信号丢失' : 'SIGNAL LOST');
 
   const vis = roundConfig.visuals;
-  const isDark = vis && (vis.bgColor.startsWith('#0') || vis.bgColor.startsWith('#1') || vis.bgColor === '#000000');
+  const isDark = vis ? isBgDark(vis.bgColor) : false;
   const endStyle: React.CSSProperties = {
     background: vis?.bgColor || '#f5f0e6',
     color: isDark ? 'rgba(248,250,252,0.85)' : undefined,
