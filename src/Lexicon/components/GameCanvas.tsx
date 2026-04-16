@@ -8,6 +8,7 @@ import {
   SURGE_SPEED_MULT, ANCHOR_TIME_BONUS,
 } from '../constants';
 import { sfxCollect, sfxTrap, sfxShatter, sfxTime, sfxVolatile, sfxSurgeStart, sfxChain, resumeAudio } from '../utils/sounds';
+import { locale } from '../i18n';
 
 const GLITCH_CHARS = '!@#$%^&*~<>[]{}?|01_';
 function glitchText(text: string, seed: number): string {
@@ -771,6 +772,36 @@ export default function GameCanvas({
         }
 
         ctx.restore();
+      }
+
+      // Lap separator — drawn at the end of each passage cycle
+      {
+        const tc = vis?.textColor ?? INK;
+        const sepAlpha = (vis?.textAlpha ?? 0.85) * 0.3;
+        const maxLap = roundConfig.maxLaps + (equippedGlyphIds.includes('extra_lap') ? 1 : 0);
+        for (let lap = 0; lap < maxLap; lap++) {
+          const sepY = totalH * (lap + 1) - 40 - scrollY;
+          if (sepY < -60 || sepY > H + 60) continue;
+          // Horizontal line
+          ctx.save();
+          ctx.strokeStyle = `rgba(${tc[0]},${tc[1]},${tc[2]},${sepAlpha})`;
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          const lineW = Math.min(W * 0.6, 280);
+          ctx.moveTo((W - lineW) / 2, sepY);
+          ctx.lineTo((W + lineW) / 2, sepY);
+          ctx.stroke();
+          // Label
+          ctx.font = `10px ${FONT_FAMILY}`;
+          ctx.fillStyle = `rgba(${tc[0]},${tc[1]},${tc[2]},${sepAlpha})`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          const label = locale === 'zh'
+            ? `— 第 ${lap + 1} 轮结束 —`
+            : `— END OF LAP ${lap + 1} —`;
+          ctx.fillText(label, W / 2, sepY + 16);
+          ctx.restore();
+        }
       }
 
       // Bursts
