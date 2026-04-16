@@ -173,23 +173,23 @@
   transition: all 0.2s;
 }
 .lex-equip__slot--filled {
-  border-color: rgba(80, 100, 180, 0.6); background: rgba(80, 100, 180, 0.08);
+  border-color: transparent; background: rgba(80, 100, 180, 0.8);
 }
 .lex-equip__slot-icon {
-  font-size: 16px; line-height: 1;
+  font-size: 18px; line-height: 1; color: rgba(255,255,255,0.95);
 }
 .lex-equip__slot-name {
-  font-family: @font; font-size: 8px; letter-spacing: 1px; color: @ink-mid;
+  font-family: @font; font-size: 9px; letter-spacing: 1px; color: rgba(255,255,255,0.7);
   margin-top: 3px; max-width: 52px; overflow: hidden; text-overflow: ellipsis;
   white-space: nowrap; text-align: center;
 }
 .lex-equip__slot-empty {
-  font-family: @font; font-size: 14px; color: @ink-light;
+  font-family: @font; font-size: 16px; color: @ink-light;
 }
 
 // Pool label + list
 .lex-equip__pool-label {
-  font-family: @font; font-size: 10px; letter-spacing: 4px; color: @ink-dim;
+  font-family: @font; font-size: 12px; letter-spacing: 4px; color: @ink-dim;
   margin-bottom: 8px; text-align: center;
 }
 .lex-equip__pool {
@@ -212,10 +212,10 @@
 }
 .lex-equip__pool-info { display: flex; flex-direction: column; }
 .lex-equip__pool-name {
-  font-family: @font; font-size: 12px; letter-spacing: 2px; color: @ink;
+  font-family: @font; font-size: 14px; letter-spacing: 2px; color: @ink;
 }
 .lex-equip__pool-desc {
-  font-family: @font; font-size: 10px; letter-spacing: 1px; color: @ink-dim; margin-top: 1px;
+  font-family: @font; font-size: 12px; letter-spacing: 1px; color: @ink-dim; margin-top: 2px;
 }
 .lex-intro__glyph-info {
   display: flex; flex-direction: column;
@@ -274,10 +274,8 @@
   .lex-intro__glyph-name { color: rgba(248,250,252,0.8); }
   .lex-intro__glyph-desc { color: rgba(248,250,252,0.45); }
   .lex-equip__empty { color: rgba(248,250,252,0.3); }
-  .lex-equip__slot { border-color: rgba(248,250,252,0.12); }
-  .lex-equip__slot--filled { border-color: rgba(120,150,240,0.5); background: rgba(120,150,240,0.1); }
-  .lex-equip__slot-name { color: rgba(248,250,252,0.5); }
-  .lex-equip__slot-empty { color: rgba(248,250,252,0.15); }
+  .lex-equip__slot { border-color: rgba(248,250,252,0.15); }
+  .lex-equip__slot-empty { color: rgba(248,250,252,0.2); }
   .lex-equip__pool-label { color: rgba(248,250,252,0.35); }
   .lex-equip__pool-item { border-color: rgba(248,250,252,0.12); }
   .lex-equip__pool-name { color: rgba(248,250,252,0.8); }
