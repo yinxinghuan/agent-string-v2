@@ -28,9 +28,7 @@ export default function StartScreen({ onStart, isInAigram, onShowLeaderboard }: 
         <div className="lex-start__rule" />
         <button className="lex-btn" onPointerDown={onStart}>{t('start')}</button>
         {isInAigram && (
-          <button className="lex-btn lex-btn--ghost" onPointerDown={onShowLeaderboard}>
-            {locale === 'zh' ? '排行榜' : 'LEADERBOARD'}
-          </button>
+          <button className="lex-start__lb" onPointerDown={onShowLeaderboard}>🏆</button>
         )}
       </div>
     </div>

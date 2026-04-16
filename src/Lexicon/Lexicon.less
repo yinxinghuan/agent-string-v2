@@ -54,6 +54,13 @@
   font-size: 14px; line-height: 2.2; color: @ink-mid; text-align: center;
   font-family: -apple-system, 'Helvetica Neue', sans-serif;
 }
+.lex-start__lb {
+  display: block; margin: 10px auto 0;
+  width: 36px; height: 36px; border-radius: 50%; border: none;
+  background: @ink-light; font-size: 18px; cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  &:active { background: @ink-dim; transform: scale(0.9); }
+}
 .lex-start__rule, .lex-end__rule, .lex-shop__rule {
   width: 100%; height: 1px; background: @ink-light; margin: 18px 0;
 }
