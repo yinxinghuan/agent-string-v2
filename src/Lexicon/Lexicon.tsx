@@ -239,8 +239,24 @@ export default function Lexicon() {
     if (passed) {
       const excludeIds = state.glyphPool.map(g => g.id);
       const offered = pickRandomGlyphs(3, excludeIds);
-      setShopOffered(offered);
-      setState(prev => ({ ...prev, phase: 'shop' }));
+      if (offered.length > 0) {
+        // Glyphs available — show shop
+        setShopOffered(offered);
+        setState(prev => ({ ...prev, phase: 'shop' }));
+      } else {
+        // All glyphs collected — skip shop, go to next level
+        setState(prev => {
+          const nextRound = prev.round + 1;
+          return {
+            ...prev, phase: 'levelIntro', round: nextRound, score: 0,
+            lap: 0, lapProgress: 0, streak: 0, pressure: 0,
+            surgeActive: false, surgeTimer: 0,
+            wordsCollectedThisRound: [], phraseSetsCompleted: new Set(),
+            trapHits: 0, wordsShattered: 0,
+          };
+        });
+        pipelineEntryRef.current = null;
+      }
     } else {
       setState(prev => {
         const nextRound = prev.round + 1;

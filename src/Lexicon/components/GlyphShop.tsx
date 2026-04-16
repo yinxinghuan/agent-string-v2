@@ -17,7 +17,14 @@ export default function GlyphShop({ round, score, offered, pool, onPick }: Glyph
         <div className="lex-shop__rule" />
         <div className="lex-shop__score">{score} PTS</div>
         <div className="lex-shop__rule" />
-        <div className="lex-shop__title">{t('chooseGlyph')}</div>
+        <div className="lex-shop__title">
+          {locale === 'zh' ? '获得新符文' : 'EARN A NEW GLYPH'}
+        </div>
+        <div className="lex-shop__hint">
+          {locale === 'zh'
+            ? '选择一个加入你的符文池，下一关前可装配使用'
+            : 'Pick one to add to your collection. Equip before next level.'}
+        </div>
 
         <div className="lex-shop__cards">
           {offered.map(g => (
@@ -37,7 +44,7 @@ export default function GlyphShop({ round, score, offered, pool, onPick }: Glyph
           <>
             <div className="lex-shop__rule" />
             <div className="lex-shop__active-label">
-              {locale === 'zh' ? '符文池' : 'GLYPH POOL'} ({pool.length})
+              {locale === 'zh' ? '已收集' : 'COLLECTED'} ({pool.length})
             </div>
             <div className="lex-shop__active">
               {pool.map(g => (
