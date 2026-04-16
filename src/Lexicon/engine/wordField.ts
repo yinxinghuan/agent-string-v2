@@ -120,6 +120,7 @@ export function buildWords(cfg: BuildConfig): { words: Word[]; totalHeight: numb
   const positions = computePositions(cfg);
   const tokens = flatPassageTokens(cfg.passage);
   const usedTarget = new Set<number>();
+  const usedTrap = new Set<string>();
   const words: Word[] = [];
 
   // Pre-build lowercase sets for fast matching
@@ -141,9 +142,9 @@ export function buildWords(cfg: BuildConfig): { words: Word[]; totalHeight: numb
     if (ti >= 0 && !usedTarget.has(ti)) {
       meta = { ...cfg.targets[ti], text }; // keep original display text
       usedTarget.add(ti);
-    } else if (cfg.trapKeys.some(k => k.toLowerCase() === cleaned)) {
-      // Traps match EVERY occurrence (not just first) — they're landmines
+    } else if (cfg.trapKeys.some(k => k.toLowerCase() === cleaned) && !usedTrap.has(cleaned)) {
       meta = { text, type: 'trap' };
+      usedTrap.add(cleaned);
     } else if (volatileSet.has(cleaned) && !usedVolatile.has(cleaned)) {
       // Volatile: match first occurrence only
       meta = { text, type: 'volatile' };
