@@ -155,34 +155,67 @@
 .lex-intro__combo-words { color: @ink-dim; font-size: 12px; flex: 1; text-align: center; }
 .lex-intro__combo-bonus { color: rgb(50, 140, 70); font-weight: 600; flex-shrink: 0; }
 
-// Glyphs page
-.lex-intro__glyph-count {
-  font-family: @font; font-size: 14px; letter-spacing: 3px; color: @ink-dim;
-  margin: 4px 0;
+// ── Glyph Equip Component ────────────────────────────────────────────────
+.lex-equip { width: 100%; }
+.lex-equip__empty {
+  font-family: @font; font-size: 14px; color: @ink-dim; letter-spacing: 2px;
+  text-align: center; padding: 24px 0;
 }
-.lex-intro__glyphs {
-  display: flex; flex-direction: column; gap: 12px; width: 100%;
+
+// Equipped slots row
+.lex-equip__slots {
+  display: flex; gap: 6px; justify-content: center; margin-bottom: 16px;
 }
-.lex-intro__glyph-item {
-  display: flex; align-items: center; gap: 12px;
-  padding: 8px 10px; cursor: pointer; touch-action: none;
-  -webkit-tap-highlight-color: transparent;
-  border: 1px solid transparent; transition: border-color 0.2s;
+.lex-equip__slot {
+  width: 56px; height: 56px; border: 1px solid @ink-light;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  cursor: pointer; touch-action: none; -webkit-tap-highlight-color: transparent;
+  transition: all 0.2s;
 }
-.lex-intro__glyph-item--equipped {
-  border-color: rgba(80, 100, 180, 0.5); background: rgba(80, 100, 180, 0.06);
+.lex-equip__slot--filled {
+  border-color: rgba(80, 100, 180, 0.6); background: rgba(80, 100, 180, 0.08);
 }
-.lex-intro__glyph-item--disabled {
-  opacity: 0.35; cursor: default;
+.lex-equip__slot-icon {
+  font-size: 16px; line-height: 1;
 }
-.lex-intro__glyph-toggle {
-  font-family: @font; font-size: 14px; color: rgba(80, 100, 180, 0.9);
-  margin-left: auto; flex-shrink: 0; width: 20px; text-align: center;
+.lex-equip__slot-name {
+  font-family: @font; font-size: 8px; letter-spacing: 1px; color: @ink-mid;
+  margin-top: 3px; max-width: 52px; overflow: hidden; text-overflow: ellipsis;
+  white-space: nowrap; text-align: center;
 }
-.lex-intro__glyph-icon {
-  font-size: 14px; flex-shrink: 0; width: 28px; height: 28px;
+.lex-equip__slot-empty {
+  font-family: @font; font-size: 14px; color: @ink-light;
+}
+
+// Pool label + list
+.lex-equip__pool-label {
+  font-family: @font; font-size: 10px; letter-spacing: 4px; color: @ink-dim;
+  margin-bottom: 8px; text-align: center;
+}
+.lex-equip__pool {
+  display: flex; flex-direction: column; gap: 6px; width: 100%;
+}
+.lex-equip__pool-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px; border: 1px solid @ink-light;
+  cursor: pointer; touch-action: none; -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s;
+  &:active { background: rgba(80, 100, 180, 0.08); }
+}
+.lex-equip__pool-item--disabled {
+  opacity: 0.3; cursor: default;
+}
+.lex-equip__pool-icon {
+  font-size: 14px; width: 28px; height: 28px; flex-shrink: 0;
   background: rgba(80, 100, 180, 0.8); color: rgba(255,255,255,0.95);
   display: inline-flex; align-items: center; justify-content: center;
+}
+.lex-equip__pool-info { display: flex; flex-direction: column; }
+.lex-equip__pool-name {
+  font-family: @font; font-size: 12px; letter-spacing: 2px; color: @ink;
+}
+.lex-equip__pool-desc {
+  font-family: @font; font-size: 10px; letter-spacing: 1px; color: @ink-dim; margin-top: 1px;
 }
 .lex-intro__glyph-info {
   display: flex; flex-direction: column;
@@ -240,7 +273,15 @@
   .lex-intro__pass-big-label, .lex-intro__pass-big-time { color: rgba(248,250,252,0.4); }
   .lex-intro__glyph-name { color: rgba(248,250,252,0.8); }
   .lex-intro__glyph-desc { color: rgba(248,250,252,0.45); }
-  .lex-intro__glyphs-empty { color: rgba(248,250,252,0.3); }
+  .lex-equip__empty { color: rgba(248,250,252,0.3); }
+  .lex-equip__slot { border-color: rgba(248,250,252,0.12); }
+  .lex-equip__slot--filled { border-color: rgba(120,150,240,0.5); background: rgba(120,150,240,0.1); }
+  .lex-equip__slot-name { color: rgba(248,250,252,0.5); }
+  .lex-equip__slot-empty { color: rgba(248,250,252,0.15); }
+  .lex-equip__pool-label { color: rgba(248,250,252,0.35); }
+  .lex-equip__pool-item { border-color: rgba(248,250,252,0.12); }
+  .lex-equip__pool-name { color: rgba(248,250,252,0.8); }
+  .lex-equip__pool-desc { color: rgba(248,250,252,0.4); }
   .lex-btn { color: rgba(248,250,252,0.7); border-color: rgba(248,250,252,0.2); }
   .lex-btn--solid {
     background: rgba(248,250,252,0.85); color: rgba(0,0,0,0.85);

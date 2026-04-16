@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { locale } from '../i18n';
 import type { Glyph, RoundConfig } from '../types';
 import ScrambleText from './ScrambleText';
+import GlyphEquip from './GlyphEquip';
 
 interface LevelIntroProps {
   round: number;
@@ -145,48 +146,19 @@ export default function LevelIntro({ round, roundConfig, glyphPool, equippedGlyp
     </div>
   );
 
-  // Page 3: Equip glyphs from pool
+  // Page 3: Equip glyphs from pool (slot-based UI)
   pages.push(
     <div key="glyphs" className="lex-intro__page">
       <ScrambleText className="lex-intro__page-header" as="div" speed={25} delay={100}>
         {locale === 'zh' ? '装配符文' : 'EQUIP GLYPHS'}
       </ScrambleText>
-      <ScrambleText className="lex-intro__glyph-count" as="div" speed={20} delay={250}>
-        {`${equippedGlyphs.length} / ${maxEquipped}`}
-      </ScrambleText>
       <div className="lex-intro__rule" />
-      {glyphPool.length > 0 ? (
-        <div className="lex-intro__glyphs">
-          {glyphPool.map((g, i) => {
-            const isEquipped = equippedGlyphs.some(e => e.id === g.id);
-            const canEquip = equippedGlyphs.length < maxEquipped;
-            return (
-              <div
-                key={g.id}
-                className={`lex-intro__glyph-item ${isEquipped ? 'lex-intro__glyph-item--equipped' : ''} ${!isEquipped && !canEquip ? 'lex-intro__glyph-item--disabled' : ''}`}
-                onPointerDown={() => (isEquipped || canEquip) ? onToggleEquip(g) : undefined}
-              >
-                <span className="lex-intro__glyph-icon">{g.icon}</span>
-                <div className="lex-intro__glyph-info">
-                  <ScrambleText className="lex-intro__glyph-name" speed={25} delay={300 + i * 150}>
-                    {locale === 'zh' ? g.nameZh : g.name}
-                  </ScrambleText>
-                  <span className="lex-intro__glyph-desc">
-                    {locale === 'zh' ? g.descriptionZh : g.description}
-                  </span>
-                </div>
-                <span className="lex-intro__glyph-toggle">
-                  {isEquipped ? '✓' : ''}
-                </span>
-              </div>
-            );
-          })}
-        </div>
-      ) : (
-        <ScrambleText className="lex-intro__glyphs-empty" as="div" speed={20} delay={400}>
-          {locale === 'zh' ? '通关后可获得符文' : 'Clear levels to earn glyphs'}
-        </ScrambleText>
-      )}
+      <GlyphEquip
+        glyphPool={glyphPool}
+        equippedGlyphs={equippedGlyphs}
+        maxEquipped={maxEquipped}
+        onToggleEquip={onToggleEquip}
+      />
     </div>
   );
 
