@@ -9,9 +9,9 @@ export const REPEL_F = 5.5;
 export const COLLECT_R = 140;         // generous proximity — fast-paced feel
 export const COLLECT_ALPHA_THRESH = 0.35;  // responsive threshold
 export const COLLECT_TIME = 0.1;      // quick collection — satisfying rhythm
-export const TRAP_R = 110;
-export const TRAP_ALPHA_THRESH = 0.45;
-export const TRAP_TIME = 0.25;
+export const TRAP_R = 130;           // slightly smaller than COLLECT_R — traps are sneaky
+export const TRAP_ALPHA_THRESH = 0.3; // triggers easier
+export const TRAP_TIME = 0.12;        // fast trigger — feels like stepping on a mine
 
 // ── Redline ──────────────────────────────────────────────────────────────────
 export const REDLINE_Y = 0.50;       // screen center — visual divider
