@@ -11,6 +11,7 @@ interface HUDProps {
   pressure: number;
   surgeActive: boolean;
   glyphs: Glyph[];
+  triggeredGlyphIds: string[];
   targets: WordMeta[];
   collectedWords: string[];
   passScore: number;
@@ -19,7 +20,7 @@ interface HUDProps {
   onEndRound?: () => void;
 }
 
-export default function HUD({ round, score, lap, lapProgress, maxLaps, streak, pressure, surgeActive, glyphs, targets, collectedWords, passScore, minTargets, visuals, onEndRound }: HUDProps) {
+export default function HUD({ round, score, lap, lapProgress, maxLaps, streak, pressure, surgeActive, glyphs, triggeredGlyphIds, targets, collectedWords, passScore, minTargets, visuals, onEndRound }: HUDProps) {
   const targetsCollected = collectedWords.filter(w => targets.some(t => t.text === w)).length;
   const passed = passScore > 0 && score >= passScore && targetsCollected >= minTargets;
 
@@ -83,7 +84,11 @@ export default function HUD({ round, score, lap, lapProgress, maxLaps, streak, p
       {glyphs.length > 0 && (
         <div className="lex-hud__glyphs">
           {glyphs.map(g => (
-            <span key={g.id} className="lex-hud__glyph" title={g.name}>{g.icon}</span>
+            <span
+              key={g.id}
+              className={`lex-hud__glyph ${triggeredGlyphIds.includes(g.id) ? 'lex-hud__glyph--triggered' : ''}`}
+              title={g.name}
+            >{g.icon}</span>
           ))}
         </div>
       )}

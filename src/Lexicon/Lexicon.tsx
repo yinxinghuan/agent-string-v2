@@ -41,8 +41,10 @@ function initialState(): GameState {
 export default function Lexicon() {
   const [state, setState] = useState<GameState>(initialState);
   const [shopOffered, setShopOffered] = useState<Glyph[]>([]);
+  const [triggeredGlyphIds, setTriggeredGlyphIds] = useState<string[]>([]);
   const pipelineEntryRef = useRef<PipelineEntry | null>(null);
   const streakTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const glyphFlashTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const roundConfig = getRound(state.round - 1);
 
@@ -106,6 +108,14 @@ export default function Lexicon() {
       });
 
       pipelineEntryRef.current = entry;
+
+      // Flash triggered glyphs in HUD
+      const glyphIds = entry.steps.filter(s => s.glyphId).map(s => s.glyphId!);
+      if (glyphIds.length > 0) {
+        setTriggeredGlyphIds(glyphIds);
+        if (glyphFlashTimerRef.current) clearTimeout(glyphFlashTimerRef.current);
+        glyphFlashTimerRef.current = setTimeout(() => setTriggeredGlyphIds([]), 600);
+      }
 
       if (newStreak === 3 || newStreak === 5 || newStreak === 7) {
         sfxStreak(newStreak);
@@ -319,6 +329,7 @@ export default function Lexicon() {
             pressure={state.pressure}
             surgeActive={state.surgeActive}
             glyphs={state.equippedGlyphs}
+            triggeredGlyphIds={triggeredGlyphIds}
             targets={roundConfig.targets}
             collectedWords={state.wordsCollectedThisRound}
             passScore={roundConfig.passScore}
