@@ -232,45 +232,36 @@ export default function Lexicon() {
 
   // ── Next level: shop if passed, skip if failed ─────────────────────────────
   const handleRoundEnd = useCallback(() => {
-    const targetsCollected = state.wordsCollectedThisRound.filter(w =>
-      roundConfig.targets.some(t => t.text === w)
-    ).length;
-    const passed = state.score >= roundConfig.passScore && targetsCollected >= roundConfig.minTargets;
-    if (passed) {
-      const excludeIds = state.glyphPool.map(g => g.id);
-      const offered = pickRandomGlyphs(3, excludeIds);
-      if (offered.length > 0) {
-        // Glyphs available — show shop
-        setShopOffered(offered);
-        setState(prev => ({ ...prev, phase: 'shop' }));
-      } else {
-        // All glyphs collected — skip shop, go to next level
-        setState(prev => {
-          const nextRound = prev.round + 1;
-          return {
-            ...prev, phase: 'levelIntro', round: nextRound, score: 0,
-            lap: 0, lapProgress: 0, streak: 0, pressure: 0,
-            surgeActive: false, surgeTimer: 0,
-            wordsCollectedThisRound: [], phraseSetsCompleted: new Set(),
-            trapHits: 0, wordsShattered: 0,
-          };
-        });
-        pipelineEntryRef.current = null;
+    // Use setState functional form to read latest state (avoids stale closure)
+    setState(prev => {
+      const rc = getRound(prev.round - 1);
+      const targetsCollected = prev.wordsCollectedThisRound.filter(w =>
+        rc.targets.some(t => t.text === w)
+      ).length;
+      const passed = prev.score >= rc.passScore && targetsCollected >= rc.minTargets;
+
+      if (passed) {
+        const excludeIds = prev.glyphPool.map(g => g.id);
+        const offered = pickRandomGlyphs(3, excludeIds);
+        if (offered.length > 0) {
+          setShopOffered(offered);
+          return { ...prev, phase: 'shop' as const };
+        }
+        // All glyphs collected — skip shop
       }
-    } else {
-      setState(prev => {
-        const nextRound = prev.round + 1;
-        return {
-          ...prev, phase: 'levelIntro', round: nextRound, score: 0,
-          lap: 0, lapProgress: 0, streak: 0, pressure: 0,
-          surgeActive: false, surgeTimer: 0,
-          wordsCollectedThisRound: [], phraseSetsCompleted: new Set(),
-          trapHits: 0, wordsShattered: 0,
-        };
-      });
+
+      // Next level (passed without shop, or failed)
+      const nextRound = prev.round + 1;
       pipelineEntryRef.current = null;
-    }
-  }, [state.glyphPool, state.score, state.wordsCollectedThisRound, roundConfig]);
+      return {
+        ...prev, phase: 'levelIntro' as const, round: nextRound, score: 0,
+        lap: 0, lapProgress: 0, streak: 0, pressure: 0,
+        surgeActive: false, surgeTimer: 0,
+        wordsCollectedThisRound: [], phraseSetsCompleted: new Set(),
+        trapHits: 0, wordsShattered: 0,
+      };
+    });
+  }, []);
 
   // ── Shop: pick glyph → add to pool + auto-equip if room ───────────────────
   const handlePickGlyph = useCallback((glyph: Glyph) => {
