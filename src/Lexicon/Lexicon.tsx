@@ -61,6 +61,17 @@ export default function Lexicon() {
     pipelineEntryRef.current = null;
   }, []);
 
+  // ── Debug: jump to specific round ─────────────────────────────────────────
+  const handleJumpToRound = useCallback((round: number) => {
+    resumeAudio();
+    setState({
+      ...initialState(),
+      phase: 'levelIntro',
+      round,
+    });
+    pipelineEntryRef.current = null;
+  }, []);
+
   // ── Level intro → start playing ──────────────────────────────────────────
   const handleLevelStart = useCallback(() => {
     setState(prev => ({ ...prev, phase: 'playing' }));
@@ -304,6 +315,7 @@ export default function Lexicon() {
       {state.phase === 'menu' && (
         <StartScreen
           onStart={handleStart}
+          onJumpToRound={handleJumpToRound}
           isInAigram={isInAigram}
           onShowLeaderboard={() => setShowLeaderboard(true)}
         />

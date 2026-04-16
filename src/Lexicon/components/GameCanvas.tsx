@@ -89,7 +89,7 @@ function spawnGeom(W: number, H: number): GeomShape {
     x, y, vx, vy,
     type: types[Math.floor(Math.random() * types.length)],
     size, spin: Math.random() * Math.PI * 2, spinV: (Math.random() - .5) * 0.015,
-    repelR: size * 4, strength: 8 + Math.random() * 5, alpha: 0.15 + Math.random() * 0.1,
+    repelR: Math.min(size * 4, 200), strength: 8 + Math.random() * 5, alpha: 0.15 + Math.random() * 0.1,
   };
 }
 
