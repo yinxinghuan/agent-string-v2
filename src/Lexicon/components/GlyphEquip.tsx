@@ -17,18 +17,16 @@ export default function GlyphEquip({ glyphPool, equippedGlyphs, maxEquipped, onT
     );
   }
 
-  // Build slot array: equipped glyphs + empty slots
   const slots: (Glyph | null)[] = [];
   for (let i = 0; i < maxEquipped; i++) {
     slots.push(equippedGlyphs[i] || null);
   }
 
-  // Pool: glyphs not currently equipped
   const unequipped = glyphPool.filter(g => !equippedGlyphs.some(e => e.id === g.id));
 
   return (
     <div className="lex-equip">
-      {/* Equipped slots */}
+      {/* Equipped slots — icon only, tap to unequip */}
       <div className="lex-equip__slots">
         {slots.map((g, i) => (
           <div
@@ -37,10 +35,7 @@ export default function GlyphEquip({ glyphPool, equippedGlyphs, maxEquipped, onT
             onPointerDown={g ? () => onToggleEquip(g) : undefined}
           >
             {g ? (
-              <>
-                <span className="lex-equip__slot-icon">{g.icon}</span>
-                <span className="lex-equip__slot-name">{locale === 'zh' ? g.nameZh : g.name}</span>
-              </>
+              <span className="lex-equip__slot-icon">{g.icon}</span>
             ) : (
               <span className="lex-equip__slot-empty">—</span>
             )}
@@ -48,7 +43,20 @@ export default function GlyphEquip({ glyphPool, equippedGlyphs, maxEquipped, onT
         ))}
       </div>
 
-      {/* Pool */}
+      {/* Equipped glyph descriptions */}
+      {equippedGlyphs.length > 0 && (
+        <div className="lex-equip__equipped-list">
+          {equippedGlyphs.map(g => (
+            <div key={g.id} className="lex-equip__equipped-item">
+              <span className="lex-equip__equipped-icon">{g.icon}</span>
+              <span className="lex-equip__equipped-name">{locale === 'zh' ? g.nameZh : g.name}</span>
+              <span className="lex-equip__equipped-desc">— {locale === 'zh' ? g.descriptionZh : g.description}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Pool — unequipped glyphs */}
       {unequipped.length > 0 && (
         <>
           <div className="lex-equip__pool-label">
