@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import type { Word, GameState, PipelineEntry, Glyph } from './types';
 import { getRound } from './engine/passages';
 import { resolvePipeline } from './engine/pipeline';
@@ -6,6 +6,7 @@ import { pickRandomGlyphs } from './engine/glyphs';
 import { locale } from './i18n';
 import { SURGE_DURATION } from './constants';
 import { sfxStreak, sfxComplete, resumeAudio } from './utils/sounds';
+import { useGameScore, Leaderboard } from '@shared/leaderboard';
 import GameCanvas from './components/GameCanvas';
 import HUD from './components/HUD';
 import StartScreen from './components/StartScreen';
@@ -42,6 +43,8 @@ export default function Lexicon() {
   const [state, setState] = useState<GameState>(initialState);
   const [shopOffered, setShopOffered] = useState<Glyph[]>([]);
   const [triggeredGlyphIds, setTriggeredGlyphIds] = useState<string[]>([]);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const { isInAigram, submitScore, fetchGlobalLeaderboard, fetchFriendsLeaderboard } = useGameScore('agent-string-v2');
   const pipelineEntryRef = useRef<PipelineEntry | null>(null);
   const streakTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const glyphFlashTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -276,6 +279,13 @@ export default function Lexicon() {
     pipelineEntryRef.current = null;
   }, []);
 
+  // ── Submit score to leaderboard when round ends ─────────────────────────────
+  useEffect(() => {
+    if (state.phase === 'roundEnd' && state.score > 0) {
+      submitScore(state.score);
+    }
+  }, [state.phase, state.score, submitScore]);
+
   // ── Retry ──────────────────────────────────────────────────────────────────
   const handleRetry = useCallback(() => {
     handleStart();
@@ -285,7 +295,21 @@ export default function Lexicon() {
   return (
     <div className="lex-root">
       {state.phase === 'menu' && (
-        <StartScreen onStart={handleStart} />
+        <StartScreen
+          onStart={handleStart}
+          isInAigram={isInAigram}
+          onShowLeaderboard={() => setShowLeaderboard(true)}
+        />
+      )}
+
+      {showLeaderboard && (
+        <Leaderboard
+          gameName="LEXICON"
+          isInAigram={isInAigram}
+          onClose={() => setShowLeaderboard(false)}
+          fetchGlobal={fetchGlobalLeaderboard}
+          fetchFriends={fetchFriendsLeaderboard}
+        />
       )}
 
       {state.phase === 'levelIntro' && (
