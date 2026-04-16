@@ -60,17 +60,12 @@ export default function StartScreen({ onStart, onJumpToRound, isInAigram, onShow
       </div>
 
       {showJump && (
-        <div style={{
-          position: 'fixed', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
-          background: 'rgba(0,0,0,0.7)', zIndex: 999,
-        }} onPointerDown={() => setShowJump(false)}>
-          <div style={{
-            background: '#1a1a2e', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 12,
-            padding: '24px 28px', display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center',
-          }} onPointerDown={e => e.stopPropagation()}>
-            <div style={{ color: '#aaa', fontSize: 13, fontFamily: "'IBM Plex Mono', monospace" }}>
-              Jump to round (1-30)
-            </div>
+        <div
+          className="lex-jump-overlay"
+          onPointerDown={() => setShowJump(false)}
+        >
+          <div className="lex-jump-card" onPointerDown={e => e.stopPropagation()}>
+            <div className="lex-jump-label">ROUND</div>
             <input
               autoFocus
               type="number"
@@ -78,20 +73,9 @@ export default function StartScreen({ onStart, onJumpToRound, isInAigram, onShow
               value={jumpVal}
               onChange={e => setJumpVal(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter') handleJumpConfirm(); }}
-              style={{
-                width: 80, textAlign: 'center', fontSize: 24, padding: '6px 12px',
-                background: '#0d0d1a', color: '#fff', border: '1px solid rgba(255,255,255,0.3)',
-                borderRadius: 6, outline: 'none', fontFamily: "'IBM Plex Mono', monospace",
-              }}
+              className="lex-jump-input"
             />
-            <button
-              onPointerDown={handleJumpConfirm}
-              style={{
-                padding: '8px 24px', fontSize: 14, background: 'rgba(255,255,255,0.1)',
-                color: '#fff', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 6,
-                cursor: 'pointer', fontFamily: "'IBM Plex Mono', monospace",
-              }}
-            >GO</button>
+            <button className="lex-btn" onPointerDown={handleJumpConfirm}>GO</button>
           </div>
         </div>
       )}

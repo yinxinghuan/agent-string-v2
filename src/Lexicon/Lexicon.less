@@ -61,6 +61,26 @@
   -webkit-tap-highlight-color: transparent;
   &:active { background: @ink-dim; transform: scale(0.9); }
 }
+// ── Jump dialog (debug) ─────────────────────────────────────────────────────
+.lex-jump-overlay {
+  position: fixed; inset: 0; z-index: 999;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(20, 12, 5, 0.35);
+}
+.lex-jump-card {
+  background: @bg; border: 1px solid @ink-dim;
+  padding: 28px 32px; display: flex; flex-direction: column; align-items: center; gap: 16px;
+  width: min(240px, 80vw);
+}
+.lex-jump-label {
+  font-family: @font; font-size: 11px; letter-spacing: 6px; color: @ink-dim;
+}
+.lex-jump-input {
+  width: 80px; text-align: center; font-size: 28px; padding: 8px 12px;
+  background: transparent; color: @ink; border: none; border-bottom: 1px solid @ink-dim;
+  outline: none; font-family: @font; letter-spacing: 4px;
+}
+
 .lex-start__rule, .lex-end__rule, .lex-shop__rule {
   width: 100%; height: 1px; background: @ink-light; margin: 18px 0;
 }
