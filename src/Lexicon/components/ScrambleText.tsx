@@ -21,12 +21,8 @@ export default function ScrambleText({
 }: ScrambleTextProps) {
   const [display, setDisplay] = useState('');
   const rafRef = useRef(0);
-  const startedRef = useRef(false);
 
   useEffect(() => {
-    if (startedRef.current) return;
-    startedRef.current = true;
-
     const chars = Array.from(text);
     const len = chars.length;
     // Total ticks: each char needs scrambleTicks random + 1 settle

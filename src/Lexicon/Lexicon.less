@@ -35,9 +35,69 @@
   border: none; color: @ink-dim; padding: 12px 36px; margin-top: 4px;
 }
 
-// ── Start screen ─────────────────────────────────────────────────────────────
+// ── Start screen — INVERTED palette experiment ───────────────────────────────
+@inv-bg: #14110a;                          // dark warm (≈ inverted cream)
+@inv-ink: rgba(245, 240, 230, 0.92);       // cream (≈ inverted ink)
+@inv-ink-dim: rgba(245, 240, 230, 0.45);
+@inv-ink-mid: rgba(245, 240, 230, 0.6);
+@inv-ink-light: rgba(245, 240, 230, 0.15);
+@field-ink: rgb(215, 165, 95);             // warm amber (≈ inverted blue)
+
+.lex-start {
+  background: @inv-bg;
+
+  .lex-start__label    { color: @inv-ink-dim; }
+  .lex-start__title    { color: @inv-ink; }
+  .lex-start__subtitle { color: @inv-ink-mid; }
+  .lex-start__rules    { color: @inv-ink-mid; }
+  .lex-start__rule     { background: @inv-ink-light; }
+
+  .lex-btn {
+    color: @inv-ink;
+    border-color: @inv-ink-dim;
+    &:active { background: @inv-ink-light; }
+  }
+
+  .lex-start__lb {
+    background: @inv-ink-light;
+    &:active { background: @inv-ink-dim; }
+  }
+}
+
+.lex-start__field {
+  position: absolute; inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  font-family: @font;
+  font-size: 14px;
+  line-height: 2.2;
+  letter-spacing: 1.5px;
+  color: @field-ink;
+  padding: 28px 14px;
+  box-sizing: border-box;
+  overflow: hidden;
+  // soft fade at the screen edges so words don't crowd the rounded mask
+  mask-image: radial-gradient(ellipse 78% 85% at center, #000 60%, rgba(0,0,0,0.85) 82%, rgba(0,0,0,0.2) 100%);
+  -webkit-mask-image: radial-gradient(ellipse 78% 85% at center, #000 60%, rgba(0,0,0,0.85) 82%, rgba(0,0,0,0.2) 100%);
+}
+.lex-fw {
+  display: inline-block;
+  margin: 0 0.7em;
+  white-space: nowrap;
+  will-change: transform;
+}
+
 .lex-start__inner {
   display: flex; flex-direction: column; align-items: center; width: min(320px, 88vw);
+  position: relative; z-index: 2;
+}
+.lex-start__title {
+  margin: 0 0 14px;
+}
+.lex-start__tagline {
+  font-family: @font; font-size: 11px; letter-spacing: 5px;
+  color: @ink-dim; text-align: center; margin-top: 6px; margin-bottom: 28px;
+  text-transform: uppercase; text-indent: 5px;
 }
 .lex-start__label {
   font-size: 12px; letter-spacing: 6px; color: @ink-dim; font-family: @font; text-align: center;
