@@ -44,7 +44,7 @@ export default function Lexicon() {
   const [shopOffered, setShopOffered] = useState<Glyph[]>([]);
   const [triggeredGlyphIds, setTriggeredGlyphIds] = useState<string[]>([]);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
-  const { isInAigram, submitScore, fetchGlobalLeaderboard, fetchFriendsLeaderboard } = useGameScore('agent-string-v2');
+  const { isInAigram, submitScore, fetchLeaderboard } = useGameScore();
   const pipelineEntryRef = useRef<PipelineEntry | null>(null);
   const streakTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const glyphFlashTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -326,8 +326,7 @@ export default function Lexicon() {
           gameName="LEXICON"
           isInAigram={isInAigram}
           onClose={() => setShowLeaderboard(false)}
-          fetchGlobal={fetchGlobalLeaderboard}
-          fetchFriends={fetchFriendsLeaderboard}
+          fetch={fetchLeaderboard}
         />
       )}
 
